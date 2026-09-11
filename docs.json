@@ -16,7 +16,7 @@
       },
         {
                 "tab": "API reference (manual testing version)",
-                "openapi": "./openapi.json",
+                "openapi": "openapi.json",
                 "groups": [
                     {
                         "group": "Private Swaps",
