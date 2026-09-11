@@ -11,21 +11,97 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "quickstart"
-            ]
-          }
-        ]
+        "tab": "API Reference (dev)",
+        "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json"
       },
-      {
-        "tab": "API Reference",
-        "openapi": "https://api-partner.houdiniswap.com/v2/openapi.json"
-      }
+        {
+                "tab": "API reference (manual testing version)",
+                "openapi": "./openapi.json",
+                "groups": [
+                    {
+                        "group": "Private Swaps",
+                        "pages": [
+                            "GET /tokens",
+                            "GET /quotes",
+                            "GET /quotes/byChainAddress",
+                            "POST /exchanges",
+                            "GET /orders",
+                            "GET /orders/{houdiniId}"
+                        ]
+                    },
+                    {
+                        "group": "Standard Swaps",
+                        "pages": [
+                            "GET /tokens",
+                            "GET /quotes",
+                            "GET /quotes/byChainAddress",
+                            "POST /exchanges",
+                            "GET /orders",
+                            "GET /orders/{houdiniId}"
+                        ]
+                    },
+                    {
+                        "group": "DEX Swaps",
+                        "pages": [
+                            "GET /tokens",
+                            "GET /quotes",
+                            "GET /quotes/byChainAddress",
+                            "POST /exchanges",
+                            "POST /dex/allowance",
+                            "POST /dex/approve",
+                            "POST /dex/chainSignatures",
+                            "POST /dex/confirmTx",
+                            "GET /orders",
+                            "GET /orders/{houdiniId}"
+                        ]
+                    },
+                    {
+                        "group": "Multi-Exchange",
+                        "pages": [
+                            "GET /tokens",
+                            "POST /quotes/multi",
+                            "POST /exchanges/multi",
+                            "GET /exchanges/multi/{multiId}",
+                            {
+                                "group": "Bundler",
+                                "pages": [
+                                    "POST /exchanges/multi/{multiId}/tx/build",
+                                    "GET /exchanges/multi/{multiId}/tx",
+                                    "POST /exchanges/multi/{multiId}/tx",
+                                    "POST /exchanges/multi/{multiId}/retry",
+                                    "POST /exchanges/multi/recovery"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "group": "Reference Data",
+                        "pages": [
+                            "GET /tokens/{id}",
+                            "GET /chains",
+                            "GET /swaps",
+                            "GET /minMax"
+                        ]
+                    },
+                    {
+                        "group": "Partner Account",
+                        "pages": [
+                            "GET /me",
+                            "GET /commissions",
+                            "GET /commissions/summary",
+                            "GET /withdrawals",
+                            "GET /stats/volume",
+                            "GET /stats/weeklyVolume",
+                            "GET /stats/chart",
+                            "GET /rateLimits"
+                        ]
+                    },
+                    {
+                        "group": "System",
+                        "pages": ["GET /status"]
+                    }
+                ]
+            }
     ],
     "global": {
       "anchors": [
