@@ -10,10 +10,6 @@
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
-      {
-        "tab": "API Reference (dev)",
-        "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json"
-      },
         {
                 "tab": "API reference (manual testing version)",
                 "openapi": "openapi.json",
