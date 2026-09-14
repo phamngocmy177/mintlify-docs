@@ -940,12 +940,12 @@
 					"amountIn": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount you send, as a decimal in the input token's own units, e.g. `0.25` BTC."
+						"description": "Amount you send, e.g. `0.25` BTC."
 					},
 					"amountOut": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount you receive, as a decimal in the output token's own units, e.g. `3.52` ETH. DEX quotes do not subtract `feeUsd` here — compare routes on `netAmountOut`."
+						"description": "Amount you receive, e.g. `3.52` ETH."
 					},
 					"amountOutUsd": {
 						"type": "number",
@@ -970,7 +970,7 @@
 					"netAmountOut": {
 						"type": "number",
 						"format": "double",
-						"description": "The field to compare routes on: `amountOut` minus `feeUsd`, in the output token's own units — not USD.\n\n- equals `amountOut` on CEX quotes, which carry no `feeUsd`\n- gas is not deducted\n- falls back to `amountOut` when the output token has no USD price"
+						"description": "The field to compare routes on: `amountOut` minus `feeUsd`, in the output token — not USD.\n\n- equals `amountOut` on CEX quotes, which carry no `feeUsd`\n- gas is not deducted\n- falls back to `amountOut` when the output token has no USD price"
 					},
 					"error": {
 						"type": "string",
@@ -1037,26 +1037,26 @@
 					"min": {
 						"type": "number",
 						"format": "double",
-						"description": "Smallest amount this route accepts, in input token units."
+						"description": "Smallest amount this route accepts, e.g. `0.001` BTC."
 					},
 					"max": {
 						"type": "number",
 						"format": "double",
-						"description": "Largest amount this route accepts, in input token units."
+						"description": "Largest amount this route accepts, e.g. `5` BTC."
 					},
 					"minOut": {
 						"type": "number",
 						"format": "double",
-						"description": "Smallest amount you can receive. Present only when `amountType` is `receive` and the provider returns receive-side bounds."
+						"description": "Smallest amount you can receive, e.g. `100` USDT. Present only when `amountType` is `receive` and the provider returns receive-side bounds."
 					},
 					"maxOut": {
 						"type": "number",
 						"format": "double",
-						"description": "Largest amount you can receive. Present only when `amountType` is `receive` and the provider returns receive-side bounds."
+						"description": "Largest amount you can receive, e.g. `50000` USDT. Present only when `amountType` is `receive` and the provider returns receive-side bounds."
 					},
 					"rateId": {
 						"type": "string",
-						"description": "Identifier for the locked rate. Required when creating a fixed-rate exchange."
+						"description": "Identifies the locked rate on a fixed-rate quote. You do not pass this when creating the exchange — `quoteId` carries it."
 					},
 					"fixed": {
 						"type": "boolean",
@@ -1122,54 +1122,10 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ExchangeType": {
+			"SwapShortName": {
 				"type": "string",
-				"enum": [
-					"ch",
-					"cl",
-					"cn",
-					"ff",
-					"le",
-					"se",
-					"ss",
-					"sx",
-					"sxby",
-					"sxhu",
-					"sxku",
-					"sxmx",
-					"sz",
-					"sp",
-					"eb",
-					"nx",
-					"cc",
-					"qx",
-					"sg",
-					"tc",
-					"hu",
-					"nic",
-					"dl",
-					"ad",
-					"wh",
-					"cf",
-					"un",
-					"jp",
-					"mn",
-					"rd",
-					"ps",
-					"cs",
-					"kd",
-					"ct",
-					"zx",
-					"wc",
-					"su",
-					"tt",
-					"ni",
-					"sd",
-					"bg",
-					"ab",
-					"pt",
-					"ax"
-				]
+				"example": "cl",
+				"description": "A provider's short code, e.g. `cl`. Get the current list from Get swap providers (`GET /v2/swaps`) — the `shortName` field."
 			},
 			"QuoteSort": {
 				"enum": [
@@ -1185,7 +1141,7 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount of the `from` token to swap, as a decimal in the token's own units (e.g. `1.5` BTC, `250.75` USDT) — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
@@ -1224,7 +1180,7 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if a swap cannot complete. Send it to get:\n\n- fixed-rate quotes\n- providers that require one — they are dropped from your results without it",
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
 						"maxLength": 200
 					},
 					"deviationThreshold": {
@@ -1243,7 +1199,7 @@
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Enable payout wallet rotation for better privacy. Only used for CEX swaps."
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it."
 					},
 					"rotateFallback": {
 						"type": "boolean",
@@ -1258,10 +1214,10 @@
 					},
 					"swaps": {
 						"items": {
-							"$ref": "#/components/schemas/ExchangeType"
+							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Swaps to use for the quote; if omitted, all swaps are used"
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX"
 					},
 					"inLegIncludedSwaps": {
 						"items": {
@@ -1293,11 +1249,11 @@
 					},
 					"senderAddress": {
 						"type": "string",
-						"description": "Address of the wallet initiating the swap"
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it."
 					},
 					"receiverAddress": {
 						"type": "string",
-						"description": "If different from senderAddress, DEX routes that don't support sending to another wallet are filtered. Also used for payout wallet rotation"
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation"
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort",
@@ -1434,7 +1390,7 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount to swap, as a decimal in the token's own units, e.g. `1.5` BTC.",
+						"description": "Amount to swap, e.g. `1.5` BTC.",
 						"minimum": 0
 					},
 					"anonymous": {
@@ -2571,25 +2527,25 @@
 							"maxOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum receive amount when using amountType=receive (CEX, in to-token units)",
+								"description": "Largest amount you can receive. Only for `amountType=receive`.",
 								"example": 50000
 							},
 							"minOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum receive amount when using amountType=receive (CEX, in to-token units)",
+								"description": "Smallest amount you can receive. Only for `amountType=receive`.",
 								"example": 75
 							},
 							"max": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum swap amount for CEX",
+								"description": "Largest amount you can send.",
 								"example": 16.914175
 							},
 							"min": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum swap amount for CEX",
+								"description": "Smallest amount you can send.",
 								"example": 0.0253712625
 							}
 						},
@@ -2608,23 +2564,23 @@
 							"maxOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum receive amount when using amountType=receive (DEX does not support exact-out — always undefined)"
+								"description": "Not returned — DEX does not support `amountType=receive`."
 							},
 							"minOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum receive amount when using amountType=receive (DEX does not support exact-out — always undefined)"
+								"description": "Not returned — DEX does not support `amountType=receive`."
 							},
 							"max": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum swap amount for DEX",
+								"description": "Largest amount you can send.",
 								"example": 50
 							},
 							"min": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum swap amount for DEX",
+								"description": "Smallest amount you can send.",
 								"example": 0.005
 							}
 						},
@@ -2641,25 +2597,25 @@
 							"maxOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum receive amount when using amountType=receive (private swaps, in to-token units)",
+								"description": "Largest amount you can receive. Only for `amountType=receive`.",
 								"example": 50000
 							},
 							"minOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum receive amount when using amountType=receive (private swaps, in to-token units)",
+								"description": "Smallest amount you can receive. Only for `amountType=receive`.",
 								"example": 100
 							},
 							"max": {
 								"type": "number",
 								"format": "double",
-								"description": "Maximum swap amount for private/anonymous CEX swaps",
+								"description": "Largest amount you can send.",
 								"example": 16.914175
 							},
 							"min": {
 								"type": "number",
 								"format": "double",
-								"description": "Minimum swap amount for private/anonymous CEX swaps",
+								"description": "Smallest amount you can send.",
 								"example": 0.0845708751
 							}
 						},
@@ -2869,7 +2825,7 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount of the `from` token to swap, as a decimal in the token's own units (e.g. `1.5` BTC, `250.75` USDT) — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
@@ -2939,9 +2895,10 @@
 					},
 					"swaps": {
 						"items": {
-							"$ref": "#/components/schemas/ExchangeType"
+							"$ref": "#/components/schemas/SwapShortName"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX"
 					},
 					"inLegIncludedSwaps": {
 						"items": {
@@ -2972,10 +2929,12 @@
 						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
 					},
 					"senderAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it."
 					},
 					"receiverAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation"
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort"
@@ -4144,7 +4103,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Amount of the `from` token to swap, as a decimal in the token's own units (e.g. `1.5` BTC, `250.75` USDT) — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
 						"in": "query",
 						"name": "amount",
 						"required": true,
@@ -4219,7 +4178,7 @@
 						}
 					},
 					{
-						"description": "Where funds are returned if a swap cannot complete. Send it to get:\n\n- fixed-rate quotes\n- providers that require one — they are dropped from your results without it",
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
 						"in": "query",
 						"name": "refundAddress",
 						"required": false,
@@ -4253,7 +4212,7 @@
 						}
 					},
 					{
-						"description": "Enable payout wallet rotation for better privacy. Only used for CEX swaps.",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
 						"in": "query",
 						"name": "rotatePayoutWallets",
 						"required": false,
@@ -4283,14 +4242,14 @@
 						}
 					},
 					{
-						"description": "Swaps to use for the quote; if omitted, all swaps are used",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
 						"schema": {
 							"type": "array",
 							"items": {
-								"$ref": "#/components/schemas/ExchangeType"
+								"$ref": "#/components/schemas/SwapShortName"
 							}
 						}
 					},
@@ -4343,7 +4302,7 @@
 						}
 					},
 					{
-						"description": "Address of the wallet initiating the swap",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
 						"in": "query",
 						"name": "senderAddress",
 						"required": false,
@@ -4352,7 +4311,7 @@
 						}
 					},
 					{
-						"description": "If different from senderAddress, DEX routes that don't support sending to another wallet are filtered. Also used for payout wallet rotation",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
 						"in": "query",
 						"name": "receiverAddress",
 						"required": false,
@@ -5753,7 +5712,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Amount of the `from` token to swap, as a decimal in the token's own units (e.g. `1.5` BTC, `250.75` USDT) — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
 						"in": "query",
 						"name": "amount",
 						"required": true,
@@ -5894,13 +5853,14 @@
 						}
 					},
 					{
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
 						"schema": {
 							"type": "array",
 							"items": {
-								"$ref": "#/components/schemas/ExchangeType"
+								"$ref": "#/components/schemas/SwapShortName"
 							}
 						}
 					},
@@ -5953,6 +5913,7 @@
 						}
 					},
 					{
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
 						"in": "query",
 						"name": "senderAddress",
 						"required": false,
@@ -5961,6 +5922,7 @@
 						}
 					},
 					{
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
 						"in": "query",
 						"name": "receiverAddress",
 						"required": false,
@@ -6574,7 +6536,7 @@
 	},
 	"servers": [
 		{
-			"url": "https://api-partner-dev.houdiniswap.com/v2"
+			"url": "http://localhost:3003/v2"
 		}
 	],
 	"tags": [
