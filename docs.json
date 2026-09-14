@@ -13,20 +13,9 @@
         {
                 "tab": "API reference (manual testing version)",
                 "openapi": "openapi.json",
-                "groups": [
+                 "groups": [
                     {
-                        "group": "Private Swaps",
-                        "pages": [
-                            "GET /tokens",
-                            "GET /quotes",
-                            "GET /quotes/byChainAddress",
-                            "POST /exchanges",
-                            "GET /orders",
-                            "GET /orders/{houdiniId}"
-                        ]
-                    },
-                    {
-                        "group": "Standard Swaps",
+                        "group": "Private and Standard Swaps",
                         "pages": [
                             "GET /tokens",
                             "GET /quotes",
@@ -59,10 +48,16 @@
                             "POST /exchanges/multi",
                             "GET /exchanges/multi/{multiId}",
                             {
-                                "group": "Bundler",
+                                "group": "Bundler SOL",
                                 "pages": [
                                     "POST /exchanges/multi/{multiId}/tx/build",
-                                    "GET /exchanges/multi/{multiId}/tx",
+                                    "GET /exchanges/multi/{multiId}/tx"
+                                ]
+                            },
+                            {
+                                "group": "Bundler EVM",
+                                "pages": [
+                                    "POST /exchanges/multi/{multiId}/tx/build",
                                     "POST /exchanges/multi/{multiId}/tx",
                                     "POST /exchanges/multi/{multiId}/retry",
                                     "POST /exchanges/multi/recovery"
@@ -94,7 +89,9 @@
                     },
                     {
                         "group": "System",
-                        "pages": ["GET /status"]
+                        "pages": [
+                            "GET /status"
+                        ]
                     }
                 ]
             }
