@@ -13,7 +13,7 @@
         {
                 "tab": "API reference (manual testing version)",
                 "openapi": "openapi.json",
-                 "groups": [
+                     "groups": [
                     {
                         "group": "Private and Standard Swaps",
                         "pages": [
@@ -21,22 +21,6 @@
                             "GET /quotes",
                             "GET /quotes/byChainAddress",
                             "POST /exchanges",
-                            "GET /orders",
-                            "GET /orders/{houdiniId}"
-                        ]
-                    },
-                    {
-                        "group": "DEX Swaps",
-                        "pages": [
-                            "GET /tokens",
-                            "GET /quotes",
-                            "GET /quotes/byChainAddress",
-                            "POST /exchanges",
-                            "POST /dex/allowance",
-                            "POST /dex/approve",
-                            "POST /dex/chainSignatures",
-                            "POST /dex/confirmTx",
-                            "GET /orders",
                             "GET /orders/{houdiniId}"
                         ]
                     },
@@ -66,6 +50,20 @@
                         ]
                     },
                     {
+                        "group": "DEX Swaps",
+                        "pages": [
+                            "GET /tokens",
+                            "GET /quotes",
+                            "GET /quotes/byChainAddress",
+                            "POST /exchanges",
+                            "POST /dex/allowance",
+                            "POST /dex/approve",
+                            "POST /dex/chainSignatures",
+                            "POST /dex/confirmTx",
+                            "GET /orders/{houdiniId}"
+                        ]
+                    },
+                    {
                         "group": "Reference Data",
                         "pages": [
                             "GET /tokens/{id}",
@@ -77,6 +75,7 @@
                     {
                         "group": "Partner Account",
                         "pages": [
+                            "GET /orders",
                             "GET /me",
                             "GET /commissions",
                             "GET /commissions/summary",
