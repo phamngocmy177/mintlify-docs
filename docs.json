@@ -94,6 +94,10 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "API develop",
+                "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json"
             }
     ],
     "global": {
