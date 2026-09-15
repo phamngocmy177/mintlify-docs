@@ -2947,10 +2947,12 @@
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"fromTokenAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Contract address of the token you are swapping from. Omit for the chain's native coin."
 					},
 					"toTokenAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Contract address of the token you are swapping to. Omit for the chain's native coin."
 					},
 					"slippage": {
 						"type": "number",
@@ -2968,7 +2970,8 @@
 						"maximum": 4
 					},
 					"useXmr": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "Use XMR if true, if false use another token for the anonymous transaction"
 					},
 					"fixed": {
 						"type": "boolean",
@@ -2989,16 +2992,19 @@
 						"maximum": 100
 					},
 					"rotatePayoutWallets": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it."
 					},
 					"rotateFallback": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own."
 					},
 					"types": {
 						"items": {
 							"$ref": "#/components/schemas/QuoteType"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Types of quotes to return; if omitted, all types are used"
 					},
 					"swaps": {
 						"items": {
@@ -3044,10 +3050,12 @@
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation"
 					},
 					"sort": {
-						"$ref": "#/components/schemas/QuoteSort"
+						"$ref": "#/components/schemas/QuoteSort",
+						"description": "Sort the quotes by the given field (default: amountOut)"
 					},
 					"sortOrder": {
-						"$ref": "#/components/schemas/SortDirection"
+						"$ref": "#/components/schemas/SortDirection",
+						"description": "Sort direction for quotes (default: desc)"
 					}
 				},
 				"required": [
@@ -3562,6 +3570,38 @@
 										"$ref": "#/components/schemas/SwapResponse"
 									},
 									"type": "array"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"id": "6689b73ec90e45f3b3e51a01",
+												"name": "Changelly",
+												"shortName": "cl",
+												"enabled": true,
+												"isDex": false,
+												"deprecated": false,
+												"markupSupported": true,
+												"slippageSupported": false,
+												"autoSlippageSupported": false,
+												"txUrl": "https://changelly.com/track/",
+												"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+											},
+											{
+												"id": "6689b73ec90e45f3b3e51a02",
+												"name": "Uniswap",
+												"shortName": "un",
+												"enabled": true,
+												"isDex": true,
+												"deprecated": false,
+												"markupSupported": false,
+												"slippageSupported": true,
+												"autoSlippageSupported": true,
+												"txUrl": "https://etherscan.io/tx/",
+												"logoUrl": "https://api.houdiniswap.com/assets/swaps/un.png"
+											}
+										]
+									}
 								}
 							}
 						}
@@ -3916,6 +3956,48 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/Token"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"id": "6689b73ec90e45f3b3e51558",
+											"symbol": "USDT",
+											"name": "Tether USD",
+											"chain": "ethereum",
+											"address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+											"decimals": 6,
+											"icon": "https://api.houdiniswap.com/assets/tokens/USDT.png",
+											"created": "2024-07-06T10:21:18.000Z",
+											"mainnet": false,
+											"enabled": true,
+											"unverified": false,
+											"hasCex": true,
+											"hasDex": true,
+											"hasBundler": true,
+											"hasSelfPrivate": true,
+											"cexTokenId": "usdterc20",
+											"price": 0.9998,
+											"marketCap": 120450000000,
+											"volume": 48200000000,
+											"chainData": {
+												"id": "6689b73ec90e45f3b3e5150a",
+												"name": "Ethereum",
+												"shortName": "ethereum",
+												"shortNameV1": "ETH",
+												"kind": "evm",
+												"chainId": 1,
+												"enabled": true,
+												"memoNeeded": false,
+												"priority": 1,
+												"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
+												"created": "2024-07-06T10:21:18.000Z",
+												"explorerUrl": "https://etherscan.io/tx/{txHash}",
+												"addressUrl": "https://etherscan.io/address/{address}",
+												"addressValidation": "^0x[a-fA-F0-9]{40}$",
+												"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
+											}
+										}
+									}
 								}
 							}
 						}
@@ -4019,18 +4101,36 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"houdiniId": "example-houdini-id",
+											"houdiniId": "hxK7mQp2",
+											"id": "6707c1a2e4b0f3a9d8c12345",
 											"created": "2026-01-01T12:00:00.000Z",
+											"modified": "2026-01-01T12:02:14.000Z",
+											"inCreated": "2026-01-01T12:00:00.000Z",
+											"expires": "2026-01-01T12:30:00.000Z",
 											"depositAddress": "bc1qexampledepositaddress000000000000000000",
 											"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-											"anonymous": false,
-											"expires": "2026-01-01T12:30:00.000Z",
+											"anonymous": true,
 											"status": 0,
+											"displayStatus": "WAITING_FOR_DEPOSIT",
+											"inStatus": 0,
+											"outStatus": 0,
 											"inAmount": 0.25,
 											"inSymbol": "BTC",
-											"outAmount": 3.52,
+											"outAmount": 3.5182,
 											"outSymbol": "ETH",
-											"displayStatus": "WAITING_FOR_DEPOSIT"
+											"inAmountUsd": 26450.5,
+											"outAmountUsd": 26301.44,
+											"eta": 22,
+											"swapName": "Changelly",
+											"isDex": false,
+											"fixed": false,
+											"rerouted": false,
+											"notified": false,
+											"actionRequired": false,
+											"nonRefundable": false,
+											"multiId": "",
+											"outTransactionOutHash": "",
+											"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
 										}
 									}
 								}
@@ -4138,18 +4238,36 @@
 										"value": {
 											"orders": [
 												{
-													"houdiniId": "example-houdini-id",
+													"houdiniId": "hxK7mQp2",
+													"id": "6707c1a2e4b0f3a9d8c12345",
 													"created": "2026-01-01T12:00:00.000Z",
+													"modified": "2026-01-01T12:02:14.000Z",
+													"inCreated": "2026-01-01T12:00:00.000Z",
+													"expires": "2026-01-01T12:30:00.000Z",
 													"depositAddress": "bc1qexampledepositaddress000000000000000000",
 													"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-													"anonymous": false,
-													"expires": "2026-01-01T12:30:00.000Z",
+													"anonymous": true,
 													"status": 0,
+													"displayStatus": "WAITING_FOR_DEPOSIT",
+													"inStatus": 0,
+													"outStatus": 0,
 													"inAmount": 0.25,
 													"inSymbol": "BTC",
-													"outAmount": 3.52,
+													"outAmount": 3.5182,
 													"outSymbol": "ETH",
-													"displayStatus": "WAITING_FOR_DEPOSIT"
+													"inAmountUsd": 26450.5,
+													"outAmountUsd": 26301.44,
+													"eta": 22,
+													"swapName": "Changelly",
+													"isDex": false,
+													"fixed": false,
+													"rerouted": false,
+													"notified": false,
+													"actionRequired": false,
+													"nonRefundable": false,
+													"multiId": "",
+													"outTransactionOutHash": "",
+													"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
 												}
 											],
 											"totalPages": 1,
@@ -4360,6 +4478,66 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/QuoteResultV2"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"quotes": [
+												{
+													"quoteId": "69a02882f48d56c923119d95",
+													"swap": "cl",
+													"swapName": "Changelly",
+													"type": "private",
+													"amountIn": 0.25,
+													"amountOut": 3.5182,
+													"amountInUsd": 26450.5,
+													"amountOutUsd": 26301.44,
+													"netAmountOut": 3.5182,
+													"duration": 22,
+													"providerEta": 18,
+													"min": 0.0012,
+													"max": 12.5,
+													"fixed": false,
+													"filtered": false,
+													"markupSupported": true,
+													"slippageSupported": false,
+													"rewardsAvailable": true,
+													"depositAddressSupported": true,
+													"requiresApproval": false,
+													"requiresRefundAddress": false,
+													"appliedApiMarkup": 0.5,
+													"amountType": "send",
+													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+												},
+												{
+													"quoteId": "69a02882f48d56c923119d96",
+													"swap": "cn",
+													"swapName": "ChangeNOW",
+													"type": "standard",
+													"amountIn": 0.25,
+													"amountOut": 3.5321,
+													"amountInUsd": 26450.5,
+													"amountOutUsd": 26405.35,
+													"netAmountOut": 3.5321,
+													"duration": 9,
+													"providerEta": 7,
+													"min": 0.0009,
+													"max": 25,
+													"fixed": false,
+													"filtered": false,
+													"markupSupported": true,
+													"slippageSupported": false,
+													"rewardsAvailable": false,
+													"depositAddressSupported": true,
+													"requiresApproval": false,
+													"requiresRefundAddress": false,
+													"amountType": "send",
+													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
+												}
+											],
+											"total": 2
+										}
+									}
 								}
 							}
 						}
@@ -4698,6 +4876,51 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/MultiQuoteResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"mode": "all",
+											"batched": true,
+											"orders": [
+												{
+													"index": 0,
+													"quoted": true,
+													"total": 1,
+													"quotes": [
+														{
+															"quoteId": "69a02882f48d56c923119d95",
+															"swap": "cl",
+															"swapName": "Changelly",
+															"type": "private",
+															"amountIn": 0.25,
+															"amountOut": 3.5182,
+															"amountInUsd": 26450.5,
+															"amountOutUsd": 26301.44,
+															"netAmountOut": 3.5182,
+															"duration": 22,
+															"providerEta": 18,
+															"min": 0.0012,
+															"max": 12.5,
+															"fixed": false,
+															"filtered": false,
+															"amountType": "send"
+														}
+													]
+												},
+												{
+													"index": 1,
+													"quoted": true,
+													"total": 0,
+													"quotes": [],
+													"error": {
+														"code": "SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
+														"message": "Amount is below the minimum for this pair"
+													}
+												}
+											]
+										}
+									}
 								}
 							}
 						}
@@ -4907,6 +5130,59 @@
 										"$ref": "#/components/schemas/ApprovalTypedData"
 									},
 									"type": "array"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"key": "permit",
+												"type": "chained",
+												"step": 1,
+												"totalSteps": 2,
+												"isComplete": false,
+												"data": {
+													"primaryType": "Permit",
+													"domain": {
+														"name": "USD Coin",
+														"version": "2",
+														"chainId": 1,
+														"verifyingContract": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+													},
+													"types": {
+														"Permit": [
+															{
+																"name": "owner",
+																"type": "address"
+															},
+															{
+																"name": "spender",
+																"type": "address"
+															},
+															{
+																"name": "value",
+																"type": "uint256"
+															},
+															{
+																"name": "nonce",
+																"type": "uint256"
+															},
+															{
+																"name": "deadline",
+																"type": "uint256"
+															}
+														]
+													},
+													"message": {
+														"owner": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40",
+														"spender": "0x1111111254eeb25477b68fb85ed929f73a960582",
+														"value": "1000000000",
+														"nonce": "3",
+														"deadline": "1767225600"
+													}
+												}
+											}
+										]
+									}
 								}
 							}
 						}
@@ -4995,6 +5271,35 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ApprovalResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"approvals": [
+												{
+													"from": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40",
+													"to": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+													"data": "0x095ea7b30000000000000000000000001111111254eeb25477b68fb85ed929f73a960582000000000000000000000000000000000000000000000000000000003b9aca00",
+													"fromChain": {
+														"id": "6689b73ec90e45f3b3e5150a",
+														"name": "Ethereum",
+														"shortName": "ethereum",
+														"shortNameV1": "ETH",
+														"kind": "evm",
+														"chainId": 1,
+														"enabled": true,
+														"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
+														"created": "2024-07-06T10:21:18.000Z",
+														"explorerUrl": "https://etherscan.io/tx/{txHash}",
+														"addressUrl": "https://etherscan.io/address/{address}",
+														"addressValidation": "^0x[a-fA-F0-9]{40}$",
+														"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
+													}
+												}
+											],
+											"signatures": []
+										}
+									}
 								}
 							}
 						}
@@ -5175,18 +5480,36 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"houdiniId": "example-houdini-id",
+											"houdiniId": "hxK7mQp2",
+											"id": "6707c1a2e4b0f3a9d8c12345",
 											"created": "2026-01-01T12:00:00.000Z",
+											"modified": "2026-01-01T12:02:14.000Z",
+											"inCreated": "2026-01-01T12:00:00.000Z",
+											"expires": "2026-01-01T12:30:00.000Z",
 											"depositAddress": "bc1qexampledepositaddress000000000000000000",
 											"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-											"anonymous": false,
-											"expires": "2026-01-01T12:30:00.000Z",
+											"anonymous": true,
 											"status": 0,
+											"displayStatus": "WAITING_FOR_DEPOSIT",
+											"inStatus": 0,
+											"outStatus": 0,
 											"inAmount": 0.25,
 											"inSymbol": "BTC",
-											"outAmount": 3.52,
+											"outAmount": 3.5182,
 											"outSymbol": "ETH",
-											"displayStatus": "WAITING_FOR_DEPOSIT"
+											"inAmountUsd": 26450.5,
+											"outAmountUsd": 26301.44,
+											"eta": 22,
+											"swapName": "Changelly",
+											"isDex": false,
+											"fixed": false,
+											"rerouted": false,
+											"notified": false,
+											"actionRequired": false,
+											"nonRefundable": false,
+											"multiId": "",
+											"outTransactionOutHash": "",
+											"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
 										}
 									}
 								}
@@ -5296,18 +5619,25 @@
 											"orders": [
 												{
 													"order": {
-														"houdiniId": "example-houdini-id",
+														"houdiniId": "hxK7mQp2",
+														"id": "6707c1a2e4b0f3a9d8c12345",
 														"created": "2026-01-01T12:00:00.000Z",
-														"depositAddress": "bc1qexampledepositaddress000000000000000000",
-														"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-														"anonymous": false,
 														"expires": "2026-01-01T12:30:00.000Z",
+														"depositAddress": "bc1qexampledeposit000000000000000000000000",
+														"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
+														"anonymous": true,
 														"status": 0,
+														"displayStatus": "WAITING_FOR_DEPOSIT",
 														"inAmount": 0.25,
 														"inSymbol": "BTC",
-														"outAmount": 3.52,
+														"outAmount": 3.5182,
 														"outSymbol": "ETH",
-														"displayStatus": "WAITING_FOR_DEPOSIT"
+														"inAmountUsd": 26450.5,
+														"outAmountUsd": 26301.44,
+														"eta": 22,
+														"swapName": "Changelly",
+														"isDex": false,
+														"multiId": "mx8Qa1"
 													}
 												}
 											]
@@ -5411,6 +5741,39 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/FailedMultiswapRecoveryResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"saAddress": "0x3aF1c90b5E2d7B4a8c6E9f0a1B2c3D4e5F607182",
+											"assets": [
+												{
+													"tokenAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+													"tokenSymbol": "USDT",
+													"decimals": 6,
+													"balance": "1000000000",
+													"sourceHoudiniIds": [
+														"hxK7mQp2"
+													]
+												}
+											],
+											"transactions": [
+												{
+													"houdiniIds": [
+														"hxK7mQp2"
+													],
+													"txData": {
+														"userOpHash": "0x7b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90a",
+														"to": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+														"data": "0xa9059cbb000000000000000000000000b7de6b6eebf7401afea5a49d6405c9048fef2d40",
+														"value": "0",
+														"chainId": 1,
+														"tokenAmount": "1000000000"
+													}
+												}
+											]
+										}
+									}
 								}
 							}
 						}
@@ -5526,18 +5889,36 @@
 											"multiId": "example-multi-id",
 											"orders": [
 												{
-													"houdiniId": "example-houdini-id",
+													"houdiniId": "hxK7mQp2",
+													"id": "6707c1a2e4b0f3a9d8c12345",
 													"created": "2026-01-01T12:00:00.000Z",
+													"modified": "2026-01-01T12:02:14.000Z",
+													"inCreated": "2026-01-01T12:00:00.000Z",
+													"expires": "2026-01-01T12:30:00.000Z",
 													"depositAddress": "bc1qexampledepositaddress000000000000000000",
 													"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-													"anonymous": false,
-													"expires": "2026-01-01T12:30:00.000Z",
+													"anonymous": true,
 													"status": 0,
+													"displayStatus": "WAITING_FOR_DEPOSIT",
+													"inStatus": 0,
+													"outStatus": 0,
 													"inAmount": 0.25,
 													"inSymbol": "BTC",
-													"outAmount": 3.52,
+													"outAmount": 3.5182,
 													"outSymbol": "ETH",
-													"displayStatus": "WAITING_FOR_DEPOSIT"
+													"inAmountUsd": 26450.5,
+													"outAmountUsd": 26301.44,
+													"eta": 22,
+													"swapName": "Changelly",
+													"isDex": false,
+													"fixed": false,
+													"rerouted": false,
+													"notified": false,
+													"actionRequired": false,
+													"nonRefundable": false,
+													"multiId": "",
+													"outTransactionOutHash": "",
+													"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
 												},
 												{
 													"houdiniId": "deleted-example-houdini-id",
@@ -5645,6 +6026,33 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/RetryResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"txData": {
+												"multiId": "mx8Qa1",
+												"chain": "evm",
+												"depositNeeded": "0",
+												"saCurrentBalance": "18400000000000000",
+												"transactions": [
+													{
+														"houdiniIds": [
+															"hxK7mQp2"
+														],
+														"txData": {
+															"userOpHash": "0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
+															"to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+															"data": "0xb61d27f6000000000000000000000000000000000000000000000000000000000000000",
+															"value": "0",
+															"chainId": 1,
+															"tokenAmount": "1000000000"
+														}
+													}
+												]
+											}
+										}
+									}
 								}
 							}
 						}
@@ -5764,6 +6172,32 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/MultiExchangeTxResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"multiId": "mx8Qa1",
+											"chain": "evm",
+											"depositNeeded": "0",
+											"saCurrentBalance": "18400000000000000",
+											"transactions": [
+												{
+													"houdiniIds": [
+														"hxK7mQp2",
+														"hxK7mQp3"
+													],
+													"txData": {
+														"userOpHash": "0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
+														"to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+														"data": "0xb61d27f60000000000000000000000000000000000000000000000000000000000000001",
+														"value": "0",
+														"chainId": 1,
+														"tokenAmount": "1000000000"
+													}
+												}
+											]
+										}
+									}
 								}
 							}
 						}
@@ -5879,6 +6313,15 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/SubmitEvmBatchTxResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"userOpHashes": [
+												"0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f"
+											]
+										}
+									}
 								}
 							}
 						}
@@ -5998,6 +6441,32 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/MultiExchangeTxResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"multiId": "mx8Qa1",
+											"chain": "evm",
+											"depositNeeded": "0",
+											"saCurrentBalance": "18400000000000000",
+											"transactions": [
+												{
+													"houdiniIds": [
+														"hxK7mQp2",
+														"hxK7mQp3"
+													],
+													"txData": {
+														"userOpHash": "0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
+														"to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+														"data": "0xb61d27f60000000000000000000000000000000000000000000000000000000000000001",
+														"value": "0",
+														"chainId": 1,
+														"tokenAmount": "1000000000"
+													}
+												}
+											]
+										}
+									}
 								}
 							}
 						}
@@ -6118,6 +6587,28 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/MinMaxResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"cex": {
+												"min": 0.0009,
+												"max": 25,
+												"minOut": 12.5,
+												"maxOut": 340000
+											},
+											"dex": {
+												"min": 0.005,
+												"max": 50
+											},
+											"private": {
+												"min": 0.0012,
+												"max": 12.5,
+												"minOut": 17.4,
+												"maxOut": 170000
+											}
+										}
+									}
 								}
 							}
 						}
@@ -6225,6 +6716,30 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/PaginatedChainResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"chains": [
+												{
+													"id": "6689b73ec90e45f3b3e5150a",
+													"name": "Ethereum",
+													"shortName": "ethereum",
+													"kind": "evm",
+													"chainId": 1,
+													"memoNeeded": false,
+													"priority": 1,
+													"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
+													"explorerUrl": "https://etherscan.io/tx/{txHash}",
+													"addressUrl": "https://etherscan.io/address/{address}",
+													"addressValidation": "^0x[a-fA-F0-9]{40}$",
+													"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
+												}
+											],
+											"total": 1,
+											"totalPages": 1
+										}
+									}
 								}
 							}
 						}
@@ -6391,6 +6906,23 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/RateLimitsResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"monthlyRequestCount": 18432,
+											"quote": {
+												"perMinute": 120,
+												"perHour": 3000,
+												"perDay": 40000
+											},
+											"exchange": {
+												"perMinute": 30,
+												"perHour": 600,
+												"perDay": 8000
+											}
+										}
+									}
 								}
 							}
 						}
@@ -6479,6 +7011,66 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/QuoteResultV2"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"quotes": [
+												{
+													"quoteId": "69a02882f48d56c923119d95",
+													"swap": "cl",
+													"swapName": "Changelly",
+													"type": "private",
+													"amountIn": 0.25,
+													"amountOut": 3.5182,
+													"amountInUsd": 26450.5,
+													"amountOutUsd": 26301.44,
+													"netAmountOut": 3.5182,
+													"duration": 22,
+													"providerEta": 18,
+													"min": 0.0012,
+													"max": 12.5,
+													"fixed": false,
+													"filtered": false,
+													"markupSupported": true,
+													"slippageSupported": false,
+													"rewardsAvailable": true,
+													"depositAddressSupported": true,
+													"requiresApproval": false,
+													"requiresRefundAddress": false,
+													"appliedApiMarkup": 0.5,
+													"amountType": "send",
+													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+												},
+												{
+													"quoteId": "69a02882f48d56c923119d96",
+													"swap": "cn",
+													"swapName": "ChangeNOW",
+													"type": "standard",
+													"amountIn": 0.25,
+													"amountOut": 3.5321,
+													"amountInUsd": 26450.5,
+													"amountOutUsd": 26405.35,
+													"netAmountOut": 3.5321,
+													"duration": 9,
+													"providerEta": 7,
+													"min": 0.0009,
+													"max": 25,
+													"fixed": false,
+													"filtered": false,
+													"markupSupported": true,
+													"slippageSupported": false,
+													"rewardsAvailable": false,
+													"depositAddressSupported": true,
+													"requiresApproval": false,
+													"requiresRefundAddress": false,
+													"amountType": "send",
+													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
+												}
+											],
+											"total": 2
+										}
+									}
 								}
 							}
 						}
@@ -6589,6 +7181,7 @@
 						}
 					},
 					{
+						"description": "Contract address of the token you are swapping from. Omit for the chain's native coin.",
 						"in": "query",
 						"name": "fromTokenAddress",
 						"required": false,
@@ -6597,6 +7190,7 @@
 						}
 					},
 					{
+						"description": "Contract address of the token you are swapping to. Omit for the chain's native coin.",
 						"in": "query",
 						"name": "toTokenAddress",
 						"required": false,
@@ -6630,6 +7224,7 @@
 						"example": 0.5
 					},
 					{
+						"description": "Use XMR if true, if false use another token for the anonymous transaction",
 						"in": "query",
 						"name": "useXmr",
 						"required": false,
@@ -6671,6 +7266,7 @@
 						}
 					},
 					{
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
 						"in": "query",
 						"name": "rotatePayoutWallets",
 						"required": false,
@@ -6679,6 +7275,7 @@
 						}
 					},
 					{
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
 						"in": "query",
 						"name": "rotateFallback",
 						"required": false,
@@ -6687,6 +7284,7 @@
 						}
 					},
 					{
+						"description": "Types of quotes to return; if omitted, all types are used",
 						"in": "query",
 						"name": "types",
 						"required": false,
@@ -6776,6 +7374,7 @@
 						}
 					},
 					{
+						"description": "Sort the quotes by the given field (default: amountOut)",
 						"in": "query",
 						"name": "sort",
 						"required": false,
@@ -6784,6 +7383,7 @@
 						}
 					},
 					{
+						"description": "Sort direction for quotes (default: desc)",
 						"in": "query",
 						"name": "sortOrder",
 						"required": false,
@@ -6804,6 +7404,18 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/VolumeResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"count": 1284,
+											"totalOrders": 1284,
+											"totalTransactedUSD": 4820155.42,
+											"thisMonthVolumeUsd": 318420.11,
+											"lastMonthVolumeUsd": 402188.9,
+											"thisMonthOrders": 96
+										}
+									}
 								}
 							}
 						}
@@ -6885,6 +7497,28 @@
 										"$ref": "#/components/schemas/WeeklyVolumeResponse"
 									},
 									"type": "array"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"year": 2026,
+												"week": 1,
+												"count": 52,
+												"anonymous": 31,
+												"volume": 61430.88,
+												"commission": 214.91
+											},
+											{
+												"year": 2026,
+												"week": 2,
+												"count": 44,
+												"anonymous": 25,
+												"volume": 48250.12,
+												"commission": 168.87
+											}
+										]
+									}
 								}
 							}
 						}
@@ -6963,6 +7597,24 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/PartnerProfileResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"id": "6689b73ec90e45f3b3e51500",
+											"name": "Acme Wallet",
+											"nickname": "acme",
+											"email": "dev@acme.io",
+											"tier": "growth",
+											"commissionRate": 0.35,
+											"privateCommissionRate": 0.5,
+											"standardCommissionRate": 0.35,
+											"dexCommissionRate": 0.2,
+											"markup": 0.65,
+											"walletAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
+											"created": "2024-07-06T10:21:18.000Z"
+										}
+									}
 								}
 							}
 						}
@@ -7051,6 +7703,34 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/PaginatedCommissionsResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"commissions": [
+												{
+													"id": "6707c1a2e4b0f3a9d8c18001",
+													"created": "2026-01-01T12:24:31.000Z",
+													"commissionAmountUsd": 92.05,
+													"commissionPercentage": 0.35,
+													"orderVolumeUsd": 26301.44,
+													"processed": false,
+													"commissionMonth": "2026-01",
+													"routeType": "private",
+													"order": {
+														"id": "6707c1a2e4b0f3a9d8c12345",
+														"houdiniId": "hxK7mQp2",
+														"created": "2026-01-01T12:00:00.000Z",
+														"anonymous": true,
+														"outAmountUsd": 26301.44,
+														"status": 4
+													}
+												}
+											],
+											"total": 1,
+											"totalPages": 1
+										}
+									}
 								}
 							}
 						}
@@ -7162,6 +7842,18 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/CommissionSummaryResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"totalEarnings": 12840.55,
+											"pendingCommissions": 318.42,
+											"processedCommissions": 12522.13,
+											"thisMonthEarnings": 318.42,
+											"lastMonthEarnings": 402.18,
+											"commissionCount": 1284
+										}
+									}
 								}
 							}
 						}
@@ -7253,6 +7945,22 @@
 										"$ref": "#/components/schemas/ChartDataPoint"
 									},
 									"type": "array"
+								},
+								"examples": {
+									"Example 1": {
+										"value": [
+											{
+												"date": "2026-01-01",
+												"volumeUsd": 48250.12,
+												"count": 37
+											},
+											{
+												"date": "2026-01-02",
+												"volumeUsd": 61430.88,
+												"count": 52
+											}
+										]
+									}
 								}
 							}
 						}
@@ -7425,6 +8133,24 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/WithdrawalsResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"withdrawals": [
+												{
+													"id": "6707c1a2e4b0f3a9d8c19001",
+													"amountUsd": 1284.55,
+													"status": "completed",
+													"batchId": "2026-01-payout-03",
+													"processedTx": "0x4e3c1b7a9d2f5e8c0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f6071",
+													"created": "2026-01-05T09:12:00.000Z"
+												}
+											],
+											"total": 1,
+											"totalPages": 1
+										}
+									}
 								}
 							}
 						}
