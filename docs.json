@@ -56,8 +56,8 @@
                             "GET /quotes",
                             "GET /quotes/byChainAddress",
                             "POST /exchanges",
-                            "POST /dex/allowance",
                             "POST /dex/approve",
+                            "POST /dex/allowance",
                             "POST /dex/chainSignatures",
                             "POST /dex/confirmTx",
                             "GET /orders/{houdiniId}"
@@ -77,13 +77,13 @@
                         "pages": [
                             "GET /orders",
                             "GET /me",
+                            "GET /rateLimits",
                             "GET /commissions",
                             "GET /commissions/summary",
                             "GET /withdrawals",
                             "GET /stats/volume",
                             "GET /stats/weeklyVolume",
-                            "GET /stats/chart",
-                            "GET /rateLimits"
+                            "GET /stats/chart"
                         ]
                     },
                     {

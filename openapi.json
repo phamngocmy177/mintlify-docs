@@ -155,7 +155,8 @@
 				"description": "A provider that can route swaps.",
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "Internal id of the provider record. Use `shortName` to refer to a provider."
 					},
 					"name": {
 						"type": "string",
@@ -187,15 +188,16 @@
 					},
 					"slippageSupported": {
 						"type": "boolean",
-						"description": "True when the provider honours the `slippage` parameter."
+						"description": "DEX providers only. True when the provider honours the `slippage` parameter."
 					},
 					"autoSlippageSupported": {
 						"type": "boolean",
 						"nullable": true,
-						"description": "True when the provider can choose slippage for you."
+						"description": "DEX providers only. True when the provider can pick the slippage for you when you omit `slippage`."
 					},
 					"logoUrl": {
-						"type": "string"
+						"type": "string",
+						"description": "Provider logo, ready to show in your UI."
 					}
 				},
 				"required": [
@@ -243,7 +245,7 @@
 					"memoNeeded": {
 						"type": "boolean",
 						"nullable": true,
-						"description": "True when a deposit on this chain needs a memo or destination tag, e.g. XRP or TON. Send it as `destinationTag` when creating the exchange."
+						"description": "True when an address on this chain needs a memo or destination tag, e.g. XRP or TON. Send it as `destinationTag` for the payout address, or `refundExtraId` for the refund address."
 					},
 					"hashUrl": {
 						"type": "string",
@@ -574,6 +576,25 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"DisplayStatus": {
+				"description": "Human-readable order state, derived from `status` and the per-leg statuses. Use this to drive your UI.\n\n- `WAITING_FOR_DEPOSIT` — waiting for your deposit to arrive\n- `DEPOSIT_DETECTED` — deposit seen, waiting for confirmations\n- `EXCHANGE_IN_PROGRESS` — the swap is running\n- `SENDING_TO_INTERMEDIARY` — private only: first leg on its way to the bridge token\n- `REACHED_INTERMEDIARY` — private only: first leg done\n- `INITIATING_SECOND_EXCHANGE` — private only: second leg starting\n- `SECOND_EXCHANGE_IN_PROGRESS` — private only: second leg running\n- `SENDING_TO_RECEIVER` — payout on its way to `receiverAddress`\n- `SWAP_COMPLETED` — finished\n- `EXPIRED` — no deposit arrived before `expires`\n- `FAILED` — the swap could not complete; check `actionRequired`\n- `REFUNDED` — funds returned to `refundAddress`\n- `DELETED` — order removed",
+				"enum": [
+					"WAITING_FOR_DEPOSIT",
+					"DEPOSIT_DETECTED",
+					"EXCHANGE_IN_PROGRESS",
+					"SENDING_TO_INTERMEDIARY",
+					"REACHED_INTERMEDIARY",
+					"INITIATING_SECOND_EXCHANGE",
+					"SECOND_EXCHANGE_IN_PROGRESS",
+					"SENDING_TO_RECEIVER",
+					"SWAP_COMPLETED",
+					"EXPIRED",
+					"FAILED",
+					"REFUNDED",
+					"DELETED"
+				],
+				"type": "string"
+			},
 			"OrderStatus": {
 				"description": "- **-2** Order is being initialized (label: INITIALIZING)\n- **-1** Order initialized (label: NEW)\n- **0** Waiting for deposit confirmation (label: WAITING)\n- **1** Deposit is being confirmed (label: CONFIRMING)\n- **2** Exchange is in progress (label: EXCHANGING)\n- **3** Order is going through anonymization (label: ANONYMIZING)\n- **4** Order completed successfully (label: FINISHED)\n- **5** Order has expired (label: EXPIRED)\n- **6** Order failed (label: FAILED)\n- **7** Order was refunded (label: REFUNDED)\n- **8** Order was deleted (label: DELETED)",
 				"enum": [
@@ -608,79 +629,55 @@
 				],
 				"type": "number"
 			},
-			"DisplayStatus": {
-				"enum": [
-					"WAITING_FOR_DEPOSIT",
-					"DEPOSIT_DETECTED",
-					"EXCHANGE_IN_PROGRESS",
-					"SENDING_TO_INTERMEDIARY",
-					"REACHED_INTERMEDIARY",
-					"INITIATING_SECOND_EXCHANGE",
-					"SECOND_EXCHANGE_IN_PROGRESS",
-					"SENDING_TO_RECEIVER",
-					"SWAP_COMPLETED",
-					"EXPIRED",
-					"FAILED",
-					"REFUNDED",
-					"DELETED"
-				],
-				"type": "string"
-			},
 			"Pick_Pick_Order.PublicOrderFields_.Exclude_keyofPick_Order.PublicOrderFields_.receiverTag__": {
 				"properties": {
 					"houdiniId": {
-						"type": "string"
-					},
-					"created": {
 						"type": "string",
-						"format": "date-time"
-					},
-					"modified": {
-						"type": "string",
-						"format": "date-time"
+						"description": "Public order id. Use it with Get order details."
 					},
 					"depositAddress": {
 						"type": "string",
 						"description": "The CEX deposit address where the user must send funds"
 					},
-					"receiverAddress": {
-						"type": "string"
-					},
-					"anonymous": {
-						"type": "boolean"
+					"depositTag": {
+						"type": "string",
+						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress` — a deposit sent without it may not be credited."
 					},
 					"expires": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "Deposit deadline — send the funds by this time or the order expires. Not a rate lock."
+					},
+					"displayStatus": {
+						"$ref": "#/components/schemas/DisplayStatus",
+						"description": "Human-readable state for your UI, derived from `status` and the leg statuses. Prefer this over `status`."
 					},
 					"status": {
-						"$ref": "#/components/schemas/OrderStatus"
-					},
-					"inAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"inSymbol": {
-						"type": "string"
-					},
-					"outAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"outSymbol": {
-						"type": "string"
-					},
-					"depositTag": {
-						"type": "string",
-						"description": "Memo/tag required when depositing funds for assets that use one"
-					},
-					"notified": {
-						"type": "boolean"
+						"$ref": "#/components/schemas/OrderStatus",
+						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing — private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
 					},
 					"eta": {
 						"type": "number",
 						"format": "double",
 						"description": "ETA time, depending on swap"
+					},
+					"inAmount": {
+						"type": "number",
+						"format": "double",
+						"description": "Amount to deposit, in the input token."
+					},
+					"inSymbol": {
+						"type": "string",
+						"description": "Symbol of the input token, e.g. `BTC`."
+					},
+					"outAmount": {
+						"type": "number",
+						"format": "double",
+						"description": "Amount you receive, in the output token."
+					},
+					"outSymbol": {
+						"type": "string",
+						"description": "Symbol of the output token, e.g. `ETH`."
 					},
 					"inAmountUsd": {
 						"type": "number",
@@ -689,49 +686,52 @@
 					},
 					"outAmountUsd": {
 						"type": "number",
-						"format": "double"
-					},
-					"multiId": {
-						"type": "string"
-					},
-					"inCreated": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"id": {
-						"type": "string"
-					},
-					"nonRefundable": {
-						"type": "boolean"
-					},
-					"metadata": {},
-					"isDex": {
-						"type": "boolean"
-					},
-					"orderFinishedReceived": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"actionRequired": {
-						"type": "boolean"
-					},
-					"outToken": {
-						"$ref": "#/components/schemas/Token"
+						"format": "double",
+						"description": "`outAmount` valued in USD."
 					},
 					"inToken": {
-						"$ref": "#/components/schemas/Token"
+						"$ref": "#/components/schemas/Token",
+						"description": "Token you sent."
 					},
-					"inStatus": {
-						"$ref": "#/components/schemas/Status"
+					"outToken": {
+						"$ref": "#/components/schemas/Token",
+						"description": "Token you received."
 					},
-					"outStatus": {
-						"$ref": "#/components/schemas/Status"
+					"receiverAddress": {
+						"type": "string",
+						"description": "Wallet the payout is sent to."
 					},
-					"swapName": {
-						"type": "string"
+					"refundAddress": {
+						"type": "string",
+						"description": "Refund address recorded for this order."
+					},
+					"anonymous": {
+						"type": "boolean",
+						"description": "True when this order took the private two-leg route."
+					},
+					"isDex": {
+						"type": "boolean",
+						"description": "True when the order executed on a DEX route."
 					},
 					"fixed": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when the order settled at a locked rate."
+					},
+					"swapName": {
+						"type": "string",
+						"description": "Provider that executed the order, e.g. `Changelly`."
+					},
+					"multiId": {
+						"type": "string",
+						"description": "Id of the multi-exchange group this order belongs to. Empty for single swaps."
+					},
+					"nonRefundable": {
+						"type": "boolean",
+						"description": "True when the deposit can no longer be refunded."
+					},
+					"actionRequired": {
+						"type": "boolean",
+						"description": "True when the order failed but your deposit had already arrived — contact support to recover the funds."
 					},
 					"rerouted": {
 						"type": "boolean",
@@ -747,45 +747,75 @@
 						"format": "double",
 						"description": "The payout originally quoted, present only when the order was rerouted. `outAmount` is what the fallback route will actually pay; on an exact-in order this is the side that moves."
 					},
-					"refundAddress": {
-						"type": "string"
-					},
 					"outTransactionOutHash": {
+						"type": "string",
+						"description": "Payout transaction hash. Empty until the payout is broadcast."
+					},
+					"inStatus": {
+						"$ref": "#/components/schemas/Status",
+						"description": "Progress of the incoming leg — your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+					},
+					"outStatus": {
+						"$ref": "#/components/schemas/Status",
+						"description": "Progress of the outgoing leg — the payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+					},
+					"created": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"modified": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"inCreated": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the incoming leg was created."
+					},
+					"orderFinishedReceived": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the order reached a final state."
+					},
+					"notified": {
+						"type": "boolean"
+					},
+					"id": {
 						"type": "string"
 					},
-					"displayStatus": {
-						"$ref": "#/components/schemas/DisplayStatus"
+					"metadata": {
+						"description": "Extra data from the provider. The shape depends on the route."
 					}
 				},
 				"required": [
 					"houdiniId",
-					"created",
 					"depositAddress",
-					"receiverAddress",
-					"anonymous",
 					"expires",
+					"displayStatus",
 					"status",
+					"eta",
 					"inAmount",
 					"inSymbol",
 					"outAmount",
 					"outSymbol",
-					"notified",
-					"eta",
 					"inAmountUsd",
 					"outAmountUsd",
-					"multiId",
-					"inCreated",
-					"id",
-					"isDex",
-					"orderFinishedReceived",
-					"actionRequired",
-					"outToken",
 					"inToken",
+					"outToken",
+					"receiverAddress",
+					"anonymous",
+					"isDex",
+					"swapName",
+					"multiId",
+					"actionRequired",
+					"outTransactionOutHash",
 					"inStatus",
 					"outStatus",
-					"swapName",
-					"outTransactionOutHash",
-					"displayStatus"
+					"created",
+					"inCreated",
+					"orderFinishedReceived",
+					"notified",
+					"id"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -793,58 +823,52 @@
 			"OrderV2PublicResponse": {
 				"properties": {
 					"houdiniId": {
-						"type": "string"
-					},
-					"created": {
 						"type": "string",
-						"format": "date-time"
-					},
-					"modified": {
-						"type": "string",
-						"format": "date-time"
+						"description": "Public order id. Use it with Get order details."
 					},
 					"depositAddress": {
 						"type": "string",
 						"description": "The CEX deposit address where the user must send funds"
 					},
-					"receiverAddress": {
-						"type": "string"
-					},
-					"anonymous": {
-						"type": "boolean"
+					"depositTag": {
+						"type": "string",
+						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress` — a deposit sent without it may not be credited."
 					},
 					"expires": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "Deposit deadline — send the funds by this time or the order expires. Not a rate lock."
+					},
+					"displayStatus": {
+						"$ref": "#/components/schemas/DisplayStatus",
+						"description": "Human-readable state for your UI, derived from `status` and the leg statuses. Prefer this over `status`."
 					},
 					"status": {
-						"$ref": "#/components/schemas/OrderStatus"
-					},
-					"inAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"inSymbol": {
-						"type": "string"
-					},
-					"outAmount": {
-						"type": "number",
-						"format": "double"
-					},
-					"outSymbol": {
-						"type": "string"
-					},
-					"depositTag": {
-						"type": "string",
-						"description": "Memo/tag required when depositing funds for assets that use one"
-					},
-					"notified": {
-						"type": "boolean"
+						"$ref": "#/components/schemas/OrderStatus",
+						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing — private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
 					},
 					"eta": {
 						"type": "number",
 						"format": "double",
 						"description": "ETA time, depending on swap"
+					},
+					"inAmount": {
+						"type": "number",
+						"format": "double",
+						"description": "Amount to deposit, in the input token."
+					},
+					"inSymbol": {
+						"type": "string",
+						"description": "Symbol of the input token, e.g. `BTC`."
+					},
+					"outAmount": {
+						"type": "number",
+						"format": "double",
+						"description": "Amount you receive, in the output token."
+					},
+					"outSymbol": {
+						"type": "string",
+						"description": "Symbol of the output token, e.g. `ETH`."
 					},
 					"inAmountUsd": {
 						"type": "number",
@@ -853,49 +877,52 @@
 					},
 					"outAmountUsd": {
 						"type": "number",
-						"format": "double"
-					},
-					"multiId": {
-						"type": "string"
-					},
-					"inCreated": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"id": {
-						"type": "string"
-					},
-					"nonRefundable": {
-						"type": "boolean"
-					},
-					"metadata": {},
-					"isDex": {
-						"type": "boolean"
-					},
-					"orderFinishedReceived": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"actionRequired": {
-						"type": "boolean"
-					},
-					"outToken": {
-						"$ref": "#/components/schemas/Token"
+						"format": "double",
+						"description": "`outAmount` valued in USD."
 					},
 					"inToken": {
-						"$ref": "#/components/schemas/Token"
+						"$ref": "#/components/schemas/Token",
+						"description": "Token you sent."
 					},
-					"inStatus": {
-						"$ref": "#/components/schemas/Status"
+					"outToken": {
+						"$ref": "#/components/schemas/Token",
+						"description": "Token you received."
 					},
-					"outStatus": {
-						"$ref": "#/components/schemas/Status"
+					"receiverAddress": {
+						"type": "string",
+						"description": "Wallet the payout is sent to."
 					},
-					"swapName": {
-						"type": "string"
+					"refundAddress": {
+						"type": "string",
+						"description": "Refund address recorded for this order."
+					},
+					"anonymous": {
+						"type": "boolean",
+						"description": "True when this order took the private two-leg route."
+					},
+					"isDex": {
+						"type": "boolean",
+						"description": "True when the order executed on a DEX route."
 					},
 					"fixed": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when the order settled at a locked rate."
+					},
+					"swapName": {
+						"type": "string",
+						"description": "Provider that executed the order, e.g. `Changelly`."
+					},
+					"multiId": {
+						"type": "string",
+						"description": "Id of the multi-exchange group this order belongs to. Empty for single swaps."
+					},
+					"nonRefundable": {
+						"type": "boolean",
+						"description": "True when the deposit can no longer be refunded."
+					},
+					"actionRequired": {
+						"type": "boolean",
+						"description": "True when the order failed but your deposit had already arrived — contact support to recover the funds."
 					},
 					"rerouted": {
 						"type": "boolean",
@@ -911,14 +938,44 @@
 						"format": "double",
 						"description": "The payout originally quoted, present only when the order was rerouted. `outAmount` is what the fallback route will actually pay; on an exact-in order this is the side that moves."
 					},
-					"refundAddress": {
-						"type": "string"
-					},
 					"outTransactionOutHash": {
+						"type": "string",
+						"description": "Payout transaction hash. Empty until the payout is broadcast."
+					},
+					"inStatus": {
+						"$ref": "#/components/schemas/Status",
+						"description": "Progress of the incoming leg — your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+					},
+					"outStatus": {
+						"$ref": "#/components/schemas/Status",
+						"description": "Progress of the outgoing leg — the payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+					},
+					"created": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"modified": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"inCreated": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the incoming leg was created."
+					},
+					"orderFinishedReceived": {
+						"type": "string",
+						"format": "date-time",
+						"description": "When the order reached a final state."
+					},
+					"notified": {
+						"type": "boolean"
+					},
+					"id": {
 						"type": "string"
 					},
-					"displayStatus": {
-						"$ref": "#/components/schemas/DisplayStatus"
+					"metadata": {
+						"description": "Extra data from the provider. The shape depends on the route."
 					},
 					"receiverTag": {
 						"type": "string",
@@ -928,33 +985,33 @@
 				},
 				"required": [
 					"houdiniId",
-					"created",
 					"depositAddress",
-					"receiverAddress",
-					"anonymous",
 					"expires",
+					"displayStatus",
 					"status",
+					"eta",
 					"inAmount",
 					"inSymbol",
 					"outAmount",
 					"outSymbol",
-					"notified",
-					"eta",
 					"inAmountUsd",
 					"outAmountUsd",
-					"multiId",
-					"inCreated",
-					"id",
-					"isDex",
-					"orderFinishedReceived",
-					"actionRequired",
-					"outToken",
 					"inToken",
+					"outToken",
+					"receiverAddress",
+					"anonymous",
+					"isDex",
+					"swapName",
+					"multiId",
+					"actionRequired",
+					"outTransactionOutHash",
 					"inStatus",
 					"outStatus",
-					"swapName",
-					"outTransactionOutHash",
-					"displayStatus"
+					"created",
+					"inCreated",
+					"orderFinishedReceived",
+					"notified",
+					"id"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1171,18 +1228,18 @@
 					},
 					"validUntil": {
 						"type": "string",
-						"description": "When `rateId` expires. Fixed-rate quotes only."
+						"description": "When the locked rate expires, as a Unix timestamp in seconds, e.g. `\"1767225600\"`. Fixed-rate quotes only — create the exchange before it passes."
 					},
 					"requiresApproval": {
 						"type": "boolean",
-						"description": "True when the wallet must approve the token before swapping — EVM and Tron non-native tokens. Use the allowance and approve endpoints."
+						"description": "DEX quotes only. True when the wallet must approve the token before swapping — EVM and Tron non-native tokens. Call [Get token approval data](/api-reference/dex-swaps/get-token-approval-data), send what it returns, then poll [Check token allowance](/api-reference/dex-swaps/check-token-allowance) until it turns true."
 					},
 					"isPriority": {
 						"type": "boolean"
 					},
 					"depositAddressSupported": {
 						"type": "boolean",
-						"description": "True when the route can be funded by sending to a deposit address, with no connected wallet."
+						"description": "DEX quotes only. True when the route can be funded by sending to a deposit address, with no connected wallet."
 					},
 					"requiresRefundAddress": {
 						"type": "boolean",
@@ -1191,11 +1248,11 @@
 					"appliedApiMarkup": {
 						"type": "number",
 						"format": "double",
-						"description": "The per-request markup this quote was priced with, as a percentage (`0.5` = 0.5%), echoing the `markup` you sent. Absent when your stored account markup applied. On a private swap this is the PER-LEG value and is charged on both legs."
+						"description": "The `markup` you sent, as a percentage (`0.5` = 0.5%), returned back so you can check it was used. Absent when your stored account markup applied. On a private swap this is the PER-LEG value and is charged on both legs."
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "The refund address this quote was priced with, echoing what you sent."
+						"description": "The `refundAddress` you sent, returned back so you can check it was used. It sits on the source chain."
 					},
 					"amountType": {
 						"type": "string",
@@ -1287,7 +1344,7 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
 						"maxLength": 200
 					},
 					"deviationThreshold": {
@@ -1398,7 +1455,8 @@
 			"MultiQuoteOrderError": {
 				"properties": {
 					"message": {
-						"type": "string"
+						"type": "string",
+						"description": "What went wrong, in plain text. Show it, but do not branch on it — the wording can change."
 					},
 					"code": {
 						"anyOf": [
@@ -1409,7 +1467,8 @@
 								"type": "number",
 								"format": "double"
 							}
-						]
+						],
+						"description": "Machine-readable reason, from the same set of codes as a top-level error response. Branch on this."
 					}
 				},
 				"required": [
@@ -1439,10 +1498,12 @@
 						"items": {
 							"$ref": "#/components/schemas/QuoteV2"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Routes for this order, best rate first. Empty when `quoted` is false or `error` is set."
 					},
 					"error": {
-						"$ref": "#/components/schemas/MultiQuoteOrderError"
+						"$ref": "#/components/schemas/MultiQuoteOrderError",
+						"description": "Why this order could not be quoted. Only the affected order fails — the rest of the batch still returns, and the request is still a 200."
 					}
 				},
 				"required": [
@@ -1457,16 +1518,19 @@
 			"MultiQuoteResult": {
 				"properties": {
 					"mode": {
-						"$ref": "#/components/schemas/MultiQuoteMode"
+						"$ref": "#/components/schemas/MultiQuoteMode",
+						"description": "The `mode` this batch was quoted with."
 					},
 					"batched": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "The `batched` setting this request ran with."
 					},
 					"orders": {
 						"items": {
 							"$ref": "#/components/schemas/MultiQuoteOrderResult"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "One entry per order you sent, in the same order. Match them up with `index`."
 					}
 				},
 				"required": [
@@ -1531,13 +1595,15 @@
 						"items": {
 							"type": "string"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Only use these providers for this leg. Values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)."
 					},
 					"exclude": {
 						"items": {
 							"type": "string"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Never use these providers for this leg. Values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)."
 					}
 				},
 				"type": "object",
@@ -1549,31 +1615,38 @@
 						"items": {
 							"type": "string"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Only quote these providers. Omit to use all of them. Values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)."
 					},
 					"rotatePayoutWallets": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "Rotate the payout path for better privacy. Private swaps only — standard and DEX are single-leg and ignore it."
 					},
 					"rotateFallback": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "When strict rotation runs out of rotated routes, use a valid non-rotated route instead of failing. Default false. Needs `rotatePayoutWallets` — on its own it does nothing."
 					},
 					"deviationThreshold": {
 						"type": "number",
 						"format": "double",
+						"description": "How far the rate may move, as a percentage, before a rotated route is rejected. Default 5. Only used when `rotatePayoutWallets` is true.",
 						"minimum": 0,
 						"maximum": 100
 					},
 					"rotationLookback": {
 						"type": "integer",
 						"format": "int32",
+						"description": "How many of your recent orders to look at when picking a different payout path. Default 10. Only used when `rotatePayoutWallets` is true.",
 						"minimum": 1,
 						"maximum": 100
 					},
 					"inLeg": {
-						"$ref": "#/components/schemas/LegFilter"
+						"$ref": "#/components/schemas/LegFilter",
+						"description": "Provider filter for the in-leg of a private (2-hop) route. Omit it and `onlySwaps` applies to both legs. Ignored by standard and DEX, which are single-hop."
 					},
 					"outLeg": {
-						"$ref": "#/components/schemas/LegFilter"
+						"$ref": "#/components/schemas/LegFilter",
+						"description": "Provider filter for the out-leg of a private (2-hop) route. Omit it and `onlySwaps` applies to both legs. Ignored by standard and DEX, which are single-hop."
 					}
 				},
 				"type": "object",
@@ -1586,6 +1659,7 @@
 							"$ref": "#/components/schemas/MultiQuoteOrderItem"
 						},
 						"type": "array",
+						"description": "The swaps to quote, 1 to 10 per request. Each is quoted on its own, so one failing does not fail the rest.",
 						"minItems": 1,
 						"maxItems": 10
 					},
@@ -1599,7 +1673,7 @@
 					},
 					"batched": {
 						"type": "boolean",
-						"description": "Resolve distinct order tuples concurrently (bounded) when true (default), or sequentially when false. POC knob for latency benchmarking."
+						"description": "Quote the orders in parallel (`true`, the default) or one after another. Leave it unset unless you are measuring latency — the results are the same either way."
 					}
 				},
 				"required": [
@@ -1719,27 +1793,34 @@
 			"ApprovalTypedData": {
 				"properties": {
 					"data": {
-						"$ref": "#/components/schemas/EIP712TypedData"
+						"$ref": "#/components/schemas/EIP712TypedData",
+						"description": "The EIP-712 payload for the wallet to sign."
 					},
 					"type": {
-						"$ref": "#/components/schemas/SignatureType"
+						"$ref": "#/components/schemas/SignatureType",
+						"description": "`single` — sign it and you are done. `chained` — sign it, then call [Get next chain signature](/api-reference/dex-swaps/get-next-chain-signature) for the next one."
 					},
 					"totalSteps": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "How many signatures this chain needs in total. `1` for a single signature."
 					},
 					"step": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Which signature this is, counting from 1."
 					},
 					"isComplete": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True on the last signature of the chain — stop asking for more once you see it."
 					},
 					"key": {
-						"type": "string"
+						"type": "string",
+						"description": "Identifies this signature. Pass it as `key` to [Get next chain signature](/api-reference/dex-swaps/get-next-chain-signature) to fetch the next step."
 					},
 					"swapRequiredMetadata": {
-						"$ref": "#/components/schemas/Record_string.any_"
+						"$ref": "#/components/schemas/Record_string.any_",
+						"description": "Provider data attached to this signature. Send it back unchanged with the signed result — the swap fails without it."
 					}
 				},
 				"required": [
@@ -1815,16 +1896,20 @@
 			"ApproveTransaction": {
 				"properties": {
 					"data": {
-						"type": "string"
+						"type": "string",
+						"description": "Calldata to send. Encodes the approval for the amount this swap needs."
 					},
 					"to": {
-						"type": "string"
+						"type": "string",
+						"description": "Send the transaction to this address — the contract of the token being approved."
 					},
 					"from": {
-						"type": "string"
+						"type": "string",
+						"description": "Wallet that must send the transaction — the `addressFrom` you supplied."
 					},
 					"fromChain": {
-						"$ref": "#/components/schemas/Chain"
+						"$ref": "#/components/schemas/Chain",
+						"description": "Chain the transaction runs on."
 					}
 				},
 				"required": [
@@ -1842,13 +1927,15 @@
 						"items": {
 							"$ref": "#/components/schemas/ApproveTransaction"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Transactions the wallet must send before the swap. Empty when the allowance already covers it."
 					},
 					"signatures": {
 						"items": {
 							"$ref": "#/components/schemas/ApprovalTypedData"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Messages to sign instead of sending an approval transaction, when the token and provider both support it. Pass the signed results to `signatures` on [Create exchange](/api-reference/dex-swaps/create-exchange)."
 					}
 				},
 				"required": [
@@ -1926,7 +2013,7 @@
 					},
 					"quoteId": {
 						"type": "string",
-						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- private also tries a different bridge token — the cascade covers every provider and bridge-token combination\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
+						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- a quote is only accepted for about a minute after you fetched it — quote again if the user takes longer\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
 					},
 					"markup": {
 						"type": "number",
@@ -1942,12 +2029,12 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if the swap cannot complete. Required when the quote has:\n\n- `fixed: true`\n- `requiresRefundAddress: true`",
+						"description": "Where funds are returned if the swap cannot complete.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- required when the quote has `fixed: true` or `requiresRefundAddress: true`",
 						"maxLength": 200
 					},
 					"refundExtraId": {
 						"type": "string",
-						"description": "Memo/tag for refundAddress on memo-bearing chains (e.g. XRP DestinationTag, Stellar memo, TON comment). Ignored when the destination chain has no memo concept.",
+						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"signatures": {
@@ -1959,12 +2046,12 @@
 					},
 					"destinationTag": {
 						"type": "string",
-						"description": "Destination tag / memo (e.g. for XRP, XLM)",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"walletInfo": {
 						"type": "string",
-						"description": "Wallet info string",
+						"description": "Name of the wallet the user is swapping from, e.g. `MetaMask`, `Phantom`, `Trust Wallet`. Optional.",
 						"maxLength": 256
 					}
 				},
@@ -2065,7 +2152,7 @@
 					},
 					"destinationTag": {
 						"type": "string",
-						"description": "Destination tag / memo (e.g. for XRP, XLM)",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"useXmr": {
@@ -2074,7 +2161,7 @@
 					},
 					"walletInfo": {
 						"type": "string",
-						"description": "Wallet info string",
+						"description": "Name of the wallet the user is swapping from, e.g. `MetaMask`, `Phantom`, `Trust Wallet`. Optional.",
 						"maxLength": 256
 					},
 					"filters": {
@@ -2087,12 +2174,12 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if the swap cannot complete. Required when `fixed` is true, or the provider requires one.",
+						"description": "Where funds are returned if the swap cannot complete. Required when `fixed` is true, or the provider requires one.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited",
 						"maxLength": 200
 					},
 					"refundExtraId": {
 						"type": "string",
-						"description": "Memo/tag for refundAddress on memo-bearing chains (XRP, Stellar, TON, …).",
+						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"markup": {
@@ -2137,23 +2224,28 @@
 			"RecoveryAssetInfoResult": {
 				"properties": {
 					"tokenAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Contract address of the stuck token."
 					},
 					"tokenSymbol": {
-						"type": "string"
+						"type": "string",
+						"description": "Symbol of the stuck token, e.g. `USDT`."
 					},
 					"decimals": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Decimals of the stuck token, for turning `balance` into a display amount."
 					},
 					"balance": {
-						"type": "string"
+						"type": "string",
+						"description": "Amount held, in the token's smallest unit."
 					},
 					"sourceHoudiniIds": {
 						"items": {
 							"type": "string"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "The orders whose funds ended up here."
 					}
 				},
 				"required": [
@@ -2170,23 +2262,29 @@
 				"description": "The fields needed to sign and submit the batch.",
 				"properties": {
 					"userOpHash": {
-						"type": "string"
+						"type": "string",
+						"description": "The digest the user's wallet must sign, as 32 bytes of hex. Sign it as a message — `signMessage({ message: { raw: userOpHash } })` in viem, `signMessage(getBytes(userOpHash))` in ethers — then post the signature to [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)."
 					},
 					"to": {
-						"type": "string"
+						"type": "string",
+						"description": "Smart account that collects the funds for this batch. Send `value` and `tokenAmount` here before submitting.\n\nIt is derived from the `sender` wallet and owned by it — only that wallet can authorise a transfer out, so Houdini cannot move the funds. The same wallet always gets the same address."
 					},
 					"data": {
-						"type": "string"
+						"type": "string",
+						"description": "Calldata for the funding transfer — `0x` when the source token is the chain's native coin, otherwise an ERC-20 transfer to `to`."
 					},
 					"value": {
-						"type": "string"
+						"type": "string",
+						"description": "Native coin to send to `to`, in wei. Covers gas, plus the swap amount when the source token is the native coin."
 					},
 					"chainId": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "EVM chain the batch runs on, e.g. `1` for Ethereum."
 					},
 					"tokenAmount": {
-						"type": "string"
+						"type": "string",
+						"description": "Token amount to transfer to `to`, in the token's smallest unit. `\"0\"` when the source token is the chain's native coin."
 					}
 				},
 				"required": [
@@ -2408,19 +2506,22 @@
 			"FailedMultiswapRecoveryResult": {
 				"properties": {
 					"saAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Smart account holding the stuck funds. It is owned by the wallet that built the batch, so the funds stay recoverable by that wallet alone."
 					},
 					"assets": {
 						"items": {
 							"$ref": "#/components/schemas/RecoveryAssetInfoResult"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Every stuck token, with its balance."
 					},
 					"transactions": {
 						"items": {
 							"$ref": "#/components/schemas/TxBatch"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Withdrawal transactions to sign and submit, one per batch."
 					}
 				},
 				"required": [
@@ -2514,7 +2615,8 @@
 			"MultiExchangeTxResult": {
 				"properties": {
 					"multiId": {
-						"type": "string"
+						"type": "string",
+						"description": "The group these transactions fund."
 					},
 					"chain": {
 						"type": "string",
@@ -2524,15 +2626,16 @@
 						"items": {
 							"$ref": "#/components/schemas/TxBatch"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "One entry per batch. A group larger than the per-chain batch limit is split across several."
 					},
 					"depositNeeded": {
 						"type": "string",
-						"description": "How much more native ETH (wei) the SA needs before submission; \"0\" means already funded"
+						"description": "Native coin the smart account still needs before you can submit, in wei. `\"0\"` means it is already funded."
 					},
 					"saCurrentBalance": {
 						"type": "string",
-						"description": "Current SA native balance in wei"
+						"description": "Native coin the smart account holds right now, in wei. The account is owned by the `sender` wallet, so this balance stays under the user's control."
 					}
 				},
 				"required": [
@@ -2576,7 +2679,7 @@
 				"properties": {
 					"sender": {
 						"type": "string",
-						"description": "Wallet address that will sign and fund the transaction(s)",
+						"description": "Wallet that will sign and fund the transaction(s). On EVM it also owns the smart account the batch runs through, so the same wallet must sign at [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction).",
 						"minLength": 1
 					},
 					"houdiniIds": {
@@ -2601,7 +2704,7 @@
 							"type": "string"
 						},
 						"type": "array",
-						"description": "ERC-4337 UserOperation hash(es) returned by the bundler — one per batch"
+						"description": "One hash per submitted batch — the on-chain reference for each UserOperation."
 					}
 				},
 				"required": [
@@ -2617,7 +2720,7 @@
 							"type": "string"
 						},
 						"type": "array",
-						"description": "One signature per batch, in the same order as the build response transactions array",
+						"description": "One signature per batch, in the same order as `transactions` in the build response.\n\nSign each batch's `userOpHash` as a message, with the same wallet you passed as `sender` when building. Pass the hash as **bytes**, not as a hex string — signing the `\"0x…\"` text produces a different digest and the submit is rejected.\n\n- viem — `walletClient.signMessage({ account, message: { raw: userOpHash } })`\n- ethers v6 — `signer.signMessage(getBytes(userOpHash))`\n- ethers v5 — `signer.signMessage(ethers.utils.arrayify(userOpHash))`",
 						"minItems": 1
 					}
 				},
@@ -2766,7 +2869,7 @@
 					"memoNeeded": {
 						"type": "boolean",
 						"nullable": true,
-						"description": "Whether the chain requires a memo/tag for transactions",
+						"description": "True when an address on this chain needs a memo or destination tag, e.g. XRP or TON. Send it as `destinationTag` for the payout address, or `refundExtraId` for the refund address.",
 						"example": false
 					},
 					"explorerUrl": {
@@ -2975,7 +3078,7 @@
 					},
 					"fixed": {
 						"type": "boolean",
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use GET /v2/quotes for private fixed-rate quotes or `amountType=receive`."
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`."
 					},
 					"deviationThreshold": {
 						"type": "number",
@@ -3234,7 +3337,8 @@
 					},
 					"status": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Numeric order state — same values as `status` on [Get order details](/api-reference/private-and-standard-swaps/get-order-details). `4` means finished."
 					}
 				},
 				"type": "object",
@@ -3687,7 +3791,7 @@
 						}
 					},
 					{
-						"description": "Filter providers by whether they support slippage configuration",
+						"description": "Filter providers by whether they support slippage configuration. DEX providers only — CEX providers never do, so `true` returns DEX providers alone.",
 						"in": "query",
 						"name": "slippageSupported",
 						"required": false,
@@ -3825,31 +3929,6 @@
 				],
 				"parameters": [
 					{
-						"description": "Number of results to return per page",
-						"in": "query",
-						"name": "pageSize",
-						"required": false,
-						"schema": {
-							"default": 1000,
-							"format": "int32",
-							"type": "integer",
-							"maximum": 1000,
-							"minimum": 1
-						}
-					},
-					{
-						"in": "query",
-						"name": "page",
-						"required": false,
-						"schema": {
-							"default": 1,
-							"format": "int32",
-							"type": "integer",
-							"minimum": 1,
-							"maximum": 10000
-						}
-					},
-					{
 						"description": "Search term that matches against name, symbol, address, keyword, cexTokenId fields",
 						"in": "query",
 						"name": "term",
@@ -3869,12 +3948,23 @@
 						}
 					},
 					{
-						"description": "Filter by token type. true returns each chain's native coin (e.g. ETH on Ethereum, BNB on BSC); false returns issued tokens (e.g. USDT). Omit to return both.",
+						"description": "Filter by exact token symbol, e.g. \"USDT\"",
 						"in": "query",
-						"name": "mainnet",
+						"name": "symbol",
 						"required": false,
 						"schema": {
-							"type": "boolean"
+							"type": "string",
+							"maxLength": 20
+						}
+					},
+					{
+						"description": "Filter tokens by contract address",
+						"in": "query",
+						"name": "address",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"maxLength": 200
 						}
 					},
 					{
@@ -3896,36 +3986,6 @@
 						}
 					},
 					{
-						"description": "Filter tokens by contract address",
-						"in": "query",
-						"name": "address",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"maxLength": 200
-						}
-					},
-					{
-						"description": "Filter by exact token symbol, e.g. \"USDT\"",
-						"in": "query",
-						"name": "symbol",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"maxLength": 20
-						}
-					},
-					{
-						"description": "Include tokens we have not reviewed yet. These are added automatically the first time someone quotes a contract address. Check `securityScan` before using one.",
-						"in": "query",
-						"name": "unverified",
-						"required": false,
-						"schema": {
-							"default": false,
-							"type": "boolean"
-						}
-					},
-					{
 						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them.",
 						"in": "query",
 						"name": "hasSelfPrivate",
@@ -3941,6 +4001,50 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
+						}
+					},
+					{
+						"description": "Filter by token type. true returns each chain's native coin (e.g. ETH on Ethereum, BNB on BSC); false returns issued tokens (e.g. USDT). Omit to return both.",
+						"in": "query",
+						"name": "mainnet",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Include tokens we have not reviewed. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens — check `securityScan` before offering one to users.",
+						"in": "query",
+						"name": "unverified",
+						"required": false,
+						"schema": {
+							"default": false,
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "int32",
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 10000
+						}
+					},
+					{
+						"description": "Number of results to return per page",
+						"in": "query",
+						"name": "pageSize",
+						"required": false,
+						"schema": {
+							"default": 1000,
+							"format": "int32",
+							"type": "integer",
+							"maximum": 1000,
+							"minimum": 1
 						}
 					}
 				]
@@ -4198,7 +4302,7 @@
 						}
 					}
 				},
-				"description": "Returns order details for a given Houdini order ID created in the last 48 hours.",
+				"description": "Returns order details for a given Houdini order ID created in the last 48 hours.\n\nPast that window the order drops out of the API and returns 404, the same as an id that never existed — store whatever you need to keep before then.",
 				"summary": "Get order details",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4339,7 +4443,7 @@
 						}
 					}
 				},
-				"description": "Returns a paginated list of orders created in the last 48 hours.",
+				"description": "Returns a paginated list of orders created in the last 48 hours.\n\nOlder orders drop out of the API entirely — a `from` date earlier than that is clamped to the window, so keep your own record of anything you need long-term.",
 				"summary": "Get orders",
 				"tags": [
 					"Partner Account"
@@ -4502,8 +4606,6 @@
 													"markupSupported": true,
 													"slippageSupported": false,
 													"rewardsAvailable": true,
-													"depositAddressSupported": true,
-													"requiresApproval": false,
 													"requiresRefundAddress": false,
 													"appliedApiMarkup": 0.5,
 													"amountType": "send",
@@ -4528,8 +4630,6 @@
 													"markupSupported": true,
 													"slippageSupported": false,
 													"rewardsAvailable": false,
-													"depositAddressSupported": true,
-													"requiresApproval": false,
 													"requiresRefundAddress": false,
 													"amountType": "send",
 													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
@@ -4691,7 +4791,7 @@
 						}
 					},
 					{
-						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
 						"in": "query",
 						"name": "refundAddress",
 						"required": false,
@@ -4986,7 +5086,7 @@
 						}
 					}
 				},
-				"description": "Returns the available routes for each swap in a batch.\n\n- standard and private CEX only — no DEX\n- `mode=single` quotes just the first swap, as a faster preview\n\nBeta — the response shape may still change.",
+				"description": "Returns the available routes for each swap in a batch.\n\nOptional. [Create multi exchange](/api-reference/multi-exchange/create-multi-exchange) picks its own routes and takes no `quoteId`, so call this only when you want to show rates before committing.\n\n- standard and private CEX only — no DEX\n- `mode=single` quotes just the first swap, as a faster preview\n\nBeta — the response shape may still change.",
 				"summary": "Get multi quotes",
 				"tags": [
 					"Multi-Exchange"
@@ -5122,7 +5222,7 @@
 				"operationId": "ChainSignatures",
 				"responses": {
 					"200": {
-						"description": "Success",
+						"description": "The next signature in the chain",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5238,7 +5338,7 @@
 						}
 					}
 				},
-				"description": "Returns the next signature in a multi-step chain, for swaps needing more than one (e.g. permit + bridge).\n\n- only needed when approve returned a signature of type `CHAINED`\n- sign the returned data, post it back, repeat until `isComplete` is true",
+				"description": "Returns the next signature in a multi-step chain, for swaps needing more than one (e.g. permit + bridge).\n\n- only needed when [Get token approval data](/api-reference/dex-swaps/get-token-approval-data) returned a signature of type `CHAINED`\n- sign the returned data, post it back, repeat until `isComplete` is true",
 				"summary": "Get next chain signature",
 				"tags": [
 					"DEX Swaps"
@@ -5266,7 +5366,7 @@
 				"operationId": "Approve",
 				"responses": {
 					"200": {
-						"description": "Success",
+						"description": "What the wallet must approve; both arrays empty if nothing is needed",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5355,7 +5455,7 @@
 						}
 					}
 				},
-				"description": "Returns what the wallet must approve before a DEX swap.\n\n- `approvals` — transactions to send. Poll until this comes back empty.\n- `signatures` — EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
+				"description": "Returns what the wallet must approve before a DEX swap. Call this first — both arrays come back empty when the allowance already covers the swap.\n\n- `approvals` — transactions to send. After sending them, poll [Check token allowance](/api-reference/dex-swaps/check-token-allowance) until it returns true.\n- `signatures` — EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
 				"summary": "Get token approval data",
 				"tags": [
 					"DEX Swaps"
@@ -5383,7 +5483,7 @@
 				"operationId": "Allowance",
 				"responses": {
 					"200": {
-						"description": "Success",
+						"description": "`true` when the allowance covers the swap",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5443,7 +5543,7 @@
 						}
 					}
 				},
-				"description": "Check if token allowance is sufficient for a DEX swap\n\nReturns true if the current allowance is enough to proceed with the swap, or false if an approval transaction is needed first.",
+				"description": "Check if token allowance is sufficient for a DEX swap\n\nReturns true when the current allowance covers the swap. Poll this after sending an approval from [Get token approval data](/api-reference/dex-swaps/get-token-approval-data), and create the exchange once it turns true.",
 				"summary": "Check token allowance",
 				"tags": [
 					"DEX Swaps"
@@ -5577,7 +5677,7 @@
 						}
 					}
 				},
-				"description": "Creates a swap from a quote.\n\nThe route type — private, standard or DEX — comes from the quote you pass as `quoteId`; there is no type field on this request.",
+				"description": "Creates the order from a `quoteId`.\n\nQuote first, then create right away — a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.\n\nWith the order data returned by this endpoint:\n\n- private and standard: send the deposit to `depositAddress` before `expires`\n- DEX: see the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap)",
 				"summary": "Create exchange",
 				"tags": [
 					"Private and Standard Swaps",
@@ -5708,7 +5808,7 @@
 						}
 					}
 				},
-				"description": "Creates a group of swaps that share one `multiId`.\n\n- routes are chosen for you — no `quoteId` needed\n- each swap starts at status NEW and is prepared in the background\n- poll `GET /exchanges/multi/{multiId}` for deposit addresses",
+				"description": "Creates a group of swaps that share one `multiId`. Post the orders straight here — there is no quote step and no `quoteId`.\n\n- routes are chosen for you, per order\n- [Get multi quotes](/api-reference/multi-exchange/get-multi-quotes) is optional, for showing rates first\n- each swap starts at status NEW and is prepared in the background\n- poll [Get batch status](/api-reference/multi-exchange/get-batch-status) for deposit addresses\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
 				"summary": "Create multi exchange",
 				"tags": [
 					"Multi-Exchange"
@@ -6177,9 +6277,7 @@
 									"Example 1": {
 										"value": {
 											"multiId": "mx8Qa1",
-											"chain": "evm",
-											"depositNeeded": "0",
-											"saCurrentBalance": "18400000000000000",
+											"chain": "sol",
 											"transactions": [
 												{
 													"houdiniIds": [
@@ -6187,12 +6285,7 @@
 														"hxK7mQp3"
 													],
 													"txData": {
-														"userOpHash": "0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
-														"to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-														"data": "0xb61d27f60000000000000000000000000000000000000000000000000000000000000001",
-														"value": "0",
-														"chainId": 1,
-														"tokenAmount": "1000000000"
+														"data": "AQABBHqRUq0lHs8mkGBz0cJ0ZQ3LXKcM4k4xGz0OHhcVDQYFAwIBAAAAAgAAAAAAAADoAwAAAAAAAA=="
 													}
 												}
 											]
@@ -6263,11 +6356,12 @@
 						}
 					}
 				},
-				"description": "Returns the batched deposit transaction for a Solana group.\n\n- all orders must share the same source chain\n- up to 10 deposit addresses per batch\n- Solana only — for EVM use `POST /exchanges/multi/{multiId}/tx/build`",
+				"description": "Deprecated. Use [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction) instead — it returns the same Solana transaction and works for EVM groups too.\n\nStill supported for integrations built before EVM batching existed, so nothing breaks if you are already calling it.\n\n- Solana only; `txData.data` is the serialized transaction, base64 encoded\n- up to 10 deposit addresses per batch; a larger group comes back as several entries in `transactions`",
 				"summary": "Get batch transaction",
 				"tags": [
 					"Bundler SOL"
 				],
+				"deprecated": true,
 				"security": [
 					{
 						"apiKey": []
@@ -6397,7 +6491,7 @@
 						}
 					}
 				},
-				"description": "Submits signed UserOperation(s) to the bundler.\n\n- one signature per batch, in the order returned by `tx/build`\n- most groups produce a single batch, so usually one signature\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check `GET /exchanges/multi/{multiId}`.",
+				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-evm/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
 				"summary": "Submit signed transaction",
 				"tags": [
 					"Bundler EVM"
@@ -6542,7 +6636,7 @@
 						}
 					}
 				},
-				"description": "Builds the batched transaction that funds every order in the group.\n\n- Solana: up to 10 deposits per batch\n- EVM: up to 20 legs per batch, as an ERC-4337 UserOperation\n- all orders must share the same source chain",
+				"description": "Funds every order in the group with one transaction instead of paying each deposit address. Works for both chains; all orders must share the same source chain.\n\n- Solana — sign the returned transaction and broadcast it. Nothing to submit back.\n- EVM — send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction).\n- large groups come back as several batches — handle every entry in `transactions`\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
 				"summary": "Build batch transaction",
 				"tags": [
 					"Bundler SOL",
@@ -6807,6 +6901,40 @@
 				],
 				"parameters": [
 					{
+						"description": "Filter by chain name (case-insensitive search in name, shortName)",
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"maxLength": 50
+						}
+					},
+					{
+						"description": "Filter by chain kind, exact match against the `kind` field returned by this endpoint (e.g., \"evm\", \"sol\", \"bitcoin\", \"xmr\", \"ltc\"). Call this endpoint without filters to discover available kinds. Each value must be 16 characters or less.",
+						"in": "query",
+						"name": "kind",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/components/schemas/ChainKindFilter"
+							},
+							"maxItems": 10
+						}
+					},
+					{
+						"description": "Filter by numeric EVM chain ID (e.g. 1 for Ethereum, 42161 for Arbitrum)",
+						"in": "query",
+						"name": "chainId",
+						"required": false,
+						"schema": {
+							"format": "int32",
+							"type": "integer",
+							"minimum": 1
+						}
+					},
+					{
 						"description": "Filter chains that support CEX swaps",
 						"in": "query",
 						"name": "hasCex",
@@ -6825,26 +6953,12 @@
 						}
 					},
 					{
-						"description": "Filter by chain kind, exact match against the `kind` field returned by this endpoint (e.g., \"evm\", \"sol\", \"bitcoin\", \"xmr\", \"ltc\"). Call this endpoint without filters to discover available kinds. Each value must be 16 characters or less.",
+						"description": "Filter chains by whether they require a destination memo/tag",
 						"in": "query",
-						"name": "kind",
+						"name": "memoNeeded",
 						"required": false,
 						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/components/schemas/ChainKindFilter"
-							},
-							"maxItems": 10
-						}
-					},
-					{
-						"description": "Filter by chain name (case-insensitive search in name, shortName)",
-						"in": "query",
-						"name": "name",
-						"required": false,
-						"schema": {
-							"type": "string",
-							"maxLength": 50
+							"type": "boolean"
 						}
 					},
 					{
@@ -6871,26 +6985,6 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
-					},
-					{
-						"description": "Filter by numeric EVM chain ID (e.g. 1 for Ethereum, 42161 for Arbitrum)",
-						"in": "query",
-						"name": "chainId",
-						"required": false,
-						"schema": {
-							"format": "int32",
-							"type": "integer",
-							"minimum": 1
-						}
-					},
-					{
-						"description": "Filter chains by whether they require a destination memo/tag",
-						"in": "query",
-						"name": "memoNeeded",
-						"required": false,
-						"schema": {
-							"type": "boolean"
 						}
 					}
 				]
@@ -7035,8 +7129,6 @@
 													"markupSupported": true,
 													"slippageSupported": false,
 													"rewardsAvailable": true,
-													"depositAddressSupported": true,
-													"requiresApproval": false,
 													"requiresRefundAddress": false,
 													"appliedApiMarkup": 0.5,
 													"amountType": "send",
@@ -7061,8 +7153,6 @@
 													"markupSupported": true,
 													"slippageSupported": false,
 													"rewardsAvailable": false,
-													"depositAddressSupported": true,
-													"requiresApproval": false,
 													"requiresRefundAddress": false,
 													"amountType": "send",
 													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
@@ -7136,8 +7226,8 @@
 						}
 					}
 				},
-				"description": "Same as Get quotes, but you identify each token by its chain and contract address instead of a token id. Useful when you already have an address and want to skip the token lookup.",
-				"summary": "Get quotes by address",
+				"description": "Get quotes using contract addresses instead of token ids. Returns private, standard and DEX routes — narrow the set with `types`.\n\n- send `fromChain` + `fromTokenAddress` instead of `from`\n- send `toChain` + `toTokenAddress` instead of `to`\n\nEverything else works the same as [Get quotes](/api-reference/private-and-standard-swaps/get-quotes).",
+				"summary": "Get quotes by token address",
 				"tags": [
 					"Private and Standard Swaps",
 					"DEX Swaps"
@@ -7233,7 +7323,7 @@
 						}
 					},
 					{
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use GET /v2/quotes for private fixed-rate quotes or `amountType=receive`.",
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
 						"in": "query",
 						"name": "fixed",
 						"required": false,
@@ -7602,16 +7692,16 @@
 									"Example 1": {
 										"value": {
 											"id": "6689b73ec90e45f3b3e51500",
-											"name": "Acme Wallet",
-											"nickname": "acme",
-											"email": "dev@acme.io",
+											"name": "Example Partner",
+											"nickname": "example-partner",
+											"email": "partner@example.com",
 											"tier": "growth",
-											"commissionRate": 0.35,
+											"commissionRate": 0.5,
 											"privateCommissionRate": 0.5,
-											"standardCommissionRate": 0.35,
-											"dexCommissionRate": 0.2,
-											"markup": 0.65,
-											"walletAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
+											"standardCommissionRate": 0.5,
+											"dexCommissionRate": 0.5,
+											"markup": 0.5,
+											"walletAddress": "0x0000000000000000000000000000000000000000",
 											"created": "2024-07-06T10:21:18.000Z"
 										}
 									}
@@ -8257,19 +8347,19 @@
 		},
 		{
 			"name": "Multi-Exchange",
-			"description": "Create and track a group of swaps sharing one `multiId`.\n\n- routes are chosen for you — no `quoteId` needed\n- each order gets its own deposit address; poll `GET /exchanges/multi/{multiId}` for every leg\n- CEX standard and private only — no DEX in a batch\n\nTo fund the whole group in one transaction, see Bundler SOL or Bundler EVM."
+			"description": "Create and track a group of swaps sharing one `multiId`.\n\n- post the orders straight to Create multi exchange — there is no quote step and no `quoteId`\n- Get multi quotes is optional, for showing rates first\n- each order gets its own deposit address; poll `GET /exchanges/multi/{multiId}` for every leg\n- CEX standard and private only — no DEX in a batch\n\nTo fund the whole group in one transaction, see Bundler SOL or Bundler EVM. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler SOL",
-			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- up to 10 deposits per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the transaction, then sign and broadcast it from the wallet\n- nothing to submit back afterwards — retry and recovery are EVM-only"
+			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- one call — Build batch transaction returns the transaction to sign and broadcast\n- up to 10 deposits per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- nothing to submit back afterwards — retry and recovery are EVM-only\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler EVM",
-			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets"
+			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "DEX Swaps",
-			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → check allowance → approve → sign chain signatures → `POST /exchanges` → confirm the transaction → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
+			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → get approval data → send it and poll allowance → sign chain signatures → `POST /exchanges` → confirm the transaction → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
 		},
 		{
 			"name": "Reference Data",
