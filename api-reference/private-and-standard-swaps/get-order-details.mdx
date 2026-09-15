@@ -1,0 +1,9 @@
+---
+title: "Get order details"
+description: "Returns a private or standard swap order created in the last 48 hours."
+openapi: "GET /orders/{houdiniId}"
+---
+
+Poll this with the `houdiniId` from [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) to follow the deposit and payout.
+
+Past the 48-hour window the order drops out of the API and returns 404, the same as an id that never existed — store whatever you need to keep before then.

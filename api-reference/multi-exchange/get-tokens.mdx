@@ -1,0 +1,16 @@
+---
+title: "Get tokens"
+description: "Returns the tokens available for a multi-exchange. Use the returned id as the from / to of each order."
+openapi: "GET /tokens"
+---
+
+A multi-exchange runs private and standard swaps only, so pass `hasCex=true`. To fund the whole group in one transaction through [Bundler SOL](/api-reference/bundler-sol/build-batch-transaction) or [Bundler EVM](/api-reference/bundler-evm/build-batch-transaction), also pass `hasBundler=true`.
+
+Without filters this returns every enabled token, 1000 per page and several MB per response. Narrow it further with:
+
+- `term` — search by name, symbol, address or cexTokenId
+- `chain` — one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains). A bundled group must share one source chain
+
+Tokens we have not reviewed are excluded unless you pass `unverified=true`.
+
+Next, pass the token ids to [Create multi exchange](/api-reference/multi-exchange/create-multi-exchange), or to [Get multi quotes](/api-reference/multi-exchange/get-multi-quotes) to show rates first.

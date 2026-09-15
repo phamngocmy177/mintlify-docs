@@ -1,0 +1,14 @@
+---
+title: "Get quotes"
+description: "Returns the private and standard routes for a token pair and amount."
+openapi: "GET /quotes"
+---
+
+Pick the mode with `types`:
+
+- `types=standard` — direct single-leg swap. Fastest, no privacy hop
+- `types=private` — two legs through a privacy bridge (XMR by default), so deposit and payout are not linkable on-chain
+
+Without `types`, DEX routes come back too.
+
+`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens). Pass the chosen `quoteId` to [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) right away.

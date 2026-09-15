@@ -1232,7 +1232,7 @@
 					},
 					"requiresApproval": {
 						"type": "boolean",
-						"description": "DEX quotes only. True when the wallet must approve the token before swapping — EVM and Tron non-native tokens. Call [Get token approval data](/api-reference/dex-swaps/get-token-approval-data), send what it returns, then poll [Check token allowance](/api-reference/dex-swaps/check-token-allowance) until it turns true."
+						"description": "DEX quotes only. True when the wallet must approve the token before swapping — EVM and Tron non-native tokens. Call [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data), send what it returns, then poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it turns true."
 					},
 					"isPriority": {
 						"type": "boolean"
@@ -1798,7 +1798,7 @@
 					},
 					"type": {
 						"$ref": "#/components/schemas/SignatureType",
-						"description": "`single` — sign it and you are done. `chained` — sign it, then call [Get next chain signature](/api-reference/dex-swaps/get-next-chain-signature) for the next one."
+						"description": "`single` — sign it and you are done. `chained` — sign it, then call [Get next chain signature](/api-reference/on-chain-dex-or-bridge/get-next-chain-signature) for the next one."
 					},
 					"totalSteps": {
 						"type": "number",
@@ -1816,7 +1816,7 @@
 					},
 					"key": {
 						"type": "string",
-						"description": "Identifies this signature. Pass it as `key` to [Get next chain signature](/api-reference/dex-swaps/get-next-chain-signature) to fetch the next step."
+						"description": "Identifies this signature. Pass it as `key` to [Get next chain signature](/api-reference/on-chain-dex-or-bridge/get-next-chain-signature) to fetch the next step."
 					},
 					"swapRequiredMetadata": {
 						"$ref": "#/components/schemas/Record_string.any_",
@@ -1935,7 +1935,7 @@
 							"$ref": "#/components/schemas/ApprovalTypedData"
 						},
 						"type": "array",
-						"description": "Messages to sign instead of sending an approval transaction, when the token and provider both support it. Pass the signed results to `signatures` on [Create exchange](/api-reference/dex-swaps/create-exchange)."
+						"description": "Messages to sign instead of sending an approval transaction, when the token and provider both support it. Pass the signed results to `signatures` on [Create exchange](/api-reference/private-and-standard-swaps/create-exchange)."
 					}
 				},
 				"required": [
@@ -3919,7 +3919,7 @@
 				"summary": "Get tokens",
 				"tags": [
 					"Private and Standard Swaps",
-					"DEX Swaps",
+					"On-chain DEX or Bridge",
 					"Multi-Exchange"
 				],
 				"security": [
@@ -4306,7 +4306,7 @@
 				"summary": "Get order details",
 				"tags": [
 					"Private and Standard Swaps",
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -4707,7 +4707,7 @@
 				"summary": "Get quotes",
 				"tags": [
 					"Private and Standard Swaps",
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -5197,7 +5197,7 @@
 				"description": "Confirms a DEX transaction with the provided transaction hash. This endpoint should be called after the user has signed and submitted the transaction. Without it the Order status may not be determined",
 				"summary": "Confirm DEX transaction",
 				"tags": [
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -5338,10 +5338,10 @@
 						}
 					}
 				},
-				"description": "Returns the next signature in a multi-step chain, for swaps needing more than one (e.g. permit + bridge).\n\n- only needed when [Get token approval data](/api-reference/dex-swaps/get-token-approval-data) returned a signature of type `CHAINED`\n- sign the returned data, post it back, repeat until `isComplete` is true",
+				"description": "Returns the next signature in a multi-step chain, for swaps needing more than one (e.g. permit + bridge).\n\n- only needed when [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data) returned a signature of type `CHAINED`\n- sign the returned data, post it back, repeat until `isComplete` is true",
 				"summary": "Get next chain signature",
 				"tags": [
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -5455,10 +5455,10 @@
 						}
 					}
 				},
-				"description": "Returns what the wallet must approve before a DEX swap. Call this first — both arrays come back empty when the allowance already covers the swap.\n\n- `approvals` — transactions to send. After sending them, poll [Check token allowance](/api-reference/dex-swaps/check-token-allowance) until it returns true.\n- `signatures` — EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
+				"description": "Returns what the wallet must approve before a DEX swap. Call this first — both arrays come back empty when the allowance already covers the swap.\n\n- `approvals` — transactions to send. After sending them, poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it returns true.\n- `signatures` — EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
 				"summary": "Get token approval data",
 				"tags": [
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -5543,10 +5543,10 @@
 						}
 					}
 				},
-				"description": "Check if token allowance is sufficient for a DEX swap\n\nReturns true when the current allowance covers the swap. Poll this after sending an approval from [Get token approval data](/api-reference/dex-swaps/get-token-approval-data), and create the exchange once it turns true.",
+				"description": "Check if token allowance is sufficient for a DEX swap\n\nReturns true when the current allowance covers the swap. Poll this after sending an approval from [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data), and create the exchange once it turns true.",
 				"summary": "Check token allowance",
 				"tags": [
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -5681,7 +5681,7 @@
 				"summary": "Create exchange",
 				"tags": [
 					"Private and Standard Swaps",
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -7230,7 +7230,7 @@
 				"summary": "Get quotes by token address",
 				"tags": [
 					"Private and Standard Swaps",
-					"DEX Swaps"
+					"On-chain DEX or Bridge"
 				],
 				"security": [
 					{
@@ -8358,7 +8358,7 @@
 			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
-			"name": "DEX Swaps",
+			"name": "On-chain DEX or Bridge",
 			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → get approval data → send it and poll allowance → sign chain signatures → `POST /exchanges` → confirm the transaction → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
 		},
 		{

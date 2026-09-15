@@ -1,0 +1,15 @@
+---
+title: "Create exchange"
+description: "Creates an on-chain DEX or bridge swap order from a quoteId."
+openapi: "POST /exchanges"
+---
+
+Create the order once approvals and chain signatures are done. Don't wait between quoting and creating — a stale `quoteId` is rejected with 422, and the message names the exact age limit.
+
+With the order data returned:
+
+- have the user sign and send the transaction from their wallet
+- call [Confirm DEX transaction](/api-reference/on-chain-dex-or-bridge/confirm-dex-transaction) with the transaction hash — without it the order status may not be determined
+- track the order with [Get order details](/api-reference/on-chain-dex-or-bridge/get-order-details)
+
+See the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap) for the full sequence.

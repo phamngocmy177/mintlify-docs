@@ -1,0 +1,12 @@
+---
+title: "Build batch transaction"
+description: "Funds every order in a multi-exchange with one ERC-4337 UserOperation instead of paying each deposit address."
+openapi: "POST /exchanges/multi/{multiId}/tx/build"
+---
+
+- all orders must share the same source chain; up to 20 legs per batch
+- send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)
+- large groups come back as several batches — handle every entry in `transactions`
+- if a bundle fails: [retry](/api-reference/bundler-evm/retry-failed-orders) within 30 minutes, or [recover stuck assets](/api-reference/bundler-evm/recover-stuck-assets)
+
+Find batchable tokens with [Get tokens](/api-reference/multi-exchange/get-tokens) and `hasBundler=true`. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.

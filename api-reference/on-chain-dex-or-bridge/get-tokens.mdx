@@ -1,0 +1,16 @@
+---
+title: "Get tokens"
+description: "Returns the tokens available for on-chain DEX and bridge swaps. Use the returned id as the from / to of a quote."
+openapi: "GET /tokens"
+---
+
+Pass `hasDex=true` to return only tokens routable on-chain.
+
+Without filters this returns every enabled token, 1000 per page and several MB per response. Narrow it further with:
+
+- `term` — search by name, symbol, address or cexTokenId
+- `chain` — one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains)
+
+Tokens we have not reviewed are excluded unless you pass `unverified=true`.
+
+Next, pass the token ids to [Get quotes](/api-reference/on-chain-dex-or-bridge/get-quotes) with `types=dex`.

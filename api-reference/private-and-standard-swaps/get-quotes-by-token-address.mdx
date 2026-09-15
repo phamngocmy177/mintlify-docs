@@ -1,0 +1,11 @@
+---
+title: "Get quotes by token address"
+description: "Returns private and standard routes using contract addresses instead of token ids."
+openapi: "GET /quotes/byChainAddress"
+---
+
+- send `fromChain` + `fromTokenAddress` instead of `from`
+- send `toChain` + `toTokenAddress` instead of `to`
+- pick the mode with `types=standard` or `types=private`. Without `types`, DEX routes come back too
+
+Everything else works the same as [Get quotes](/api-reference/private-and-standard-swaps/get-quotes).

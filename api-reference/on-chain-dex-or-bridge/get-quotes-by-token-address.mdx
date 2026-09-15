@@ -1,0 +1,11 @@
+---
+title: "Get quotes by token address"
+description: "Returns on-chain DEX and bridge routes using contract addresses instead of token ids."
+openapi: "GET /quotes/byChainAddress"
+---
+
+- send `fromChain` + `fromTokenAddress` instead of `from`
+- send `toChain` + `toTokenAddress` instead of `to`
+- pass `types=dex` to return on-chain routes only. Without it, private and standard routes come back too
+
+Everything else works the same as [Get quotes](/api-reference/on-chain-dex-or-bridge/get-quotes), including `senderAddress` and `requiresApproval`.
