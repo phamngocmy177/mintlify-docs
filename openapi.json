@@ -23,16 +23,100 @@
 					"type": "object"
 				}
 			},
+			"ErrorCode": {
+				"enum": [
+					"VALIDATION_ERROR",
+					"INVALID_MONTH_FORMAT",
+					"BAD_REQUEST",
+					"INTERNAL_SERVER_ERROR",
+					"METHOD_NOT_ALLOWED",
+					"ROUTE_NOT_FOUND",
+					"MISSING_API_CREDENTIALS",
+					"INVALID_API_CREDENTIALS",
+					"INVALID_API_CREDENTIALS_FORMAT",
+					"AUTHENTICATION_FAILED",
+					"INVALID_SECURITY_SCHEME",
+					"NOT_FOUND",
+					"ACCESS_DENIED",
+					"SERVICE_UNAVAILABLE",
+					"QUOTE_OVER_LIMIT",
+					"ANONYMOUS_DISABLED",
+					"AMOUNT_TOO_LOW",
+					"TO_AND_FROM_CANNOT_BE_THE_SAME",
+					"UNSUPPORTED_ANON_TOKEN",
+					"SWAP_COMBINATION_DISABLED",
+					"PRICE_QUOTES_NOT_RETRIEVED",
+					"UNSUPPORTED_FROM_TOKEN",
+					"UNSUPPORTED_TO_TOKEN",
+					"ADDRESS_TO_INVALID",
+					"ADDRESS_TO_INVALID_FOR_CHAIN",
+					"ADDRESS_TO_IN_DEPOSIT_LOG",
+					"ADDRESS_REFUND_IN_DEPOSIT_LOG",
+					"ADDRESS_TO_IS_TOKEN_ADDRESS",
+					"ADDRESS_REFUND_IS_TOKEN_ADDRESS",
+					"ADDRESS_FROM_IS_TOKEN_ADDRESS",
+					"ADDRESS_TO_SANCTIONED",
+					"ADDRESS_REFUND_SANCTIONED",
+					"ADDRESS_FROM_SANCTIONED",
+					"ADDRESS_FROM_INVALID",
+					"ADDRESS_FROM_REQUIRED",
+					"DEPOSIT_FLOW_NOT_SUPPORTED",
+					"DEPOSIT_FLOW_DISABLED",
+					"CONFLICTING_FLOW_PARAMS",
+					"ORDER_ALREADY_INITIALIZING_OR_PROCESSED",
+					"X_ADDRESS_NOT_SUPPORTED",
+					"REFUND_X_ADDRESS_NOT_SUPPORTED",
+					"INVALID_QUOTE",
+					"UNABLE_TO_PERFORM_EXCHANGE",
+					"PROVIDER_EXCHANGE_FAILED",
+					"INVALID_PATH",
+					"ANON_SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
+					"XMR_SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
+					"SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
+					"SWAP_PROVIDER_REJECTED_QUOTE",
+					"ANON_SWAP_PROVIDER_REJECTED_QUOTE",
+					"REUSED_DEPOSIT_ADDRESS",
+					"STATIC_DEPOSIT_IN_USE",
+					"TOKEN_NOT_FOUND",
+					"TOKEN_DISABLED",
+					"INVALID_SWAP",
+					"INVALID_SIGNATURE",
+					"ADDRESS_FROM_INVALID_FOR_CHAIN",
+					"ADDRESS_REFUND_INVALID_FOR_CHAIN",
+					"RATE_LIMIT_EXCEEDED",
+					"INVALID_TOKEN",
+					"NO_DEX_ROUTES",
+					"REFUND_ADDRESS_REQUIRED_FOR_FIXED_RATE",
+					"REFUND_ADDRESS_REQUIRED",
+					"ANONYMOUS_AND_FIXED_RATE_NOT_SUPPORTED",
+					"FIXED_RATE_QUOTE_EXPIRED",
+					"DEX_AND_FIXED_RATE_NOT_SUPPORTED",
+					"EXACT_OUT_NOT_SUPPORTED_FOR_ANONYMOUS",
+					"EXACT_OUT_NOT_SUPPORTED_FOR_DEX",
+					"EXACT_OUT_REQUIRES_FIXED_RATE",
+					"CONTRADICTORY_LEG_FILTER",
+					"ALREADY_SUBMITTED",
+					"UNABLE_TO_CREATE_REFUND_LEG",
+					"FIXED_RATE_NOT_ALLOWED",
+					"MARKUP_EXCEEDS_LIMIT",
+					"MARKUP_MISMATCHES_QUOTE",
+					"MARKUP_NOT_SUPPORTED_FOR_DEX",
+					"FLOATING_RATE_NOT_ALLOWED"
+				],
+				"type": "string"
+			},
 			"ValidationError": {
 				"properties": {
 					"message": {
 						"type": "string"
 					},
 					"code": {
-						"type": "string"
+						"$ref": "#/components/schemas/ErrorCode",
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
-						"type": "string"
+						"type": "string",
+						"description": "Unique id for this request. Quote it when contacting support — it is how we find the failure in our logs."
 					},
 					"fields": {
 						"$ref": "#/components/schemas/FieldErrors"
@@ -52,10 +136,12 @@
 						"type": "string"
 					},
 					"code": {
-						"type": "string"
+						"$ref": "#/components/schemas/ErrorCode",
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
-						"type": "string"
+						"type": "string",
+						"description": "Unique id for this request. Quote it when contacting support — it is how we find the failure in our logs."
 					}
 				},
 				"required": [
@@ -307,21 +393,26 @@
 			"Token": {
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"description": "Token icon URL."
 					},
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "The token id. Pass this as `from` / `to` when quoting."
 					},
 					"address": {
 						"type": "string",
-						"nullable": true
+						"nullable": true,
+						"description": "Contract address. Null for a chain's native coin — see `mainnet`."
 					},
 					"chain": {
-						"type": "string"
+						"type": "string",
+						"description": "Chain short name, e.g. `ethereum`. Matches `shortName` on `chainData`."
 					},
 					"decimals": {
 						"type": "number",
 						"format": "double",
+						"description": "On-chain decimals. Amounts in this API are decimals in the token's own units, so you only need this for on-chain work.",
 						"default": 0
 					},
 					"symbol": {
@@ -341,27 +432,33 @@
 						"format": "date-time"
 					},
 					"chainData": {
-						"$ref": "#/components/schemas/Chain"
+						"$ref": "#/components/schemas/Chain",
+						"description": "The chain this token lives on."
 					},
 					"description": {
 						"type": "string",
-						"nullable": true
+						"nullable": true,
+						"description": "Token description from CoinGecko."
 					},
 					"mainnet": {
 						"type": "boolean",
 						"description": "True for the chain's native coin (e.g. ETH on Ethereum), false for an issued token (e.g. USDT). Not related to mainnet vs testnet."
 					},
 					"enabled": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "False when the token is temporarily not swappable."
 					},
 					"unverified": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when we have not reviewed this token yet — check `securityScan` before using it."
 					},
 					"hasDex": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when the token can be swapped on DEX routes."
 					},
 					"hasCex": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when the token can be swapped on private and standard routes."
 					},
 					"hasBundler": {
 						"type": "boolean",
@@ -373,16 +470,19 @@
 					},
 					"cexTokenId": {
 						"type": "string",
+						"description": "The token's identifier on centralized exchanges.",
 						"default": ""
 					},
 					"rank": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "CoinGecko market-cap rank. Null when unranked."
 					},
 					"cgId": {
 						"type": "string",
-						"nullable": true
+						"nullable": true,
+						"description": "CoinGecko id for this token."
 					},
 					"marketCapChange24h": {
 						"type": "number",
@@ -397,35 +497,42 @@
 					"price": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "Current price in USD, from CoinGecko."
 					},
 					"marketCap": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "Market cap in USD, from CoinGecko."
 					},
 					"volume": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "24h trading volume in USD, from CoinGecko."
 					},
 					"fdv": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "Fully diluted valuation in USD, from CoinGecko."
 					},
 					"change": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "24h price change, as a percentage."
 					},
 					"priority": {
 						"type": "number",
 						"format": "double",
-						"nullable": true
+						"nullable": true,
+						"description": "Display order — lower sorts first. Unrelated to `rank`."
 					},
 					"warningMessage": {
-						"type": "string"
+						"type": "string",
+						"description": "Warning to show the user before swapping this token."
 					},
 					"securityScan": {
 						"$ref": "#/components/schemas/TokenSecurityScan",
@@ -911,7 +1018,7 @@
 				"properties": {
 					"swap": {
 						"type": "string",
-						"description": "Provider short code, e.g. `ch`. Matches `shortName` from Get swap providers."
+						"description": "Provider short code, e.g. `ch`. Matches `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)."
 					},
 					"quoteId": {
 						"type": "string",
@@ -1125,7 +1232,7 @@
 			"SwapShortName": {
 				"type": "string",
 				"example": "cl",
-				"description": "A provider's short code, e.g. `cl`. Get the current list from Get swap providers (`GET /v2/swaps`) — the `shortName` field."
+				"description": "A provider's short code, e.g. `cl`. Get the current list from [Get swap providers](/api-reference/reference-data/get-swap-providers) — the `shortName` field."
 			},
 			"QuoteSort": {
 				"enum": [
@@ -1147,12 +1254,12 @@
 					},
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from. Use an `id` from GET /v2/tokens — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
 						"example": "6689b73ec90e45f3b3e51564"
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to. Use an `id` from GET /v2/tokens — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
 						"example": "6689b73ec90e45f3b3e51558"
 					},
 					"slippage": {
@@ -1217,7 +1324,7 @@
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX"
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
 					},
 					"inLegIncludedSwaps": {
 						"items": {
@@ -1375,14 +1482,14 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from GET /v2/tokens, e.g. `6689b73ec90e45f3b3e51564`.",
+						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51564`.",
 						"example": "6689b73ec90e45f3b3e51564",
 						"minLength": 24,
 						"maxLength": 24
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to — an `id` from GET /v2/tokens, e.g. `6689b73ec90e45f3b3e51558`.",
+						"description": "Token you are swapping to — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
 						"example": "6689b73ec90e45f3b3e51558",
 						"minLength": 24,
 						"maxLength": 24
@@ -1819,7 +1926,7 @@
 					},
 					"quoteId": {
 						"type": "string",
-						"description": "Quote ID from a prior quote response. Amount, from token, to token, and swap provider are retrieved from the provided quote. For CEX exchanges, if the exchange fails with the chosen swap provider, it will fallback to the next best route."
+						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- private also tries a different bridge token — the cascade covers every provider and bridge-token combination\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
 					},
 					"markup": {
 						"type": "number",
@@ -1929,14 +2036,14 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from GET /v2/tokens, e.g. `6689b73ec90e45f3b3e51564`.",
+						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51564`.",
 						"example": "6689b73ec90e45f3b3e51564",
 						"minLength": 24,
 						"maxLength": 24
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to — an `id` from GET /v2/tokens, e.g. `6689b73ec90e45f3b3e51558`.",
+						"description": "Token you are swapping to — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
 						"example": "6689b73ec90e45f3b3e51558",
 						"minLength": 24,
 						"maxLength": 24
@@ -2831,12 +2938,12 @@
 					},
 					"fromChain": {
 						"type": "string",
-						"description": "Source chain identifier — shortName from GET /v2/chains (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"toChain": {
 						"type": "string",
-						"description": "Destination chain identifier — shortName from GET /v2/chains (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"fromTokenAddress": {
@@ -2898,7 +3005,7 @@
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX"
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
 					},
 					"inLegIncludedSwaps": {
 						"items": {
@@ -3421,7 +3528,8 @@
 			"apiKey": {
 				"type": "apiKey",
 				"name": "Authorization",
-				"in": "header"
+				"in": "header",
+				"description": "Send `Authorization: <partnerId>:<secret>` — joined by a colon, raw. No `Bearer` prefix, no base64.\n\n[Get your credentials](https://docs.houdiniswap.com/developer-hub/getting-started/authentication)"
 			},
 			"x402": {
 				"type": "apiKey",
@@ -3458,12 +3566,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -3530,6 +3668,74 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/TokenSearchResult"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"tokens": [
+												{
+													"id": "6689b73ec90e45f3b3e51558",
+													"symbol": "USDT",
+													"name": "Tether USD",
+													"chain": "ethereum",
+													"address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+													"decimals": 6,
+													"icon": "https://api.houdiniswap.com/assets/tokens/USDT.png",
+													"created": "2024-07-06T10:21:18.000Z",
+													"mainnet": false,
+													"enabled": true,
+													"unverified": false,
+													"hasCex": true,
+													"hasDex": true,
+													"hasBundler": true,
+													"hasSelfPrivate": true,
+													"cexTokenId": "usdterc20",
+													"price": 0.9998,
+													"marketCap": 120450000000,
+													"volume": 48200000000,
+													"chainData": {
+														"id": "6689b73ec90e45f3b3e5150a",
+														"name": "Ethereum",
+														"shortName": "ethereum",
+														"shortNameV1": "ETH",
+														"kind": "evm",
+														"chainId": 1,
+														"enabled": true,
+														"memoNeeded": false,
+														"priority": 1,
+														"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
+														"created": "2024-07-06T10:21:18.000Z",
+														"explorerUrl": "https://etherscan.io/tx/{txHash}",
+														"addressUrl": "https://etherscan.io/address/{address}",
+														"addressValidation": "^0x[a-fA-F0-9]{40}$",
+														"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
+													}
+												}
+											],
+											"total": 1,
+											"totalPages": 1
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -3540,6 +3746,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -3604,7 +3820,7 @@
 						}
 					},
 					{
-						"description": "Filter by chain, e.g. \"ethereum\". Use a shortName from GET /chains",
+						"description": "Filter by chain, e.g. \"ethereum\". Use a shortName from [Get chains](/api-reference/reference-data/get-chains)",
 						"in": "query",
 						"name": "chain",
 						"required": false,
@@ -3704,6 +3920,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found",
 						"content": {
@@ -3720,6 +3956,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -3747,7 +3993,7 @@
 				],
 				"parameters": [
 					{
-						"description": "The token id returned by GET /tokens",
+						"description": "The token id returned by [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
 						"in": "path",
 						"name": "id",
 						"required": true,
@@ -3791,6 +4037,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Order not found",
 						"content": {
@@ -3807,6 +4073,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -3884,6 +4160,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -3904,6 +4200,16 @@
 							}
 						}
 					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -3918,8 +4224,7 @@
 				"description": "Returns a paginated list of orders created in the last 48 hours.",
 				"summary": "Get orders",
 				"tags": [
-					"Private and Standard Swaps",
-					"DEX Swaps"
+					"Partner Account"
 				],
 				"security": [
 					{
@@ -4023,7 +4328,7 @@
 						}
 					},
 					{
-						"description": "Filter by the token being sent, using an id from GET /tokens",
+						"description": "Filter by the token being sent, using an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
 						"in": "query",
 						"name": "inTokenId",
 						"required": false,
@@ -4033,7 +4338,7 @@
 						}
 					},
 					{
-						"description": "Filter by the token being received, using an id from GET /tokens",
+						"description": "Filter by the token being received, using an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
 						"in": "query",
 						"name": "outTokenId",
 						"required": false,
@@ -4059,6 +4364,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4079,6 +4404,16 @@
 							}
 						}
 					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -4090,7 +4425,7 @@
 						}
 					}
 				},
-				"description": "Returns every available route for a token pair and amount — private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with `GET /tokens`.",
+				"description": "Returns every available route for a token pair and amount — private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens).",
 				"summary": "Get quotes",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4115,7 +4450,7 @@
 						}
 					},
 					{
-						"description": "Token you are swapping from. Use an `id` from GET /v2/tokens — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
 						"in": "query",
 						"name": "from",
 						"required": true,
@@ -4125,7 +4460,7 @@
 						"example": "6689b73ec90e45f3b3e51564"
 					},
 					{
-						"description": "Token you are swapping to. Use an `id` from GET /v2/tokens — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
 						"in": "query",
 						"name": "to",
 						"required": true,
@@ -4242,7 +4577,7 @@
 						}
 					},
 					{
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
@@ -4367,6 +4702,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4383,6 +4738,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4445,6 +4810,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Order not found",
 						"content": {
@@ -4461,6 +4846,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4516,12 +4911,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4574,12 +4999,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4632,12 +5087,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4708,6 +5193,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4724,6 +5229,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4802,6 +5317,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4818,6 +5353,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4880,6 +5425,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "No stuck assets found",
 						"content": {
@@ -4896,6 +5461,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -4975,6 +5550,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -4991,6 +5586,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5054,6 +5659,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -5070,6 +5695,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5133,6 +5768,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -5149,6 +5804,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5228,6 +5893,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "No pending transaction found for this multiId",
 						"content": {
@@ -5244,6 +5929,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5307,6 +6002,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -5333,6 +6048,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5407,12 +6132,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5440,7 +6195,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Token you are swapping from — an id from GET /tokens, or a CEX symbol like \"ETH\"",
+						"description": "Token you are swapping from — an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"ETH\"",
 						"in": "query",
 						"name": "tokenIdFrom",
 						"required": true,
@@ -5449,7 +6204,7 @@
 						}
 					},
 					{
-						"description": "Token you are swapping to — an id from GET /tokens, or a CEX symbol like \"BNB\"",
+						"description": "Token you are swapping to — an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"BNB\"",
 						"in": "query",
 						"name": "tokenIdTo",
 						"required": true,
@@ -5474,12 +6229,42 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5610,6 +6395,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -5626,6 +6431,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5668,6 +6483,26 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found",
 						"content": {
@@ -5684,6 +6519,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5724,7 +6569,7 @@
 						}
 					},
 					{
-						"description": "Source chain identifier — shortName from GET /v2/chains (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"in": "query",
 						"name": "fromChain",
 						"required": true,
@@ -5734,7 +6579,7 @@
 						}
 					},
 					{
-						"description": "Destination chain identifier — shortName from GET /v2/chains (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"in": "query",
 						"name": "toChain",
 						"required": true,
@@ -5853,7 +6698,7 @@
 						}
 					},
 					{
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from Get swap providers (`GET /v2/swaps`)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
@@ -5963,6 +6808,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -5979,6 +6834,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6024,6 +6889,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6040,6 +6915,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6082,6 +6967,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6108,6 +7003,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6150,6 +7055,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6166,6 +7081,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6241,6 +7166,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6257,6 +7192,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6312,6 +7257,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6328,6 +7283,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6464,6 +7429,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"403": {
 						"description": "Access Denied",
 						"content": {
@@ -6480,6 +7455,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -6542,11 +7527,7 @@
 	"tags": [
 		{
 			"name": "Private and Standard Swaps",
-			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge (XMR by default), so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: `GET /tokens?hasCex=true` → quote → `POST /exchanges` → `GET /orders`. `markup` works in both modes."
-		},
-		{
-			"name": "DEX Swaps",
-			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → check allowance → approve → sign chain signatures → `POST /exchanges` → confirm the transaction.\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
+			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge (XMR by default), so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: `GET /tokens?hasCex=true` → quote → `POST /exchanges` → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
 		},
 		{
 			"name": "Multi-Exchange",
@@ -6561,12 +7542,16 @@
 			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets"
 		},
 		{
+			"name": "DEX Swaps",
+			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → check allowance → approve → sign chain signatures → `POST /exchanges` → confirm the transaction → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
+		},
+		{
 			"name": "Reference Data",
 			"description": "Optional lookups: supported chains, liquidity providers, and per-pair min/max swap amounts. Responses are cached and change rarely — safe to fetch once and reuse. Token ids come from `/tokens`, listed in each swap section above."
 		},
 		{
 			"name": "Partner Account",
-			"description": "Your partner profile, earned commissions, withdrawals, volume analytics, and the rate-limit budget attached to your API key. Every endpoint is scoped to the partner that owns the key making the request."
+			"description": "Your orders, profile, earned commissions, withdrawals, volume analytics, and the rate-limit budget attached to your API key. Every endpoint is scoped to the partner that owns the key making the request."
 		},
 		{
 			"name": "System",
