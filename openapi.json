@@ -576,6 +576,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Status": {
+				"description": "- **0** New swap\n- **1** Waiting for confirmation\n- **2** Being confirmed\n- **3** Exchange in progress\n- **4** Sending to destination\n- **5** Swap completed\n- **6** Swap failed\n- **7** Swap refunded\n- **8** Verifying swap\n- **9** Swap expired\n- **10** Fallback mode",
+				"enum": [
+					0,
+					1,
+					2,
+					3,
+					4,
+					5,
+					6,
+					7,
+					8,
+					9,
+					10
+				],
+				"type": "number"
+			},
 			"DisplayStatus": {
 				"description": "Human-readable order state, derived from `status` and the per-leg statuses. Use this to drive your UI.\n\n- `WAITING_FOR_DEPOSIT`: waiting for your deposit to arrive\n- `DEPOSIT_DETECTED`: deposit seen, waiting for confirmations\n- `EXCHANGE_IN_PROGRESS`: the swap is running\n- `SENDING_TO_INTERMEDIARY`: private only: first leg on its way to the bridge token\n- `REACHED_INTERMEDIARY`: private only: first leg done\n- `INITIATING_SECOND_EXCHANGE`: private only: second leg starting\n- `SECOND_EXCHANGE_IN_PROGRESS`: private only: second leg running\n- `SENDING_TO_RECEIVER`: payout on its way to `receiverAddress`\n- `SWAP_COMPLETED`: finished\n- `EXPIRED`: no deposit arrived before `expires`\n- `FAILED`: the swap could not complete; check `actionRequired`\n- `REFUNDED`: funds returned to `refundAddress`\n- `DELETED`: order removed",
 				"enum": [
@@ -612,32 +629,11 @@
 				],
 				"type": "number"
 			},
-			"Status": {
-				"description": "- **0** New swap\n- **1** Waiting for confirmation\n- **2** Being confirmed\n- **3** Exchange in progress\n- **4** Sending to destination\n- **5** Swap completed\n- **6** Swap failed\n- **7** Swap refunded\n- **8** Verifying swap\n- **9** Swap expired\n- **10** Fallback mode",
-				"enum": [
-					0,
-					1,
-					2,
-					3,
-					4,
-					5,
-					6,
-					7,
-					8,
-					9,
-					10
-				],
-				"type": "number"
-			},
-			"Pick_Pick_Order.PublicOrderFields_.Exclude_keyofPick_Order.PublicOrderFields_.receiverTag__": {
+			"Pick_Pick_Order.PublicOrderFields_.Exclude_keyofPick_Order.PublicOrderFields_.receiverTag-or-swapName-or-multiId-or-outStatus-or-outTransactionOutHash-or-orderFinishedReceived-or-depositAddress__": {
 				"properties": {
 					"houdiniId": {
 						"type": "string",
 						"description": "Public order id. Use it with Get order details."
-					},
-					"depositAddress": {
-						"type": "string",
-						"description": "The CEX deposit address where the user must send funds"
 					},
 					"depositTag": {
 						"type": "string",
@@ -717,14 +713,6 @@
 						"type": "boolean",
 						"description": "True when the order settled at a locked rate."
 					},
-					"swapName": {
-						"type": "string",
-						"description": "Provider that executed the order, e.g. `Changelly`."
-					},
-					"multiId": {
-						"type": "string",
-						"description": "Id of the multi-exchange group this order belongs to. Empty for single swaps."
-					},
 					"nonRefundable": {
 						"type": "boolean",
 						"description": "True when the deposit can no longer be refunded."
@@ -747,17 +735,9 @@
 						"format": "double",
 						"description": "The payout originally quoted, present only when the order was rerouted. `outAmount` is what the fallback route will actually pay; on an exact-in order this is the side that moves."
 					},
-					"outTransactionOutHash": {
-						"type": "string",
-						"description": "Payout transaction hash. Empty until the payout is broadcast."
-					},
 					"inStatus": {
 						"$ref": "#/components/schemas/Status",
 						"description": "Progress of the incoming leg. Your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
-					},
-					"outStatus": {
-						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the outgoing leg. The payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"created": {
 						"type": "string",
@@ -772,11 +752,6 @@
 						"format": "date-time",
 						"description": "When the incoming leg was created."
 					},
-					"orderFinishedReceived": {
-						"type": "string",
-						"format": "date-time",
-						"description": "When the order reached a final state."
-					},
 					"notified": {
 						"type": "boolean"
 					},
@@ -789,7 +764,6 @@
 				},
 				"required": [
 					"houdiniId",
-					"depositAddress",
 					"expires",
 					"displayStatus",
 					"status",
@@ -805,15 +779,10 @@
 					"receiverAddress",
 					"anonymous",
 					"isDex",
-					"swapName",
-					"multiId",
 					"actionRequired",
-					"outTransactionOutHash",
 					"inStatus",
-					"outStatus",
 					"created",
 					"inCreated",
-					"orderFinishedReceived",
 					"notified",
 					"id"
 				],
@@ -825,10 +794,6 @@
 					"houdiniId": {
 						"type": "string",
 						"description": "Public order id. Use it with Get order details."
-					},
-					"depositAddress": {
-						"type": "string",
-						"description": "The CEX deposit address where the user must send funds"
 					},
 					"depositTag": {
 						"type": "string",
@@ -908,14 +873,6 @@
 						"type": "boolean",
 						"description": "True when the order settled at a locked rate."
 					},
-					"swapName": {
-						"type": "string",
-						"description": "Provider that executed the order, e.g. `Changelly`."
-					},
-					"multiId": {
-						"type": "string",
-						"description": "Id of the multi-exchange group this order belongs to. Empty for single swaps."
-					},
 					"nonRefundable": {
 						"type": "boolean",
 						"description": "True when the deposit can no longer be refunded."
@@ -938,17 +895,9 @@
 						"format": "double",
 						"description": "The payout originally quoted, present only when the order was rerouted. `outAmount` is what the fallback route will actually pay; on an exact-in order this is the side that moves."
 					},
-					"outTransactionOutHash": {
-						"type": "string",
-						"description": "Payout transaction hash. Empty until the payout is broadcast."
-					},
 					"inStatus": {
 						"$ref": "#/components/schemas/Status",
 						"description": "Progress of the incoming leg. Your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
-					},
-					"outStatus": {
-						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the outgoing leg. The payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"created": {
 						"type": "string",
@@ -962,11 +911,6 @@
 						"type": "string",
 						"format": "date-time",
 						"description": "When the incoming leg was created."
-					},
-					"orderFinishedReceived": {
-						"type": "string",
-						"format": "date-time",
-						"description": "When the order reached a final state."
 					},
 					"notified": {
 						"type": "boolean"
@@ -981,11 +925,35 @@
 						"type": "string",
 						"nullable": true,
 						"description": "Memo/tag required when receiving funds for assets that use one"
+					},
+					"swapName": {
+						"type": "string",
+						"description": "Name of the exchange handling the deposit leg. Omitted on private orders, which withhold the provider, and on multiswap orders that have not yet been assigned one."
+					},
+					"multiId": {
+						"type": "string",
+						"description": "Multi ID. Present only on orders created as part of a batch."
+					},
+					"outStatus": {
+						"$ref": "#/components/schemas/Status",
+						"description": "Status of the payout leg. Present only on private orders. Public orders settle in a single leg and never carry one."
+					},
+					"outTransactionOutHash": {
+						"type": "string",
+						"description": "Payout transaction hash of the second leg. Present only on private orders, and only once that leg has paid out. Public orders report their payout hash on `inTransactionOutHash` instead."
+					},
+					"orderFinishedReceived": {
+						"type": "string",
+						"format": "date-time",
+						"description": "Date and time when the order received status 4. Stamped only when an order finishes; orders that expire, fail or refund never receive one."
+					},
+					"depositAddress": {
+						"type": "string",
+						"description": "The deposit address where the user must send funds. Omitted on multiswap orders whose per-order setup did not complete."
 					}
 				},
 				"required": [
 					"houdiniId",
-					"depositAddress",
 					"expires",
 					"displayStatus",
 					"status",
@@ -1001,15 +969,10 @@
 					"receiverAddress",
 					"anonymous",
 					"isDex",
-					"swapName",
-					"multiId",
 					"actionRequired",
-					"outTransactionOutHash",
 					"inStatus",
-					"outStatus",
 					"created",
 					"inCreated",
-					"orderFinishedReceived",
 					"notified",
 					"id"
 				],
@@ -5333,6 +5296,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Order not found",
 						"content": {
@@ -5487,6 +5460,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
@@ -5604,6 +5587,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"422": {
 						"description": "Validation Failed",
 						"content": {
@@ -5684,6 +5677,16 @@
 					},
 					"402": {
 						"description": "Payment required. The response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5816,6 +5819,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -5939,6 +5952,16 @@
 					},
 					"402": {
 						"description": "Payment required. The response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6080,6 +6103,16 @@
 					},
 					"402": {
 						"description": "Payment required. The response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6231,6 +6264,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -6368,6 +6411,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "Not found",
 						"content": {
@@ -6489,6 +6542,16 @@
 					},
 					"402": {
 						"description": "Payment required. The response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6635,6 +6698,16 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "No pending transaction found for this multiId",
 						"content": {
@@ -6763,6 +6836,16 @@
 					},
 					"402": {
 						"description": "Payment required. The response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
 						"content": {
 							"application/json": {
 								"schema": {
