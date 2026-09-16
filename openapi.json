@@ -1306,23 +1306,25 @@
 						"type": "number",
 						"format": "double",
 						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"example": 1,
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
-						"example": "6689b73ec90e45f3b3e51564"
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
+						"example": "6689b73ec90e45f3b3e51566"
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
 						"example": "6689b73ec90e45f3b3e51558"
 					},
 					"slippage": {
 						"type": "number",
 						"format": "double",
 						"description": "Slippage percentage. Only used for DEX swaps.",
+						"example": 1,
 						"minimum": 0,
 						"maximum": 100
 					},
@@ -1336,21 +1338,25 @@
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Use XMR if true, if false use another token for the anonymous transaction"
+						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"example": false
 					},
 					"fixed": {
 						"type": "boolean",
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. Available for standard and private CEX quotes; not supported for DEX."
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. Available for standard and private CEX quotes; not supported for DEX.",
+						"example": false
 					},
 					"refundAddress": {
 						"type": "string",
 						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
+						"example": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
 						"maxLength": 200
 					},
 					"deviationThreshold": {
 						"type": "number",
 						"format": "double",
 						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
+						"example": 5,
 						"minimum": 0,
 						"maximum": 100
 					},
@@ -1358,74 +1364,91 @@
 						"type": "integer",
 						"format": "int32",
 						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
+						"example": 10,
 						"minimum": 1,
 						"maximum": 100
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it."
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"example": false
 					},
 					"rotateFallback": {
 						"type": "boolean",
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own."
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"example": false
 					},
 					"types": {
 						"items": {
 							"$ref": "#/components/schemas/QuoteType"
 						},
 						"type": "array",
-						"description": "Types of quotes to return; if omitted, all types are used"
+						"description": "Types of quotes to return; if omitted, all types are used",
+						"example": [
+							"private",
+							"standard",
+							"dex"
+						]
 					},
 					"swaps": {
 						"items": {
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"example": []
 					},
 					"inLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"example": []
 					},
 					"inLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes."
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
+						"example": []
 					},
 					"outLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"example": []
 					},
 					"outLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
+						"example": []
 					},
 					"senderAddress": {
 						"type": "string",
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it."
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"example": ""
 					},
 					"receiverAddress": {
 						"type": "string",
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation"
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"example": ""
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort",
-						"description": "Sort the quotes by the given field (default: amountOut)"
+						"description": "Sort the quotes by the given field (default: amountOut)",
+						"example": "amountOut"
 					},
 					"sortOrder": {
 						"$ref": "#/components/schemas/SortDirection",
-						"description": "Sort direction for quotes (default: desc)"
+						"description": "Sort direction for quotes (default: desc)",
+						"example": "desc"
 					},
 					"amountType": {
 						"type": "string",
@@ -1433,7 +1456,8 @@
 							"send",
 							"receive"
 						],
-						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends — system computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive — system computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected."
+						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends — system computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive — system computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected.",
+						"example": "send"
 					}
 				},
 				"required": [
@@ -1546,8 +1570,8 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51564`.",
-						"example": "6689b73ec90e45f3b3e51564",
+						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
+						"example": "6689b73ec90e45f3b3e51566",
 						"minLength": 24,
 						"maxLength": 24
 					},
@@ -2123,8 +2147,8 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51564`.",
-						"example": "6689b73ec90e45f3b3e51564",
+						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
+						"example": "6689b73ec90e45f3b3e51566",
 						"minLength": 24,
 						"maxLength": 24
 					},
@@ -3036,31 +3060,37 @@
 						"type": "number",
 						"format": "double",
 						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"example": 1,
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
 					"fromChain": {
 						"type": "string",
 						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"example": "ethereum",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"toChain": {
 						"type": "string",
 						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"example": "solana",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"fromTokenAddress": {
 						"type": "string",
-						"description": "Contract address of the token you are swapping from. Omit for the chain's native coin."
+						"description": "Contract address of the token you are swapping from. Omit for the chain's native coin.",
+						"example": ""
 					},
 					"toTokenAddress": {
 						"type": "string",
-						"description": "Contract address of the token you are swapping to. Omit for the chain's native coin."
+						"description": "Contract address of the token you are swapping to. Omit for the chain's native coin.",
+						"example": ""
 					},
 					"slippage": {
 						"type": "number",
 						"format": "double",
 						"description": "Slippage percentage. Only used for DEX swaps.",
+						"example": 1,
 						"minimum": 0,
 						"maximum": 100
 					},
@@ -3074,16 +3104,19 @@
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Use XMR if true, if false use another token for the anonymous transaction"
+						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"example": false
 					},
 					"fixed": {
 						"type": "boolean",
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`."
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
+						"example": false
 					},
 					"deviationThreshold": {
 						"type": "number",
 						"format": "double",
 						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
+						"example": 5,
 						"minimum": 0,
 						"maximum": 100
 					},
@@ -3091,66 +3124,81 @@
 						"type": "integer",
 						"format": "int32",
 						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
+						"example": 10,
 						"minimum": 1,
 						"maximum": 100
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it."
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"example": false
 					},
 					"rotateFallback": {
 						"type": "boolean",
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own."
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"example": false
 					},
 					"types": {
 						"items": {
 							"$ref": "#/components/schemas/QuoteType"
 						},
 						"type": "array",
-						"description": "Types of quotes to return; if omitted, all types are used"
+						"description": "Types of quotes to return; if omitted, all types are used",
+						"example": [
+							"private",
+							"standard",
+							"dex"
+						]
 					},
 					"swaps": {
 						"items": {
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"example": []
 					},
 					"inLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"example": []
 					},
 					"inLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes."
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
+						"example": []
 					},
 					"outLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"example": []
 					},
 					"outLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
+						"example": []
 					},
 					"senderAddress": {
 						"type": "string",
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it."
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"example": ""
 					},
 					"receiverAddress": {
 						"type": "string",
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation"
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"example": ""
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort",
@@ -3260,19 +3308,24 @@
 			"PartnerProfileResponse": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "Your partner id — the first half of your API credentials."
 					},
 					"name": {
-						"type": "string"
+						"type": "string",
+						"description": "Your company or product name."
 					},
 					"nickname": {
-						"type": "string"
+						"type": "string",
+						"description": "Short handle for your account."
 					},
 					"email": {
-						"type": "string"
+						"type": "string",
+						"description": "Contact address on the account."
 					},
 					"tier": {
-						"type": "string"
+						"type": "string",
+						"description": "Your plan. It sets your rate limits — see [Get rate limits](/api-reference/partner-account/get-rate-limits)."
 					},
 					"commissionRate": {
 						"type": "number",
@@ -3301,11 +3354,13 @@
 						"description": "API markup percentage value. `0.65` means `0.65%`, not `65%`."
 					},
 					"walletAddress": {
-						"type": "string"
+						"type": "string",
+						"description": "Where your commissions are paid out."
 					},
 					"created": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "When your account was created."
 					}
 				},
 				"required": [
@@ -3319,21 +3374,26 @@
 			"CommissionOrderSummary": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "Internal id of the order."
 					},
 					"houdiniId": {
-						"type": "string"
+						"type": "string",
+						"description": "The order id you track the swap with."
 					},
 					"created": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "When the order was created."
 					},
 					"anonymous": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True when it was a private swap."
 					},
 					"outAmountUsd": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Value paid out to the user, in USD."
 					},
 					"status": {
 						"type": "number",
@@ -3347,42 +3407,53 @@
 			"CommissionItemResponse": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "Id of this commission entry."
 					},
 					"created": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "When the commission was earned."
 					},
 					"commissionAmountUsd": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "What you earned on this order, in USD."
 					},
 					"commissionPercentage": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "The rate applied to this order, as a percentage."
 					},
 					"orderVolumeUsd": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Size of the order it was earned on, in USD."
 					},
 					"processed": {
-						"type": "boolean"
+						"type": "boolean",
+						"description": "True once the commission has been paid out to you."
 					},
 					"processedTx": {
-						"type": "string"
+						"type": "string",
+						"description": "Transaction that paid it out. Present once `processed` is true."
 					},
 					"processedAt": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "When it was paid out. Present once `processed` is true."
 					},
 					"commissionMonth": {
-						"type": "string"
+						"type": "string",
+						"description": "The month it counts towards, as `YYYY-MM`. Payouts are grouped by month."
 					},
 					"routeType": {
-						"type": "string"
+						"type": "string",
+						"description": "Which route earned it — `private`, `standard` or `dex`. Each can have its own rate."
 					},
 					"order": {
-						"$ref": "#/components/schemas/CommissionOrderSummary"
+						"$ref": "#/components/schemas/CommissionOrderSummary",
+						"description": "The order it was earned on."
 					}
 				},
 				"required": [
@@ -3426,27 +3497,33 @@
 				"properties": {
 					"totalEarnings": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Everything you have earned, in USD — paid out and not yet paid out."
 					},
 					"pendingCommissions": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Earned but not yet paid out, in USD."
 					},
 					"processedCommissions": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Already paid out, in USD."
 					},
 					"thisMonthEarnings": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Earned this calendar month, in USD. Not affected by the `month` filter."
 					},
 					"lastMonthEarnings": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Earned last calendar month, in USD. Not affected by the `month` filter."
 					},
 					"commissionCount": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "How many commission entries are included."
 					}
 				},
 				"required": [
@@ -3574,11 +3651,13 @@
 			"WithdrawalItemResponse": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "string",
+						"description": "Id of this payout."
 					},
 					"amountUsd": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "Amount paid out, in USD."
 					},
 					"status": {
 						"type": "string",
@@ -3587,17 +3666,21 @@
 							"processing",
 							"completed",
 							"failed"
-						]
+						],
+						"description": "Where the payout is up to. `completed` means the funds have been sent."
 					},
 					"batchId": {
-						"type": "string"
+						"type": "string",
+						"description": "Groups payouts that were sent together."
 					},
 					"processedTx": {
-						"type": "string"
+						"type": "string",
+						"description": "Transaction that sent the funds. Present once the status is `completed`."
 					},
 					"created": {
 						"type": "string",
-						"format": "date-time"
+						"format": "date-time",
+						"description": "When the payout was requested."
 					}
 				},
 				"required": [
@@ -3616,15 +3699,18 @@
 						"items": {
 							"$ref": "#/components/schemas/WithdrawalItemResponse"
 						},
-						"type": "array"
+						"type": "array",
+						"description": "Payouts on this page, newest first."
 					},
 					"total": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "How many payouts you have in total."
 					},
 					"totalPages": {
 						"type": "number",
-						"format": "double"
+						"format": "double",
+						"description": "How many pages that is, at the current `pageSize`."
 					}
 				},
 				"required": [
@@ -3679,30 +3765,40 @@
 									"Example 1": {
 										"value": [
 											{
-												"id": "6689b73ec90e45f3b3e51a01",
-												"name": "Changelly",
-												"shortName": "cl",
+												"id": "6421c1bb38a32da00696b9bc",
+												"name": "ChangeNow",
+												"shortName": "cn",
+												"txUrl": "https://changenow.io/exchange/txs/",
 												"enabled": true,
 												"isDex": false,
 												"deprecated": false,
-												"markupSupported": true,
+												"markupSupported": false,
 												"slippageSupported": false,
-												"autoSlippageSupported": false,
-												"txUrl": "https://changelly.com/track/",
-												"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+												"logoUrl": "https://api.houdiniswap.com/assets/logos/changenow.png"
 											},
 											{
-												"id": "6689b73ec90e45f3b3e51a02",
+												"id": "661fbcfbe0197bc93edf8d59",
+												"name": "Changelly",
+												"shortName": "cl",
+												"txUrl": "https://changelly.com/transaction/",
+												"enabled": true,
+												"isDex": false,
+												"deprecated": false,
+												"markupSupported": false,
+												"slippageSupported": false,
+												"logoUrl": "https://api.houdiniswap.com/assets/logos/changelly.jpg"
+											},
+											{
+												"id": "67d93eb4fef3c27b53393519",
 												"name": "Uniswap",
 												"shortName": "un",
+												"txUrl": "https://etherscan.io/tx/",
 												"enabled": true,
 												"isDex": true,
 												"deprecated": false,
 												"markupSupported": false,
 												"slippageSupported": true,
-												"autoSlippageSupported": true,
-												"txUrl": "https://etherscan.io/tx/",
-												"logoUrl": "https://api.houdiniswap.com/assets/swaps/un.png"
+												"logoUrl": "https://api.houdiniswap.com/assets/logos/uniswap-uo9q0r.png"
 											}
 										]
 									}
@@ -3779,7 +3875,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Filter providers by whether they support partner markup",
@@ -3788,7 +3885,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Filter providers by whether they support slippage configuration. DEX providers only — CEX providers never do, so `true` returns DEX providers alone.",
@@ -3797,7 +3895,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					}
 				]
 			}
@@ -3818,42 +3917,60 @@
 										"value": {
 											"tokens": [
 												{
-													"id": "6689b73ec90e45f3b3e51558",
-													"symbol": "USDT",
-													"name": "Tether USD",
+													"address": null,
 													"chain": "ethereum",
-													"address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-													"decimals": 6,
-													"icon": "https://api.houdiniswap.com/assets/tokens/USDT.png",
-													"created": "2024-07-06T10:21:18.000Z",
-													"mainnet": false,
-													"enabled": true,
-													"unverified": false,
-													"hasCex": true,
-													"hasDex": true,
-													"hasBundler": true,
-													"hasSelfPrivate": true,
-													"cexTokenId": "usdterc20",
-													"price": 0.9998,
-													"marketCap": 120450000000,
-													"volume": 48200000000,
+													"decimals": 18,
+													"symbol": "ETH",
+													"name": "Ethereum",
+													"created": "2024-07-06T21:29:34.823Z",
+													"modified": "2026-09-16T07:06:46.700Z",
 													"chainData": {
-														"id": "6689b73ec90e45f3b3e5150a",
-														"name": "Ethereum",
+														"created": "2024-07-06T21:02:11.672Z",
+														"modified": "2026-09-14T10:01:00.292Z",
+														"name": "Ethereum Mainnet",
 														"shortName": "ethereum",
-														"shortNameV1": "ETH",
+														"addressValidation": "^(0x)[0-9A-Za-z]{40}$",
+														"tokenAddressValidation": "^(0x)[0-9A-Za-z]{40}$",
+														"memoNeeded": false,
+														"explorerUrl": "https://etherscan.io/tx/{txHash}",
+														"addressUrl": "https://etherscan.io/address/{address}",
+														"priority": 2,
 														"kind": "evm",
 														"chainId": 1,
 														"enabled": true,
-														"memoNeeded": false,
-														"priority": 1,
-														"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
-														"created": "2024-07-06T10:21:18.000Z",
-														"explorerUrl": "https://etherscan.io/tx/{txHash}",
-														"addressUrl": "https://etherscan.io/address/{address}",
-														"addressValidation": "^0x[a-fA-F0-9]{40}$",
-														"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
-													}
+														"shortNameV1": "ETH",
+														"id": "6689b0d3c52f263938c44844",
+														"icon": "https://api.houdiniswap.com/assets/networks/ETH.png"
+													},
+													"description": "Ethereum is a global, open-source platform for decentralized applications. In other words, the vision is to create a world computer that anyone can build applications in a decentralized manner; while all states and data are distributed and publicly accessible. Ethereum supports smart contracts in which developers can write code in order to program digital value. Examples of decentralized apps (dapps) that are built on Ethereum includes tokens, non-fungible tokens, decentralized finance apps, lending protocol, decentralized exchanges, and much more.\r\n\r\nOn Ethereum, all transactions and smart contract executions require a small fee to be paid. This fee is called Gas. In technical terms, Gas refers to the unit of measure on the amount of computational effort required to execute an operation or a smart contract. The more complex the execution operation is, the more gas is required to fulfill that operation. Gas fees are paid entirely in Ether (ETH), which is the native coin of the blockchain. The price of gas can fluctuate from time to time depending on the network demand.",
+													"mainnet": true,
+													"enabled": true,
+													"unverified": false,
+													"hasDex": true,
+													"hasCex": true,
+													"hasSelfPrivate": true,
+													"cexTokenId": "ETH",
+													"rank": 2,
+													"cgId": "ethereum",
+													"marketCapChange24h": -3.15312,
+													"circulatingSupply": 122053082.69974948,
+													"price": 2401.7,
+													"marketCap": 293069408497,
+													"volume": 18775255556,
+													"fdv": 293069408497,
+													"change": -3.1168,
+													"priority": 2,
+													"securityScan": {
+														"provider": "blockaid",
+														"resultType": "Unscanned",
+														"features": [],
+														"unscannedReason": "NATIVE_TOKEN",
+														"unscannedDetail": "ETH has no contract address to scan",
+														"scannedAt": "2026-09-15T08:25:54.920Z",
+														"expiresAt": "2026-09-16T08:25:54.920Z"
+													},
+													"id": "6689b73ec90e45f3b3e51566",
+													"icon": "https://api.houdiniswap.com/assets/tokens/ETH-ETH-lejbdy.png"
 												}
 											],
 											"total": 1,
@@ -3936,7 +4053,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 100
-						}
+						},
+						"example": "SOL"
 					},
 					{
 						"description": "Filter by chain, e.g. \"ethereum\". Use a shortName from [Get chains](/api-reference/reference-data/get-chains)",
@@ -3945,7 +4063,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "solana"
 					},
 					{
 						"description": "Filter by exact token symbol, e.g. \"USDT\"",
@@ -3955,7 +4074,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 20
-						}
+						},
+						"example": "SOL"
 					},
 					{
 						"description": "Filter tokens by contract address",
@@ -3965,43 +4085,48 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 200
-						}
+						},
+						"example": ""
 					},
 					{
-						"description": "Filter tokens available for private and standard swaps.",
+						"description": "Filter tokens available for private and standard swaps. `false` returns only tokens explicitly marked unavailable, not every token missing the flag.",
 						"in": "query",
 						"name": "hasCex",
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
-						"description": "Filter tokens available for DEX swaps.",
+						"description": "Filter tokens available for DEX swaps. `false` returns only tokens explicitly marked unavailable, not every token missing the flag.",
 						"in": "query",
 						"name": "hasDex",
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
-						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them.",
+						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
 						"in": "query",
 						"name": "hasSelfPrivate",
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
-						"description": "Filter tokens the bundler can fund — paying for a whole multi-exchange group with one transaction instead of a deposit per order.",
+						"description": "Filter tokens the bundler can fund — paying for a whole multi-exchange group with one transaction instead of a deposit per order. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
 						"in": "query",
 						"name": "hasBundler",
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Filter by token type. true returns each chain's native coin (e.g. ETH on Ethereum, BNB on BSC); false returns issued tokens (e.g. USDT). Omit to return both.",
@@ -4010,7 +4135,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Include tokens we have not reviewed. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens — check `securityScan` before offering one to users.",
@@ -4020,7 +4146,8 @@
 						"schema": {
 							"default": false,
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"in": "query",
@@ -4032,7 +4159,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 10000
-						}
+						},
+						"example": 20
 					},
 					{
 						"description": "Number of results to return per page",
@@ -4045,7 +4173,8 @@
 							"type": "integer",
 							"maximum": 1000,
 							"minimum": 1
-						}
+						},
+						"example": 20
 					}
 				]
 			}
@@ -4064,42 +4193,59 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"id": "6689b73ec90e45f3b3e51558",
-											"symbol": "USDT",
-											"name": "Tether USD",
-											"chain": "ethereum",
-											"address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-											"decimals": 6,
-											"icon": "https://api.houdiniswap.com/assets/tokens/USDT.png",
-											"created": "2024-07-06T10:21:18.000Z",
-											"mainnet": false,
+											"address": null,
+											"chain": "solana",
+											"decimals": 9,
+											"symbol": "SOL",
+											"name": "Solana",
+											"created": "2024-07-06T21:29:34.822Z",
+											"modified": "2026-09-16T07:17:14.429Z",
+											"chainData": {
+												"created": "2024-07-06T21:02:11.673Z",
+												"modified": "2026-09-14T10:01:00.292Z",
+												"name": "Solana",
+												"shortName": "solana",
+												"addressValidation": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
+												"tokenAddressValidation": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
+												"memoNeeded": false,
+												"explorerUrl": "https://solscan.io/tx/{txHash}",
+												"addressUrl": "https://solscan.io/account/{address}",
+												"priority": 1,
+												"kind": "sol",
+												"enabled": true,
+												"shortNameV1": "SOL",
+												"id": "6689b0d3c52f263938c4484e",
+												"icon": "https://api.houdiniswap.com/assets/chains/solana-n1gfe3.png"
+											},
+											"description": "Solana is a highly functional open source project that banks on blockchain technology’s permissionless nature to provide decentralized finance (DeFi) solutions. It is a layer 1 network that offers fast speeds and affordable costs. While the idea and initial work on the project began in 2017, Solana was officially launched in March 2020 by the Solana Foundation with headquarters in Geneva, Switzerland.",
+											"mainnet": true,
 											"enabled": true,
 											"unverified": false,
-											"hasCex": true,
 											"hasDex": true,
+											"hasCex": true,
 											"hasBundler": true,
 											"hasSelfPrivate": true,
-											"cexTokenId": "usdterc20",
-											"price": 0.9998,
-											"marketCap": 120450000000,
-											"volume": 48200000000,
-											"chainData": {
-												"id": "6689b73ec90e45f3b3e5150a",
-												"name": "Ethereum",
-												"shortName": "ethereum",
-												"shortNameV1": "ETH",
-												"kind": "evm",
-												"chainId": 1,
-												"enabled": true,
-												"memoNeeded": false,
-												"priority": 1,
-												"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
-												"created": "2024-07-06T10:21:18.000Z",
-												"explorerUrl": "https://etherscan.io/tx/{txHash}",
-												"addressUrl": "https://etherscan.io/address/{address}",
-												"addressValidation": "^0x[a-fA-F0-9]{40}$",
-												"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
-											}
+											"cexTokenId": "SOL",
+											"rank": 7,
+											"cgId": "solana",
+											"marketCapChange24h": -3.76076,
+											"circulatingSupply": 587064779.4352292,
+											"price": 97.3,
+											"marketCap": 56980421616,
+											"volume": 3952383111,
+											"fdv": 61546706124,
+											"change": -3.61639,
+											"securityScan": {
+												"provider": "blockaid",
+												"resultType": "Unscanned",
+												"features": [],
+												"unscannedReason": "NATIVE_TOKEN",
+												"unscannedDetail": "SOL has no contract address to scan",
+												"scannedAt": "2026-09-15T08:23:22.968Z",
+												"expiresAt": "2026-09-16T08:23:22.968Z"
+											},
+											"id": "6689b73ec90e45f3b3e51558",
+											"icon": "https://api.houdiniswap.com/assets/tokens/sol-solana.png"
 										}
 									}
 								}
@@ -4186,7 +4332,8 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[a-fA-F0-9]{24}$"
-						}
+						},
+						"example": "6689b73ec90e45f3b3e51558"
 					}
 				]
 			}
@@ -4321,7 +4468,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "hxK7mQp2"
 					}
 				]
 			}
@@ -4465,7 +4613,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 10000
-						}
+						},
+						"example": 20
 					},
 					{
 						"description": "Page size",
@@ -4478,7 +4627,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 20
 					},
 					{
 						"description": "Get all orders from a multi swap",
@@ -4488,7 +4638,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Order status",
@@ -4510,7 +4661,8 @@
 						"schema": {
 							"format": "date-time",
 							"type": "string"
-						}
+						},
+						"example": "2026-09-15T00:00:00.000Z"
 					},
 					{
 						"description": "Created until date ISO 8601 format",
@@ -4520,7 +4672,8 @@
 						"schema": {
 							"format": "date-time",
 							"type": "string"
-						}
+						},
+						"example": "2026-09-16T00:00:00.000Z"
 					},
 					{
 						"description": "Sort by field",
@@ -4547,7 +4700,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Filter by the token being sent, using an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
@@ -4557,7 +4711,8 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[a-fA-F0-9]{24}$"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Filter by the token being received, using an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
@@ -4567,7 +4722,8 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[a-fA-F0-9]{24}$"
-						}
+						},
+						"example": ""
 					}
 				]
 			}
@@ -4586,56 +4742,58 @@
 								"examples": {
 									"Example 1": {
 										"value": {
+											"total": 93,
 											"quotes": [
 												{
-													"quoteId": "69a02882f48d56c923119d95",
-													"swap": "cl",
-													"swapName": "Changelly",
+													"amountIn": 1,
+													"amountOut": 24.308952,
+													"min": 0.041681,
+													"max": 1617.53705385,
+													"duration": 4,
+													"amountOutUsd": 2366.7195667200003,
+													"quoteId": "6aaa4273aa41ccf7cad03086",
 													"type": "private",
-													"amountIn": 0.25,
-													"amountOut": 3.5182,
-													"amountInUsd": 26450.5,
-													"amountOutUsd": 26301.44,
-													"netAmountOut": 3.5182,
-													"duration": 22,
-													"providerEta": 18,
-													"min": 0.0012,
-													"max": 12.5,
-													"fixed": false,
-													"filtered": false,
-													"markupSupported": true,
-													"slippageSupported": false,
 													"rewardsAvailable": true,
-													"requiresRefundAddress": false,
-													"appliedApiMarkup": 0.5,
-													"amountType": "send",
-													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+													"fixed": false
 												},
 												{
-													"quoteId": "69a02882f48d56c923119d96",
-													"swap": "cn",
-													"swapName": "ChangeNOW",
+													"amountIn": 1,
+													"amountOut": 24.50601963,
+													"min": 0.01250098966168155,
+													"max": 9007199254740991,
+													"duration": 21,
+													"amountOutUsd": 2385.9060711768,
+													"swap": "se",
+													"swapName": "StealthEx",
+													"logoUrl": "https://api.houdiniswap.com/assets/logos/stealthex.png",
+													"quoteId": "6aaa4272aa41ccf7cad03035",
 													"type": "standard",
-													"amountIn": 0.25,
-													"amountOut": 3.5321,
-													"amountInUsd": 26450.5,
-													"amountOutUsd": 26405.35,
-													"netAmountOut": 3.5321,
-													"duration": 9,
-													"providerEta": 7,
-													"min": 0.0009,
-													"max": 25,
-													"fixed": false,
-													"filtered": false,
-													"markupSupported": true,
-													"slippageSupported": false,
 													"rewardsAvailable": false,
-													"requiresRefundAddress": false,
-													"amountType": "send",
-													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
+													"rateId": null
+												},
+												{
+													"swap": "cf",
+													"quoteId": "6aaa4272aa41ccf7cad0303c",
+													"duration": 2.71,
+													"gas": 0,
+													"amountIn": 1,
+													"amountOut": 24.690801441,
+													"amountOutUsd": 2402.4149802093,
+													"netAmountOut": 24.690801441,
+													"swapName": "ChainFlip",
+													"type": "dex",
+													"logoUrl": "https://api.houdiniswap.com/assets/logos/chainflip.png",
+													"markupSupported": true,
+													"apiMarkupValue": 10,
+													"markupType": "bp",
+													"restrictedCountries": [],
+													"rewardsAvailable": false,
+													"min": 0,
+													"max": 9007199254740991,
+													"requiresApproval": false,
+													"depositAddressSupported": true
 												}
-											],
-											"total": 2
+											]
 										}
 									}
 								}
@@ -4725,20 +4883,21 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 1.7976931348623157e+308
-						}
+						},
+						"example": 1
 					},
 					{
-						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51564`, not a symbol like `BTC`.",
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
 						"in": "query",
 						"name": "from",
 						"required": true,
 						"schema": {
 							"type": "string"
 						},
-						"example": "6689b73ec90e45f3b3e51564"
+						"example": "6689b73ec90e45f3b3e51566"
 					},
 					{
-						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `ETH`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
 						"in": "query",
 						"name": "to",
 						"required": true,
@@ -4757,7 +4916,8 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 100
-						}
+						},
+						"example": 1
 					},
 					{
 						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
@@ -4779,7 +4939,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. Available for standard and private CEX quotes; not supported for DEX.",
@@ -4788,7 +4949,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
@@ -4798,7 +4960,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 200
-						}
+						},
+						"example": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 					},
 					{
 						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
@@ -4810,7 +4973,8 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 100
-						}
+						},
+						"example": 5
 					},
 					{
 						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
@@ -4822,7 +4986,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 10
 					},
 					{
 						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
@@ -4831,7 +4996,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
@@ -4840,7 +5006,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Types of quotes to return; if omitted, all types are used",
@@ -4852,7 +5019,12 @@
 							"items": {
 								"$ref": "#/components/schemas/QuoteType"
 							}
-						}
+						},
+						"example": [
+							"private",
+							"standard",
+							"dex"
+						]
 					},
 					{
 						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
@@ -4864,7 +5036,8 @@
 							"items": {
 								"$ref": "#/components/schemas/SwapShortName"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -4876,7 +5049,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
@@ -4888,7 +5062,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -4900,7 +5075,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
@@ -4912,7 +5088,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
@@ -4921,7 +5098,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
@@ -4930,7 +5108,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Sort the quotes by the given field (default: amountOut)",
@@ -4961,7 +5140,8 @@
 								"send",
 								"receive"
 							]
-						}
+						},
+						"example": "send"
 					}
 				]
 			}
@@ -6111,7 +6291,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "mx8Qa1"
 					}
 				]
 			}
@@ -6247,7 +6428,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "mx8Qa1"
 					}
 				],
 				"requestBody": {
@@ -6376,7 +6558,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "mx8Qa1"
 					},
 					{
 						"description": "Wallet address that will sign and fund the transaction(s)",
@@ -6386,7 +6569,8 @@
 						"schema": {
 							"type": "string",
 							"minLength": 1
-						}
+						},
+						"example": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC"
 					},
 					{
 						"in": "query",
@@ -6394,7 +6578,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					}
 				]
 			},
@@ -6510,7 +6695,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "mx8Qa1"
 					}
 				],
 				"requestBody": {
@@ -6656,7 +6842,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						}
+						},
+						"example": "mx8Qa1"
 					}
 				],
 				"requestBody": {
@@ -6686,20 +6873,17 @@
 									"Example 1": {
 										"value": {
 											"cex": {
-												"min": 0.0009,
-												"max": 25,
-												"minOut": 12.5,
-												"maxOut": 340000
+												"min": 0.0043690289937085985,
+												"max": 164.77480776272427,
+												"minOut": 0.10262725779967159,
+												"maxOut": 4105.0903119868635
 											},
-											"dex": {
-												"min": 0.005,
-												"max": 50
-											},
+											"dex": null,
 											"private": {
-												"min": 0.0012,
-												"max": 12.5,
-												"minOut": 17.4,
-												"maxOut": 170000
+												"min": 0.010922572484271495,
+												"max": 164.77480776272427,
+												"minOut": 0.256568144499179,
+												"maxOut": 4105.0903119868635
 											}
 										}
 									}
@@ -6786,7 +6970,8 @@
 						"required": true,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "6689b73ec90e45f3b3e51566"
 					},
 					{
 						"description": "Token you are swapping to — an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"BNB\"",
@@ -6795,7 +6980,8 @@
 						"required": true,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "6689b73ec90e45f3b3e51558"
 					}
 				]
 			}
@@ -6816,22 +7002,22 @@
 										"value": {
 											"chains": [
 												{
-													"id": "6689b73ec90e45f3b3e5150a",
-													"name": "Ethereum",
+													"id": "6689b0d3c52f263938c44844",
+													"name": "Ethereum Mainnet",
 													"shortName": "ethereum",
-													"kind": "evm",
-													"chainId": 1,
 													"memoNeeded": false,
-													"priority": 1,
-													"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
 													"explorerUrl": "https://etherscan.io/tx/{txHash}",
 													"addressUrl": "https://etherscan.io/address/{address}",
-													"addressValidation": "^0x[a-fA-F0-9]{40}$",
-													"tokenAddressValidation": "^0x[a-fA-F0-9]{40}$"
+													"icon": "https://api.houdiniswap.com/assets/networks/ETH.png",
+													"priority": 2,
+													"kind": "evm",
+													"addressValidation": "^(0x)[0-9A-Za-z]{40}$",
+													"tokenAddressValidation": "^(0x)[0-9A-Za-z]{40}$",
+													"chainId": 1
 												}
 											],
-											"total": 1,
-											"totalPages": 1
+											"totalPages": 1,
+											"total": 1
 										}
 									}
 								}
@@ -6908,7 +7094,8 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 50
-						}
+						},
+						"example": "ethereum"
 					},
 					{
 						"description": "Filter by chain kind, exact match against the `kind` field returned by this endpoint (e.g., \"evm\", \"sol\", \"bitcoin\", \"xmr\", \"ltc\"). Call this endpoint without filters to discover available kinds. Each value must be 16 characters or less.",
@@ -6921,7 +7108,10 @@
 								"$ref": "#/components/schemas/ChainKindFilter"
 							},
 							"maxItems": 10
-						}
+						},
+						"example": [
+							"evm"
+						]
 					},
 					{
 						"description": "Filter by numeric EVM chain ID (e.g. 1 for Ethereum, 42161 for Arbitrum)",
@@ -6932,7 +7122,8 @@
 							"format": "int32",
 							"type": "integer",
 							"minimum": 1
-						}
+						},
+						"example": 1
 					},
 					{
 						"description": "Filter chains that support CEX swaps",
@@ -6941,7 +7132,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Filter chains that support DEX swaps",
@@ -6950,7 +7142,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": true
 					},
 					{
 						"description": "Filter chains by whether they require a destination memo/tag",
@@ -6959,7 +7152,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Page number",
@@ -6972,7 +7166,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 10000
-						}
+						},
+						"example": 20
 					},
 					{
 						"description": "Page size",
@@ -6985,7 +7180,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 20
 					}
 				]
 			}
@@ -7004,16 +7200,16 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"monthlyRequestCount": 18432,
+											"monthlyRequestCount": 0,
 											"quote": {
-												"perMinute": 120,
-												"perHour": 3000,
-												"perDay": 40000
+												"perMinute": 10,
+												"perHour": 20,
+												"perDay": 50
 											},
 											"exchange": {
-												"perMinute": 30,
-												"perHour": 600,
-												"perDay": 8000
+												"perMinute": 5,
+												"perHour": 15,
+												"perDay": 10
 											}
 										}
 									}
@@ -7109,56 +7305,58 @@
 								"examples": {
 									"Example 1": {
 										"value": {
+											"total": 93,
 											"quotes": [
 												{
-													"quoteId": "69a02882f48d56c923119d95",
-													"swap": "cl",
-													"swapName": "Changelly",
+													"amountIn": 1,
+													"amountOut": 24.308952,
+													"min": 0.041681,
+													"max": 1617.53705385,
+													"duration": 4,
+													"amountOutUsd": 2366.7195667200003,
+													"quoteId": "6aaa4273aa41ccf7cad03086",
 													"type": "private",
-													"amountIn": 0.25,
-													"amountOut": 3.5182,
-													"amountInUsd": 26450.5,
-													"amountOutUsd": 26301.44,
-													"netAmountOut": 3.5182,
-													"duration": 22,
-													"providerEta": 18,
-													"min": 0.0012,
-													"max": 12.5,
-													"fixed": false,
-													"filtered": false,
-													"markupSupported": true,
-													"slippageSupported": false,
 													"rewardsAvailable": true,
-													"requiresRefundAddress": false,
-													"appliedApiMarkup": 0.5,
-													"amountType": "send",
-													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cl.png"
+													"fixed": false
 												},
 												{
-													"quoteId": "69a02882f48d56c923119d96",
-													"swap": "cn",
-													"swapName": "ChangeNOW",
+													"amountIn": 1,
+													"amountOut": 24.50601963,
+													"min": 0.01250098966168155,
+													"max": 9007199254740991,
+													"duration": 21,
+													"amountOutUsd": 2385.9060711768,
+													"swap": "se",
+													"swapName": "StealthEx",
+													"logoUrl": "https://api.houdiniswap.com/assets/logos/stealthex.png",
+													"quoteId": "6aaa4272aa41ccf7cad03035",
 													"type": "standard",
-													"amountIn": 0.25,
-													"amountOut": 3.5321,
-													"amountInUsd": 26450.5,
-													"amountOutUsd": 26405.35,
-													"netAmountOut": 3.5321,
-													"duration": 9,
-													"providerEta": 7,
-													"min": 0.0009,
-													"max": 25,
-													"fixed": false,
-													"filtered": false,
-													"markupSupported": true,
-													"slippageSupported": false,
 													"rewardsAvailable": false,
-													"requiresRefundAddress": false,
-													"amountType": "send",
-													"logoUrl": "https://api.houdiniswap.com/assets/swaps/cn.png"
+													"rateId": null
+												},
+												{
+													"swap": "cf",
+													"quoteId": "6aaa4272aa41ccf7cad0303c",
+													"duration": 2.71,
+													"gas": 0,
+													"amountIn": 1,
+													"amountOut": 24.690801441,
+													"amountOutUsd": 2402.4149802093,
+													"netAmountOut": 24.690801441,
+													"swapName": "ChainFlip",
+													"type": "dex",
+													"logoUrl": "https://api.houdiniswap.com/assets/logos/chainflip.png",
+													"markupSupported": true,
+													"apiMarkupValue": 10,
+													"markupType": "bp",
+													"restrictedCountries": [],
+													"rewardsAvailable": false,
+													"min": 0,
+													"max": 9007199254740991,
+													"requiresApproval": false,
+													"depositAddressSupported": true
 												}
-											],
-											"total": 2
+											]
 										}
 									}
 								}
@@ -7248,7 +7446,8 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 1.7976931348623157e+308
-						}
+						},
+						"example": 1
 					},
 					{
 						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
@@ -7258,7 +7457,8 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
-						}
+						},
+						"example": "ethereum"
 					},
 					{
 						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
@@ -7268,7 +7468,8 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
-						}
+						},
+						"example": "solana"
 					},
 					{
 						"description": "Contract address of the token you are swapping from. Omit for the chain's native coin.",
@@ -7277,7 +7478,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Contract address of the token you are swapping to. Omit for the chain's native coin.",
@@ -7286,7 +7488,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Slippage percentage. Only used for DEX swaps.",
@@ -7298,7 +7501,8 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 100
-						}
+						},
+						"example": 1
 					},
 					{
 						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
@@ -7320,7 +7524,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
@@ -7329,7 +7534,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
@@ -7341,7 +7547,8 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 100
-						}
+						},
+						"example": 5
 					},
 					{
 						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
@@ -7353,7 +7560,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 10
 					},
 					{
 						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
@@ -7362,7 +7570,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
@@ -7371,7 +7580,8 @@
 						"required": false,
 						"schema": {
 							"type": "boolean"
-						}
+						},
+						"example": false
 					},
 					{
 						"description": "Types of quotes to return; if omitted, all types are used",
@@ -7383,7 +7593,12 @@
 							"items": {
 								"$ref": "#/components/schemas/QuoteType"
 							}
-						}
+						},
+						"example": [
+							"private",
+							"standard",
+							"dex"
+						]
 					},
 					{
 						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
@@ -7395,7 +7610,8 @@
 							"items": {
 								"$ref": "#/components/schemas/SwapShortName"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -7407,7 +7623,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
@@ -7419,7 +7636,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -7431,7 +7649,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
@@ -7443,7 +7662,8 @@
 							"items": {
 								"type": "string"
 							}
-						}
+						},
+						"example": []
 					},
 					{
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
@@ -7452,7 +7672,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
@@ -7461,7 +7682,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": ""
 					},
 					{
 						"description": "Sort the quotes by the given field (default: amountOut)",
@@ -7893,7 +8115,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "2026-09"
 					},
 					{
 						"in": "query",
@@ -7905,7 +8128,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 10000
-						}
+						},
+						"example": 20
 					},
 					{
 						"in": "query",
@@ -7917,7 +8141,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 20
 					}
 				]
 			}
@@ -8017,7 +8242,8 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						}
+						},
+						"example": "2026-09"
 					}
 				]
 			}
@@ -8132,7 +8358,8 @@
 						"schema": {
 							"format": "date-time",
 							"type": "string"
-						}
+						},
+						"example": "2026-08-01"
 					},
 					{
 						"in": "query",
@@ -8141,7 +8368,8 @@
 						"schema": {
 							"format": "date-time",
 							"type": "string"
-						}
+						},
+						"example": "2026-09-16"
 					},
 					{
 						"in": "query",
@@ -8317,7 +8545,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 10000
-						}
+						},
+						"example": 20
 					},
 					{
 						"in": "query",
@@ -8329,7 +8558,8 @@
 							"type": "integer",
 							"minimum": 1,
 							"maximum": 100
-						}
+						},
+						"example": 20
 					}
 				]
 			}
