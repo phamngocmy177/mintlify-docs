@@ -8,8 +8,8 @@ A multi-exchange runs private and standard swaps only, so pass `hasCex=true`. To
 
 Without filters this returns every enabled token, 1000 per page and several MB per response. Narrow it further with:
 
-- `term` — search by name, symbol, address or cexTokenId
-- `chain` — one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains). A bundled group must share one source chain
+- `term`: search by name, symbol, address or cexTokenId
+- `chain`: one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains). A bundled group must share one source chain
 
 Tokens we have not reviewed are excluded unless you pass `unverified=true`.
 

@@ -8,8 +8,8 @@ Pass `types=dex` to return on-chain routes only. Without it, private and standar
 
 `from` and `to` are token ids; look them up with [Get tokens](/api-reference/on-chain-dex-or-bridge/get-tokens).
 
-- `senderAddress` — the wallet that funds the swap. Used by DEX quotes only
-- `receiverAddress` — when it differs from `senderAddress`, routes that cannot pay out to a different wallet come back with `filtered: true`
+- `senderAddress`: the wallet that funds the swap. Used by DEX quotes only
+- `receiverAddress`: when it differs from `senderAddress`, routes that cannot pay out to a different wallet come back with `filtered: true`
 - `slippage` applies; `markup` is not supported
 
 If the chosen quote has `requiresApproval: true`, call [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data) next.

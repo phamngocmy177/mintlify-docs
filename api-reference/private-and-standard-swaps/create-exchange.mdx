@@ -4,7 +4,7 @@ description: "Creates a private or standard swap order from a quoteId."
 openapi: "POST /exchanges"
 ---
 
-Quote first, then create right away — a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.
+Quote first, then create right away: a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.
 
 With the order data returned:
 

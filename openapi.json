@@ -112,11 +112,11 @@
 					},
 					"code": {
 						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message`. Messages are free to change.\n\n- `400` / `422`: the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401`: credentials missing, malformed, or rejected.\n- `403`: authenticated, but not allowed to do this.\n- `404`: the token, order or route does not exist.\n- `409`: conflicts with something already in flight.\n- `429`: rate limited. Back off and retry.\n- `500` / `502` / `503`: our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
 						"type": "string",
-						"description": "Unique id for this request. Quote it when contacting support — it is how we find the failure in our logs."
+						"description": "Unique id for this request. Quote it when contacting support. It is how we find the failure in our logs."
 					},
 					"fields": {
 						"$ref": "#/components/schemas/FieldErrors"
@@ -137,11 +137,11 @@
 					},
 					"code": {
 						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message`. Messages are free to change.\n\n- `400` / `422`: the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401`: credentials missing, malformed, or rejected.\n- `403`: authenticated, but not allowed to do this.\n- `404`: the token, order or route does not exist.\n- `409`: conflicts with something already in flight.\n- `429`: rate limited. Back off and retry.\n- `500` / `502` / `503`: our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
 						"type": "string",
-						"description": "Unique id for this request. Quote it when contacting support — it is how we find the failure in our logs."
+						"description": "Unique id for this request. Quote it when contacting support. It is how we find the failure in our logs."
 					}
 				},
 				"required": [
@@ -168,7 +168,7 @@
 					},
 					"txUrl": {
 						"type": "string",
-						"description": "Prefix for viewing a transaction with this provider — append the transaction hash to it."
+						"description": "Prefix for viewing a transaction with this provider. Append the transaction hash to it."
 					},
 					"enabled": {
 						"type": "boolean",
@@ -253,16 +253,16 @@
 					},
 					"explorerUrl": {
 						"type": "string",
-						"description": "Template for a transaction link — substitute `{txHash}`, e.g. `https://blockchair.com/bitcoin/transaction/{txHash}`."
+						"description": "Template for a transaction link. Substitute `{txHash}`, e.g. `https://blockchair.com/bitcoin/transaction/{txHash}`."
 					},
 					"addressUrl": {
 						"type": "string",
-						"description": "Template for an address link — substitute `{address}`, e.g. `https://blockchair.com/bitcoin/address/{address}`."
+						"description": "Template for an address link. Substitute `{address}`, e.g. `https://blockchair.com/bitcoin/address/{address}`."
 					},
 					"priority": {
 						"type": "number",
 						"format": "double",
-						"description": "Display order — lower sorts first."
+						"description": "Display order, lower sorts first."
 					},
 					"kind": {
 						"type": "string",
@@ -301,7 +301,7 @@
 				"additionalProperties": false
 			},
 			"TokenScanResult": {
-				"description": "Security verdict for a token. Branch on this rather than on `features`.\n\n- `Benign` — no issues found\n- `Warning` — show a warning before swapping\n- `Malicious` — do not swap\n- `Unscanned` — could not be screened. Screening is fail-open, so this never blocks a swap on its own.",
+				"description": "Security verdict for a token. Branch on this rather than on `features`.\n\n- `Benign`: no issues found\n- `Warning`: show a warning before swapping\n- `Malicious`: do not swap\n- `Unscanned`: could not be screened. Screening is fail-open, so this never blocks a swap on its own.",
 				"enum": [
 					"Benign",
 					"Warning",
@@ -328,7 +328,7 @@
 				"additionalProperties": false
 			},
 			"TokenScanUnscannedReason": {
-				"description": "Why a token ended up `UNSCANNED`. Diagnostic only — never a branching input.",
+				"description": "Why a token ended up `UNSCANNED`. Diagnostic only, never a branching input.",
 				"enum": [
 					"NOT_CONFIGURED",
 					"UNSUPPORTED_CHAIN",
@@ -405,7 +405,7 @@
 					"address": {
 						"type": "string",
 						"nullable": true,
-						"description": "Contract address. Null for a chain's native coin — see `mainnet`."
+						"description": "Contract address. Null for a chain's native coin. See `mainnet`."
 					},
 					"chain": {
 						"type": "string",
@@ -452,7 +452,7 @@
 					},
 					"unverified": {
 						"type": "boolean",
-						"description": "True when we have not reviewed this token yet — check `securityScan` before using it."
+						"description": "True when we have not reviewed this token yet. Check `securityScan` before using it."
 					},
 					"hasDex": {
 						"type": "boolean",
@@ -464,11 +464,11 @@
 					},
 					"hasBundler": {
 						"type": "boolean",
-						"description": "True when the bundler can fund this token — paying for a whole multi-exchange group with one transaction instead of a deposit per order. Available on Solana, and on supported EVM chains."
+						"description": "True when the bundler can fund this token. Paying for a whole multi-exchange group with one transaction instead of a deposit per order. Available on Solana, and on supported EVM chains."
 					},
 					"hasSelfPrivate": {
 						"type": "boolean",
-						"description": "True when the token supports self-to-self private swaps — send it and receive the same token at another address, with no on-chain link."
+						"description": "True when the token supports self-to-self private swaps. Send it and receive the same token at another address, with no on-chain link."
 					},
 					"cexTokenId": {
 						"type": "string",
@@ -530,7 +530,7 @@
 						"type": "number",
 						"format": "double",
 						"nullable": true,
-						"description": "Display order — lower sorts first. Unrelated to `rank`."
+						"description": "Display order, lower sorts first. Unrelated to `rank`."
 					},
 					"warningMessage": {
 						"type": "string",
@@ -577,7 +577,7 @@
 				"additionalProperties": false
 			},
 			"DisplayStatus": {
-				"description": "Human-readable order state, derived from `status` and the per-leg statuses. Use this to drive your UI.\n\n- `WAITING_FOR_DEPOSIT` — waiting for your deposit to arrive\n- `DEPOSIT_DETECTED` — deposit seen, waiting for confirmations\n- `EXCHANGE_IN_PROGRESS` — the swap is running\n- `SENDING_TO_INTERMEDIARY` — private only: first leg on its way to the bridge token\n- `REACHED_INTERMEDIARY` — private only: first leg done\n- `INITIATING_SECOND_EXCHANGE` — private only: second leg starting\n- `SECOND_EXCHANGE_IN_PROGRESS` — private only: second leg running\n- `SENDING_TO_RECEIVER` — payout on its way to `receiverAddress`\n- `SWAP_COMPLETED` — finished\n- `EXPIRED` — no deposit arrived before `expires`\n- `FAILED` — the swap could not complete; check `actionRequired`\n- `REFUNDED` — funds returned to `refundAddress`\n- `DELETED` — order removed",
+				"description": "Human-readable order state, derived from `status` and the per-leg statuses. Use this to drive your UI.\n\n- `WAITING_FOR_DEPOSIT`: waiting for your deposit to arrive\n- `DEPOSIT_DETECTED`: deposit seen, waiting for confirmations\n- `EXCHANGE_IN_PROGRESS`: the swap is running\n- `SENDING_TO_INTERMEDIARY`: private only: first leg on its way to the bridge token\n- `REACHED_INTERMEDIARY`: private only: first leg done\n- `INITIATING_SECOND_EXCHANGE`: private only: second leg starting\n- `SECOND_EXCHANGE_IN_PROGRESS`: private only: second leg running\n- `SENDING_TO_RECEIVER`: payout on its way to `receiverAddress`\n- `SWAP_COMPLETED`: finished\n- `EXPIRED`: no deposit arrived before `expires`\n- `FAILED`: the swap could not complete; check `actionRequired`\n- `REFUNDED`: funds returned to `refundAddress`\n- `DELETED`: order removed",
 				"enum": [
 					"WAITING_FOR_DEPOSIT",
 					"DEPOSIT_DETECTED",
@@ -641,12 +641,12 @@
 					},
 					"depositTag": {
 						"type": "string",
-						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress` — a deposit sent without it may not be credited."
+						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress`. A deposit sent without it may not be credited."
 					},
 					"expires": {
 						"type": "string",
 						"format": "date-time",
-						"description": "Deposit deadline — send the funds by this time or the order expires. Not a rate lock."
+						"description": "Deposit deadline. Send the funds by this time or the order expires. Not a rate lock."
 					},
 					"displayStatus": {
 						"$ref": "#/components/schemas/DisplayStatus",
@@ -654,7 +654,7 @@
 					},
 					"status": {
 						"$ref": "#/components/schemas/OrderStatus",
-						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing — private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
+						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing: private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
 					},
 					"eta": {
 						"type": "number",
@@ -731,11 +731,11 @@
 					},
 					"actionRequired": {
 						"type": "boolean",
-						"description": "True when the order failed but your deposit had already arrived — contact support to recover the funds."
+						"description": "True when the order failed but your deposit had already arrived. Contact support to recover the funds."
 					},
 					"rerouted": {
 						"type": "boolean",
-						"description": "True when the route that executed is not the one that was quoted, because the quoted route failed and a fallback was used. The amounts may differ from the quote — compare `inAmount` against `quotedInAmount` and `outAmount` against `quotedOutAmount`."
+						"description": "True when the route that executed is not the one that was quoted, because the quoted route failed and a fallback was used. The amounts may differ from the quote. Compare `inAmount` against `quotedInAmount` and `outAmount` against `quotedOutAmount`."
 					},
 					"quotedInAmount": {
 						"type": "number",
@@ -753,11 +753,11 @@
 					},
 					"inStatus": {
 						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the incoming leg — your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+						"description": "Progress of the incoming leg. Your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"outStatus": {
 						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the outgoing leg — the payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+						"description": "Progress of the outgoing leg. The payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"created": {
 						"type": "string",
@@ -832,12 +832,12 @@
 					},
 					"depositTag": {
 						"type": "string",
-						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress` — a deposit sent without it may not be credited."
+						"description": "Memo/tag that must be sent with the deposit, on chains that use one (XRP, TON, Stellar, …).\n\nShow it to your user next to `depositAddress`. A deposit sent without it may not be credited."
 					},
 					"expires": {
 						"type": "string",
 						"format": "date-time",
-						"description": "Deposit deadline — send the funds by this time or the order expires. Not a rate lock."
+						"description": "Deposit deadline. Send the funds by this time or the order expires. Not a rate lock."
 					},
 					"displayStatus": {
 						"$ref": "#/components/schemas/DisplayStatus",
@@ -845,7 +845,7 @@
 					},
 					"status": {
 						"$ref": "#/components/schemas/OrderStatus",
-						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing — private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
+						"description": "Numeric order state. For anything user-facing prefer `displayStatus`.\n\n- `-2` initializing\n- `-1` created\n- `0` waiting for your deposit\n- `1` confirming your deposit\n- `2` exchanging\n- `3` anonymizing: private swaps only\n- `4` finished\n- `5` expired\n- `6` failed\n- `7` refunded\n- `8` deleted"
 					},
 					"eta": {
 						"type": "number",
@@ -922,11 +922,11 @@
 					},
 					"actionRequired": {
 						"type": "boolean",
-						"description": "True when the order failed but your deposit had already arrived — contact support to recover the funds."
+						"description": "True when the order failed but your deposit had already arrived. Contact support to recover the funds."
 					},
 					"rerouted": {
 						"type": "boolean",
-						"description": "True when the route that executed is not the one that was quoted, because the quoted route failed and a fallback was used. The amounts may differ from the quote — compare `inAmount` against `quotedInAmount` and `outAmount` against `quotedOutAmount`."
+						"description": "True when the route that executed is not the one that was quoted, because the quoted route failed and a fallback was used. The amounts may differ from the quote. Compare `inAmount` against `quotedInAmount` and `outAmount` against `quotedOutAmount`."
 					},
 					"quotedInAmount": {
 						"type": "number",
@@ -944,11 +944,11 @@
 					},
 					"inStatus": {
 						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the incoming leg — your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+						"description": "Progress of the incoming leg. Your deposit reaching the provider. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"outStatus": {
 						"$ref": "#/components/schemas/Status",
-						"description": "Progress of the outgoing leg — the payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired — no deposit arrived in time\n- `10` finished through a fallback payout"
+						"description": "Progress of the outgoing leg. The payout leaving for `receiverAddress`. For reference and debugging; drive your UI from `displayStatus` instead.\n\n- `0` created\n- `1` waiting for the deposit\n- `2` deposit seen, waiting for confirmations\n- `3` exchanging\n- `4` sending funds on\n- `5` finished\n- `6` failed\n- `7` refunded\n- `8` on hold for a compliance check\n- `9` expired: no deposit arrived in time\n- `10` finished through a fallback payout"
 					},
 					"created": {
 						"type": "string",
@@ -1079,7 +1079,7 @@
 					},
 					"quoteId": {
 						"type": "string",
-						"description": "Pass this to `POST /exchanges` to execute the quote."
+						"description": "Pass this to [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) to execute the quote."
 					},
 					"duration": {
 						"type": "number",
@@ -1134,7 +1134,7 @@
 					"netAmountOut": {
 						"type": "number",
 						"format": "double",
-						"description": "The field to compare routes on: `amountOut` minus `feeUsd`, in the output token — not USD.\n\n- equals `amountOut` on CEX quotes, which carry no `feeUsd`\n- gas is not deducted\n- falls back to `amountOut` when the output token has no USD price"
+						"description": "The field to compare routes on: `amountOut` minus `feeUsd`, in the output token, not USD.\n\n- equals `amountOut` on CEX quotes, which carry no `feeUsd`\n- gas is not deducted\n- falls back to `amountOut` when the output token has no USD price"
 					},
 					"error": {
 						"type": "string",
@@ -1150,7 +1150,7 @@
 					},
 					"filtered": {
 						"type": "boolean",
-						"description": "True when the route was returned but should not be used — check `filteredReason`. Creating an exchange from a filtered route is rejected.",
+						"description": "True when the route was returned but should not be used. Check `filteredReason`. Creating an exchange from a filtered route is rejected.",
 						"default": false
 					},
 					"filteredReason": {
@@ -1220,7 +1220,7 @@
 					},
 					"rateId": {
 						"type": "string",
-						"description": "Identifies the locked rate on a fixed-rate quote. You do not pass this when creating the exchange — `quoteId` carries it."
+						"description": "Identifies the locked rate on a fixed-rate quote. You do not pass this when creating the exchange. `quoteId` carries it."
 					},
 					"fixed": {
 						"type": "boolean",
@@ -1228,11 +1228,11 @@
 					},
 					"validUntil": {
 						"type": "string",
-						"description": "When the locked rate expires, as a Unix timestamp in seconds, e.g. `\"1767225600\"`. Fixed-rate quotes only — create the exchange before it passes."
+						"description": "When the locked rate expires, as a Unix timestamp in seconds, e.g. `\"1767225600\"`. Fixed-rate quotes only. Create the exchange before it passes."
 					},
 					"requiresApproval": {
 						"type": "boolean",
-						"description": "DEX quotes only. True when the wallet must approve the token before swapping — EVM and Tron non-native tokens. Call [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data), send what it returns, then poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it turns true."
+						"description": "DEX quotes only. True when the wallet must approve the token before swapping. EVM and Tron non-native tokens. Call [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data), send what it returns, then poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it turns true."
 					},
 					"isPriority": {
 						"type": "boolean"
@@ -1289,7 +1289,7 @@
 			"SwapShortName": {
 				"type": "string",
 				"example": "cl",
-				"description": "A provider's short code, e.g. `cl`. Get the current list from [Get swap providers](/api-reference/reference-data/get-swap-providers) — the `shortName` field."
+				"description": "A provider's short code, e.g. `cl`. Get the current list from [Get swap providers](/api-reference/reference-data/get-swap-providers). The `shortName` field."
 			},
 			"QuoteSort": {
 				"enum": [
@@ -1305,19 +1305,19 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT, not base units / wei like `100000000000000`.",
 						"example": 1,
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens). A 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
 						"example": "6689b73ec90e45f3b3e51566"
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens). A 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
 						"example": "6689b73ec90e45f3b3e51558"
 					},
 					"slippage": {
@@ -1331,7 +1331,7 @@
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -1348,7 +1348,7 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
+						"description": "Where funds are returned if a swap cannot complete. Optional here. Quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain: the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at [Create exchange](/api-reference/private-and-standard-swaps/create-exchange), where it is required for fixed-rate quotes and for those routes",
 						"example": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
 						"maxLength": 200
 					},
@@ -1370,12 +1370,12 @@
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`). Standard and DEX are single-leg and ignore it.",
 						"example": false
 					},
 					"rotateFallback": {
 						"type": "boolean",
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets. A no-op on its own.",
 						"example": false
 					},
 					"types": {
@@ -1395,7 +1395,7 @@
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type: private, standard and DEX",
 						"example": []
 					},
 					"inLegIncludedSwaps": {
@@ -1432,12 +1432,12 @@
 					},
 					"senderAddress": {
 						"type": "string",
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only. Private and standard swaps ignore it.",
 						"example": ""
 					},
 					"receiverAddress": {
 						"type": "string",
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient`. Still listed, but not usable\n- also used for payout wallet rotation",
 						"example": ""
 					},
 					"sort": {
@@ -1456,7 +1456,7 @@
 							"send",
 							"receive"
 						],
-						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends — system computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive — system computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected.",
+						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends. System computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive. System computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected.",
 						"example": "send"
 					}
 				},
@@ -1474,13 +1474,13 @@
 					"all",
 					"single"
 				],
-				"description": "Controls how many of the submitted orders are individually quoted.\n- `all` (default): every order is quoted and returns its own array of candidate routes.\n- `single`: only the first order is quoted; the remaining orders come back with `quoted: false` and no candidates — a lighter, faster preview for when quoting the whole batch is too slow."
+				"description": "Controls how many of the submitted orders are individually quoted.\n- `all` (default): every order is quoted and returns its own array of candidate routes.\n- `single`: only the first order is quoted; the remaining orders come back with `quoted: false` and no candidates. A lighter, faster preview for when quoting the whole batch is too slow."
 			},
 			"MultiQuoteOrderError": {
 				"properties": {
 					"message": {
 						"type": "string",
-						"description": "What went wrong, in plain text. Show it, but do not branch on it — the wording can change."
+						"description": "What went wrong, in plain text. Show it, but do not branch on it. The wording can change."
 					},
 					"code": {
 						"anyOf": [
@@ -1527,7 +1527,7 @@
 					},
 					"error": {
 						"$ref": "#/components/schemas/MultiQuoteOrderError",
-						"description": "Why this order could not be quoted. Only the affected order fails — the rest of the batch still returns, and the request is still a 200."
+						"description": "Why this order could not be quoted. Only the affected order fails. The rest of the batch still returns, and the request is still a 200."
 					}
 				},
 				"required": [
@@ -1570,14 +1570,14 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
+						"description": "Token you are swapping from: an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
 						"example": "6689b73ec90e45f3b3e51566",
 						"minLength": 24,
 						"maxLength": 24
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
+						"description": "Token you are swapping to: an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
 						"example": "6689b73ec90e45f3b3e51558",
 						"minLength": 24,
 						"maxLength": 24
@@ -1599,7 +1599,7 @@
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -1644,11 +1644,11 @@
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Rotate the payout path for better privacy. Private swaps only — standard and DEX are single-leg and ignore it."
+						"description": "Rotate the payout path for better privacy. Private swaps only. Standard and DEX are single-leg and ignore it."
 					},
 					"rotateFallback": {
 						"type": "boolean",
-						"description": "When strict rotation runs out of rotated routes, use a valid non-rotated route instead of failing. Default false. Needs `rotatePayoutWallets` — on its own it does nothing."
+						"description": "When strict rotation runs out of rotated routes, use a valid non-rotated route instead of failing. Default false. Needs `rotatePayoutWallets`, on its own it does nothing."
 					},
 					"deviationThreshold": {
 						"type": "number",
@@ -1697,7 +1697,7 @@
 					},
 					"batched": {
 						"type": "boolean",
-						"description": "Quote the orders in parallel (`true`, the default) or one after another. Leave it unset unless you are measuring latency — the results are the same either way."
+						"description": "Quote the orders in parallel (`true`, the default) or one after another. Leave it unset unless you are measuring latency. The results are the same either way."
 					}
 				},
 				"required": [
@@ -1822,7 +1822,7 @@
 					},
 					"type": {
 						"$ref": "#/components/schemas/SignatureType",
-						"description": "`single` — sign it and you are done. `chained` — sign it, then call [Get next chain signature](/api-reference/on-chain-dex-or-bridge/get-next-chain-signature) for the next one."
+						"description": "`single`. Sign it and you are done. `chained`. Sign it, then call [Get next chain signature](/api-reference/on-chain-dex-or-bridge/get-next-chain-signature) for the next one."
 					},
 					"totalSteps": {
 						"type": "number",
@@ -1836,7 +1836,7 @@
 					},
 					"isComplete": {
 						"type": "boolean",
-						"description": "True on the last signature of the chain — stop asking for more once you see it."
+						"description": "True on the last signature of the chain. Stop asking for more once you see it."
 					},
 					"key": {
 						"type": "string",
@@ -1844,7 +1844,7 @@
 					},
 					"swapRequiredMetadata": {
 						"$ref": "#/components/schemas/Record_string.any_",
-						"description": "Provider data attached to this signature. Send it back unchanged with the signed result — the swap fails without it."
+						"description": "Provider data attached to this signature. Send it back unchanged with the signed result. The swap fails without it."
 					}
 				},
 				"required": [
@@ -1925,11 +1925,11 @@
 					},
 					"to": {
 						"type": "string",
-						"description": "Send the transaction to this address — the contract of the token being approved."
+						"description": "Send the transaction to this address. The contract of the token being approved."
 					},
 					"from": {
 						"type": "string",
-						"description": "Wallet that must send the transaction — the `addressFrom` you supplied."
+						"description": "Wallet that must send the transaction. The `addressFrom` you supplied."
 					},
 					"fromChain": {
 						"$ref": "#/components/schemas/Chain",
@@ -2037,12 +2037,12 @@
 					},
 					"quoteId": {
 						"type": "string",
-						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- a quote is only accepted for about a minute after you fetched it — quote again if the user takes longer\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
+						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- a quote is only accepted for about a minute after you fetched it. Quote again if the user takes longer\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
 					},
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -2053,12 +2053,12 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if the swap cannot complete.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- required when the quote has `fixed: true` or `requiresRefundAddress: true`",
+						"description": "Where funds are returned if the swap cannot complete.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain: the refund comes back as the token you deposited\n- required when the quote has `fixed: true` or `requiresRefundAddress: true`",
 						"maxLength": 200
 					},
 					"refundExtraId": {
 						"type": "string",
-						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true`. See [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"signatures": {
@@ -2070,7 +2070,7 @@
 					},
 					"destinationTag": {
 						"type": "string",
-						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true`. See [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"walletInfo": {
@@ -2123,7 +2123,7 @@
 				"additionalProperties": false
 			},
 			"MultiExchangeCreateResult": {
-				"description": "Response for POST /exchanges/multi — per-item envelope, some may be errors",
+				"description": "Response for POST /exchanges/multi. Per-item envelope, some may be errors",
 				"properties": {
 					"multiId": {
 						"type": "string"
@@ -2143,18 +2143,18 @@
 				"additionalProperties": false
 			},
 			"MultiOrderItem": {
-				"description": "A single order within a multi exchange batch. Quotes are resolved internally — no quoteId required.",
+				"description": "A single order within a multi exchange batch. Quotes are resolved internally, so no quoteId is required.",
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
+						"description": "Token you are swapping from: an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
 						"example": "6689b73ec90e45f3b3e51566",
 						"minLength": 24,
 						"maxLength": 24
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
+						"description": "Token you are swapping to: an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
 						"example": "6689b73ec90e45f3b3e51558",
 						"minLength": 24,
 						"maxLength": 24
@@ -2176,7 +2176,7 @@
 					},
 					"destinationTag": {
 						"type": "string",
-						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true`. See [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"useXmr": {
@@ -2198,18 +2198,18 @@
 					},
 					"refundAddress": {
 						"type": "string",
-						"description": "Where funds are returned if the swap cannot complete. Required when `fixed` is true, or the provider requires one.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited",
+						"description": "Where funds are returned if the swap cannot complete. Required when `fixed` is true, or the provider requires one.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain: the refund comes back as the token you deposited",
 						"maxLength": 200
 					},
 					"refundExtraId": {
 						"type": "string",
-						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true`. See [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -2287,15 +2287,15 @@
 				"properties": {
 					"userOpHash": {
 						"type": "string",
-						"description": "The digest the user's wallet must sign, as 32 bytes of hex. Sign it as a message — `signMessage({ message: { raw: userOpHash } })` in viem, `signMessage(getBytes(userOpHash))` in ethers — then post the signature to [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)."
+						"description": "The digest the user's wallet must sign, as 32 bytes of hex. Sign it as a message. `signMessage({ message: { raw: userOpHash } })` in viem, `signMessage(getBytes(userOpHash))` in ethers, then post the signature to [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)."
 					},
 					"to": {
 						"type": "string",
-						"description": "Smart account that collects the funds for this batch. Send `value` and `tokenAmount` here before submitting.\n\nIt is derived from the `sender` wallet and owned by it — only that wallet can authorise a transfer out, so Houdini cannot move the funds. The same wallet always gets the same address."
+						"description": "Smart account that collects the funds for this batch. Send `value` and `tokenAmount` here before submitting.\n\nIt is derived from the `sender` wallet and owned by it, only that wallet can authorise a transfer out, so Houdini cannot move the funds. The same wallet always gets the same address."
 					},
 					"data": {
 						"type": "string",
-						"description": "Calldata for the funding transfer — `0x` when the source token is the chain's native coin, otherwise an ERC-20 transfer to `to`."
+						"description": "Calldata for the funding transfer. `0x` when the source token is the chain's native coin, otherwise an ERC-20 transfer to `to`."
 					},
 					"value": {
 						"type": "string",
@@ -2336,7 +2336,7 @@
 				"additionalProperties": false
 			},
 			"EvmUserOp": {
-				"description": "EntryPoint v0.7 unpacked UserOp. User pays gas from Smart Account balance — no paymaster.",
+				"description": "EntryPoint v0.7 unpacked UserOp. User pays gas from Smart Account balance, no paymaster.",
 				"properties": {
 					"sender": {
 						"type": "string"
@@ -2497,7 +2497,7 @@
 						"$ref": "#/components/schemas/EvmBatchTxData"
 					}
 				],
-				"description": "Union — add new network types here as they are supported"
+				"description": "Union. Add new network types here as they are supported"
 			},
 			"TxBatch": {
 				"properties": {
@@ -2674,7 +2674,7 @@
 				"properties": {
 					"txData": {
 						"$ref": "#/components/schemas/MultiExchangeTxResult",
-						"description": "Rebuilt transaction data for the failed bundle — ready to sign and submit immediately"
+						"description": "Rebuilt transaction data for the failed bundle. Ready to sign and submit immediately"
 					}
 				},
 				"required": [
@@ -2728,7 +2728,7 @@
 							"type": "string"
 						},
 						"type": "array",
-						"description": "One hash per submitted batch — the on-chain reference for each UserOperation."
+						"description": "One hash per submitted batch. The on-chain reference for each UserOperation."
 					}
 				},
 				"required": [
@@ -2744,7 +2744,7 @@
 							"type": "string"
 						},
 						"type": "array",
-						"description": "One signature per batch, in the same order as `transactions` in the build response.\n\nSign each batch's `userOpHash` as a message, with the same wallet you passed as `sender` when building. Pass the hash as **bytes**, not as a hex string — signing the `\"0x…\"` text produces a different digest and the submit is rejected.\n\n- viem — `walletClient.signMessage({ account, message: { raw: userOpHash } })`\n- ethers v6 — `signer.signMessage(getBytes(userOpHash))`\n- ethers v5 — `signer.signMessage(ethers.utils.arrayify(userOpHash))`",
+						"description": "One signature per batch, in the same order as `transactions` in the build response.\n\nSign each batch's `userOpHash` as a message, with the same wallet you passed as `sender` when building. Pass the hash as **bytes**, not as a hex string. Signing the `\"0x…\"` text produces a different digest and the submit is rejected.\n\n- viem: `walletClient.signMessage({ account, message: { raw: userOpHash } })`\n- ethers v6: `signer.signMessage(getBytes(userOpHash))`\n- ethers v5: `signer.signMessage(ethers.utils.arrayify(userOpHash))`",
 						"minItems": 1
 					}
 				},
@@ -2798,12 +2798,12 @@
 							"maxOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Not returned — DEX does not support `amountType=receive`."
+								"description": "Not returned. DEX does not support `amountType=receive`."
 							},
 							"minOut": {
 								"type": "number",
 								"format": "double",
-								"description": "Not returned — DEX does not support `amountType=receive`."
+								"description": "Not returned. DEX does not support `amountType=receive`."
 							},
 							"max": {
 								"type": "number",
@@ -3059,20 +3059,20 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT, not base units / wei like `100000000000000`.",
 						"example": 1,
 						"minimum": 0,
 						"maximum": 1.7976931348623157e+308
 					},
 					"fromChain": {
 						"type": "string",
-						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Source chain identifier. ShortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"example": "ethereum",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
 					"toChain": {
 						"type": "string",
-						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Destination chain identifier. ShortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"example": "solana",
 						"pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,49}$"
 					},
@@ -3097,7 +3097,7 @@
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -3109,7 +3109,7 @@
 					},
 					"fixed": {
 						"type": "boolean",
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes. Use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
 						"example": false
 					},
 					"deviationThreshold": {
@@ -3130,12 +3130,12 @@
 					},
 					"rotatePayoutWallets": {
 						"type": "boolean",
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`). Standard and DEX are single-leg and ignore it.",
 						"example": false
 					},
 					"rotateFallback": {
 						"type": "boolean",
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets. A no-op on its own.",
 						"example": false
 					},
 					"types": {
@@ -3155,7 +3155,7 @@
 							"$ref": "#/components/schemas/SwapShortName"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type: private, standard and DEX",
 						"example": []
 					},
 					"inLegIncludedSwaps": {
@@ -3192,12 +3192,12 @@
 					},
 					"senderAddress": {
 						"type": "string",
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only. Private and standard swaps ignore it.",
 						"example": ""
 					},
 					"receiverAddress": {
 						"type": "string",
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient`. Still listed, but not usable\n- also used for payout wallet rotation",
 						"example": ""
 					},
 					"sort": {
@@ -3309,7 +3309,7 @@
 				"properties": {
 					"id": {
 						"type": "string",
-						"description": "Your partner id — the first half of your API credentials."
+						"description": "Your partner id. The first half of your API credentials."
 					},
 					"name": {
 						"type": "string",
@@ -3325,7 +3325,7 @@
 					},
 					"tier": {
 						"type": "string",
-						"description": "Your plan. It sets your rate limits — see [Get rate limits](/api-reference/partner-account/get-rate-limits)."
+						"description": "Your plan. It sets your rate limits. See [Get rate limits](/api-reference/partner-account/get-rate-limits)."
 					},
 					"commissionRate": {
 						"type": "number",
@@ -3398,7 +3398,7 @@
 					"status": {
 						"type": "number",
 						"format": "double",
-						"description": "Numeric order state — same values as `status` on [Get order details](/api-reference/private-and-standard-swaps/get-order-details). `4` means finished."
+						"description": "Numeric order state, same values as `status` on [Get order details](/api-reference/private-and-standard-swaps/get-order-details). `4` means finished."
 					}
 				},
 				"type": "object",
@@ -3449,7 +3449,7 @@
 					},
 					"routeType": {
 						"type": "string",
-						"description": "Which route earned it — `private`, `standard` or `dex`. Each can have its own rate."
+						"description": "Which route earned it. `private`, `standard` or `dex`. Each can have its own rate."
 					},
 					"order": {
 						"$ref": "#/components/schemas/CommissionOrderSummary",
@@ -3498,7 +3498,7 @@
 					"totalEarnings": {
 						"type": "number",
 						"format": "double",
-						"description": "Everything you have earned, in USD — paid out and not yet paid out."
+						"description": "Everything you have earned, in USD. Paid out and not yet paid out."
 					},
 					"pendingCommissions": {
 						"type": "number",
@@ -3579,7 +3579,7 @@
 					"degraded",
 					"down"
 				],
-				"description": "`ok` — operating normally. `degraded` — partially available, swaps may fail or be slow. `down` — not usable."
+				"description": "`ok`: operating normally. `degraded`: partially available, swaps may fail or be slow. `down`: not usable."
 			},
 			"PartnerHealthResponse": {
 				"properties": {
@@ -3727,7 +3727,7 @@
 				"type": "apiKey",
 				"name": "Authorization",
 				"in": "header",
-				"description": "Send `Authorization: <partnerId>:<secret>` — joined by a colon, raw. No `Bearer` prefix, no base64.\n\n[Get your credentials](https://docs.houdiniswap.com/developer-hub/getting-started/authentication)"
+				"description": "Send `Authorization: <partnerId>:<secret>`. Joined by a colon, raw. No `Bearer` prefix, no base64.\n\n[Get your credentials](https://docs.houdiniswap.com/developer-hub/getting-started/authentication)"
 			},
 			"x402": {
 				"type": "apiKey",
@@ -3740,7 +3740,7 @@
 	"info": {
 		"title": "Houdini Swap Partner API",
 		"version": "2.1.2",
-		"description": "Quote and execute private, standard, and DEX swaps — one at a time or batched.",
+		"description": "Quote and execute private, standard, and DEX swaps, one at a time or batched.",
 		"license": {
 			"name": "ISC"
 		},
@@ -3817,7 +3817,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -3837,7 +3837,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -3889,7 +3889,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter providers by whether they support slippage configuration. DEX providers only — CEX providers never do, so `true` returns DEX providers alone.",
+						"description": "Filter providers by whether they support slippage configuration. DEX providers only. CEX providers never do, so `true` returns DEX providers alone.",
 						"in": "query",
 						"name": "slippageSupported",
 						"required": false,
@@ -3992,7 +3992,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4012,7 +4012,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4032,7 +4032,7 @@
 						}
 					}
 				},
-				"description": "Returns the list of available tokens. Use the returned `id` as the `from` / `to` of a quote.\n\nWithout filters this returns every enabled token, 1000 per page and several MB per response. Narrow it with:\n\n- `term` — search by name, symbol, address or cexTokenId\n- `hasCex` — tokens available for private and standard swaps\n- `hasDex` — tokens available for DEX swaps\n- `hasBundler` — tokens the bundler can fund in one transaction\n- `chain` — one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains)\n\nTokens we have not reviewed are excluded unless you pass `unverified=true`.",
+				"description": "Returns the list of available tokens. Use the returned `id` as the `from` / `to` of a quote.\n\nWithout filters this returns every enabled token, 1000 per page and several MB per response. Narrow it with:\n\n- `term`: search by name, symbol, address or cexTokenId\n- `hasCex`: tokens available for private and standard swaps\n- `hasDex`: tokens available for DEX swaps\n- `hasBundler`: tokens the bundler can fund in one transaction\n- `chain`: one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains)\n\nTokens we have not reviewed are excluded unless you pass `unverified=true`.",
 				"summary": "Get tokens",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4109,7 +4109,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
+						"description": "Filter tokens that support self-to-self private swaps. Send a token and receive the same token at another address, with no on-chain link between them. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
 						"in": "query",
 						"name": "hasSelfPrivate",
 						"required": false,
@@ -4119,7 +4119,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter tokens the bundler can fund — paying for a whole multi-exchange group with one transaction instead of a deposit per order. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
+						"description": "Filter tokens the bundler can fund. Paying for a whole multi-exchange group with one transaction instead of a deposit per order. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
 						"in": "query",
 						"name": "hasBundler",
 						"required": false,
@@ -4139,7 +4139,7 @@
 						"example": true
 					},
 					{
-						"description": "Include tokens we have not reviewed. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens — check `securityScan` before offering one to users.",
+						"description": "Include tokens we have not reviewed. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens. Check `securityScan` before offering one to users.",
 						"in": "query",
 						"name": "unverified",
 						"required": false,
@@ -4263,7 +4263,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4293,7 +4293,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4399,7 +4399,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4429,7 +4429,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4449,7 +4449,7 @@
 						}
 					}
 				},
-				"description": "Returns order details for a given Houdini order ID created in the last 48 hours.\n\nPast that window the order drops out of the API and returns 404, the same as an id that never existed — store whatever you need to keep before then.",
+				"description": "Returns order details for a given Houdini order ID created in the last 48 hours.\n\nPast that window the order drops out of the API and returns 404, the same as an id that never existed. Store whatever you need to keep before then.",
 				"summary": "Get order details",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4541,7 +4541,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4571,7 +4571,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4591,7 +4591,7 @@
 						}
 					}
 				},
-				"description": "Returns a paginated list of orders created in the last 48 hours.\n\nOlder orders drop out of the API entirely — a `from` date earlier than that is clamped to the window, so keep your own record of anything you need long-term.",
+				"description": "Returns a paginated list of orders created in the last 48 hours.\n\nOlder orders drop out of the API entirely. A `from` date earlier than that is clamped to the window, so keep your own record of anything you need long-term.",
 				"summary": "Get orders",
 				"tags": [
 					"Partner Account"
@@ -4811,7 +4811,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4841,7 +4841,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -4861,7 +4861,7 @@
 						}
 					}
 				},
-				"description": "Returns every available route for a token pair and amount — private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens).",
+				"description": "Returns every available route for a token pair and amount. Private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens).",
 				"summary": "Get quotes",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4874,7 +4874,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT, not base units / wei like `100000000000000`.",
 						"in": "query",
 						"name": "amount",
 						"required": true,
@@ -4887,7 +4887,7 @@
 						"example": 1
 					},
 					{
-						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
+						"description": "Token you are swapping from. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens). A 24-character hex id such as `6689b73ec90e45f3b3e51566`, not a symbol like `ETH`.",
 						"in": "query",
 						"name": "from",
 						"required": true,
@@ -4897,7 +4897,7 @@
 						"example": "6689b73ec90e45f3b3e51566"
 					},
 					{
-						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
+						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens). A 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
 						"in": "query",
 						"name": "to",
 						"required": true,
@@ -4920,7 +4920,7 @@
 						"example": 1
 					},
 					{
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"in": "query",
 						"name": "markup",
 						"required": false,
@@ -4953,7 +4953,7 @@
 						"example": false
 					},
 					{
-						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at `POST /exchanges`, where it is required for fixed-rate quotes and for those routes",
+						"description": "Where funds are returned if a swap cannot complete. Optional here. Quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain: the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at [Create exchange](/api-reference/private-and-standard-swaps/create-exchange), where it is required for fixed-rate quotes and for those routes",
 						"in": "query",
 						"name": "refundAddress",
 						"required": false,
@@ -4990,7 +4990,7 @@
 						"example": 10
 					},
 					{
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`). Standard and DEX are single-leg and ignore it.",
 						"in": "query",
 						"name": "rotatePayoutWallets",
 						"required": false,
@@ -5000,7 +5000,7 @@
 						"example": false
 					},
 					{
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets. A no-op on its own.",
 						"in": "query",
 						"name": "rotateFallback",
 						"required": false,
@@ -5027,7 +5027,7 @@
 						]
 					},
 					{
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type: private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
@@ -5092,7 +5092,7 @@
 						"example": []
 					},
 					{
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only. Private and standard swaps ignore it.",
 						"in": "query",
 						"name": "senderAddress",
 						"required": false,
@@ -5102,7 +5102,7 @@
 						"example": ""
 					},
 					{
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient`. Still listed, but not usable\n- also used for payout wallet rotation",
 						"in": "query",
 						"name": "receiverAddress",
 						"required": false,
@@ -5130,7 +5130,7 @@
 						}
 					},
 					{
-						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends — system computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive — system computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected.",
+						"description": "Whether `amount` refers to the send side or the receive side.\n- `\"send\"` (default): amount is what the user sends. System computes what they receive.\n- `\"receive\"`: amount is what the user wants to receive. System computes what they must send. Requires `fixed=true`. Available for standard and private CEX quotes; DEX quotes are dropped from the result, and a DEX-only request is rejected.",
 						"in": "query",
 						"name": "amountType",
 						"required": false,
@@ -5216,7 +5216,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5246,7 +5246,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5266,7 +5266,7 @@
 						}
 					}
 				},
-				"description": "Returns the available routes for each swap in a batch.\n\nOptional. [Create multi exchange](/api-reference/multi-exchange/create-multi-exchange) picks its own routes and takes no `quoteId`, so call this only when you want to show rates before committing.\n\n- standard and private CEX only — no DEX\n- `mode=single` quotes just the first swap, as a faster preview\n\nBeta — the response shape may still change.",
+				"description": "Returns the available routes for each swap in a batch.\n\nOptional. [Create multi exchange](/api-reference/multi-exchange/create-multi-exchange) picks its own routes and takes no `quoteId`, so call this only when you want to show rates before committing.\n\n- standard and private CEX only: no DEX\n- `mode=single` quotes just the first swap, as a faster preview\n\nBeta. The response shape may still change.",
 				"summary": "Get multi quotes",
 				"tags": [
 					"Multi-Exchange"
@@ -5324,7 +5324,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5354,7 +5354,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5478,7 +5478,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5498,7 +5498,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5595,7 +5595,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5615,7 +5615,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5635,7 +5635,7 @@
 						}
 					}
 				},
-				"description": "Returns what the wallet must approve before a DEX swap. Call this first — both arrays come back empty when the allowance already covers the swap.\n\n- `approvals` — transactions to send. After sending them, poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it returns true.\n- `signatures` — EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
+				"description": "Returns what the wallet must approve before a DEX swap. Call this first. Both arrays come back empty when the allowance already covers the swap.\n\n- `approvals`: transactions to send. After sending them, poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) until it returns true.\n- `signatures`: EIP-712 permits to sign instead, when the token and provider both support EIP-2612",
 				"summary": "Get token approval data",
 				"tags": [
 					"On-chain DEX or Bridge"
@@ -5683,7 +5683,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5703,7 +5703,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5807,7 +5807,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5837,7 +5837,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5857,7 +5857,7 @@
 						}
 					}
 				},
-				"description": "Creates the order from a `quoteId`.\n\nQuote first, then create right away — a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.\n\nWith the order data returned by this endpoint:\n\n- private and standard: send the deposit to `depositAddress` before `expires`\n- DEX: see the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap)",
+				"description": "Creates the order from a `quoteId`.\n\nQuote first, then create right away. A stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.\n\nWith the order data returned by this endpoint:\n\n- private and standard: send the deposit to `depositAddress` before `expires`\n- DEX: see the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap)",
 				"summary": "Create exchange",
 				"tags": [
 					"Private and Standard Swaps",
@@ -5938,7 +5938,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5968,7 +5968,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -5988,7 +5988,7 @@
 						}
 					}
 				},
-				"description": "Creates a group of swaps that share one `multiId`. Post the orders straight here — there is no quote step and no `quoteId`.\n\n- routes are chosen for you, per order\n- [Get multi quotes](/api-reference/multi-exchange/get-multi-quotes) is optional, for showing rates first\n- each swap starts at status NEW and is prepared in the background\n- poll [Get batch status](/api-reference/multi-exchange/get-batch-status) for deposit addresses\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
+				"description": "Creates a group of swaps that share one `multiId`. Post the orders straight here. There is no quote step and no `quoteId`.\n\n- routes are chosen for you, per order\n- [Get multi quotes](/api-reference/multi-exchange/get-multi-quotes) is optional, for showing rates first\n- each swap starts at status NEW and is prepared in the background\n- poll [Get batch status](/api-reference/multi-exchange/get-batch-status) for deposit addresses\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
 				"summary": "Create multi exchange",
 				"tags": [
 					"Multi-Exchange"
@@ -6079,7 +6079,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6109,7 +6109,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6129,7 +6129,7 @@
 						}
 					}
 				},
-				"description": "Finds failed EVM batches for a wallet and returns pre-built withdrawal UserOps. Use this once retry is no longer possible.\n\n- 404 means nothing to withdraw — no failed swap for this `multiId`, or the smart account no longer holds those tokens",
+				"description": "Finds failed EVM batches for a wallet and returns pre-built withdrawal UserOps. Use this once retry is no longer possible.\n\n- 404 means nothing to withdraw: no failed swap for this `multiId`, or the smart account no longer holds those tokens",
 				"summary": "Recover stuck assets",
 				"tags": [
 					"Bundler EVM"
@@ -6222,7 +6222,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6252,7 +6252,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6359,7 +6359,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6389,7 +6389,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6409,7 +6409,7 @@
 						}
 					}
 				},
-				"description": "Retries a failed bundle, returning fresh `txData` to re-sign and submit.\n\n- only within 30 minutes of order creation, while deposit addresses are valid\n- returns 400 after that, and for refunded orders — use `POST /exchanges/multi/recovery` to withdraw the funds instead",
+				"description": "Retries a failed bundle, returning fresh `txData` to re-sign and submit.\n\n- only within 30 minutes of order creation, while deposit addresses are valid\n- returns 400 after that, and for refunded orders. Use [Recover stuck assets](/api-reference/bundler-evm/recover-stuck-assets) to withdraw the funds instead",
 				"summary": "Retry failed orders",
 				"tags": [
 					"Bundler EVM"
@@ -6488,7 +6488,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6518,7 +6518,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6538,7 +6538,7 @@
 						}
 					}
 				},
-				"description": "Deprecated. Use [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction) instead — it returns the same Solana transaction and works for EVM groups too.\n\nStill supported for integrations built before EVM batching existed, so nothing breaks if you are already calling it.\n\n- Solana only; `txData.data` is the serialized transaction, base64 encoded\n- up to 10 deposit addresses per batch; a larger group comes back as several entries in `transactions`",
+				"description": "Deprecated. Use [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction) instead. It returns the same Solana transaction and works for EVM groups too.\n\nStill supported for integrations built before EVM batching existed, so nothing breaks if you are already calling it.\n\n- Solana only; `txData.data` is the serialized transaction, base64 encoded\n- up to 10 deposit addresses per batch; a larger group comes back as several entries in `transactions`",
 				"summary": "Get batch transaction",
 				"tags": [
 					"Bundler SOL"
@@ -6626,7 +6626,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6656,7 +6656,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6676,7 +6676,7 @@
 						}
 					}
 				},
-				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
+				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission. Either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
 				"summary": "Submit signed transaction",
 				"tags": [
 					"Bundler EVM"
@@ -6762,7 +6762,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6802,7 +6802,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6822,7 +6822,7 @@
 						}
 					}
 				},
-				"description": "Funds every order in the group with one transaction instead of paying each deposit address. Works for both chains; all orders must share the same source chain.\n\n- Solana — sign the returned transaction and broadcast it. Nothing to submit back.\n- EVM — send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction).\n- large groups come back as several batches — handle every entry in `transactions`\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
+				"description": "Funds every order in the group with one transaction instead of paying each deposit address. Works for both chains; all orders must share the same source chain.\n\n- Solana: sign the returned transaction and broadcast it. Nothing to submit back.\n- EVM: send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction).\n- large groups come back as several batches. Handle every entry in `transactions`\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
 				"summary": "Build batch transaction",
 				"tags": [
 					"Bundler SOL",
@@ -6912,7 +6912,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6932,7 +6932,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -6952,7 +6952,7 @@
 						}
 					}
 				},
-				"description": "Returns the smallest and largest amount you can swap for a token pair, reported separately for standard (`cex`), private, and DEX routes.\n\nBoth token parameters accept either format:\n\n- a token `id`, e.g. `6689b73ec90e45f3b3e51566` — required for DEX\n- a CEX token symbol, e.g. `ETH`, `BNB`, `USDT`",
+				"description": "Returns the smallest and largest amount you can swap for a token pair, reported separately for standard (`cex`), private, and DEX routes.\n\nBoth token parameters accept either format:\n\n- a token `id`, e.g. `6689b73ec90e45f3b3e51566`. Required for DEX\n- a CEX token symbol, e.g. `ETH`, `BNB`, `USDT`",
 				"summary": "Get min and max amounts",
 				"tags": [
 					"Reference Data"
@@ -6964,7 +6964,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Token you are swapping from — an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"ETH\"",
+						"description": "Token you are swapping from. An id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"ETH\"",
 						"in": "query",
 						"name": "tokenIdFrom",
 						"required": true,
@@ -6974,7 +6974,7 @@
 						"example": "6689b73ec90e45f3b3e51566"
 					},
 					{
-						"description": "Token you are swapping to — an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"BNB\"",
+						"description": "Token you are swapping to. An id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), or a CEX symbol like \"BNB\"",
 						"in": "query",
 						"name": "tokenIdTo",
 						"required": true,
@@ -7035,7 +7035,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7055,7 +7055,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7228,7 +7228,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7258,7 +7258,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7374,7 +7374,7 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required. The response carries x402 payment instructions",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7404,7 +7404,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7424,7 +7424,7 @@
 						}
 					}
 				},
-				"description": "Get quotes using contract addresses instead of token ids. Returns private, standard and DEX routes — narrow the set with `types`.\n\n- send `fromChain` + `fromTokenAddress` instead of `from`\n- send `toChain` + `toTokenAddress` instead of `to`\n\nEverything else works the same as [Get quotes](/api-reference/private-and-standard-swaps/get-quotes).",
+				"description": "Get quotes using contract addresses instead of token ids. Returns private, standard and DEX routes. Narrow the set with `types`.\n\n- send `fromChain` + `fromTokenAddress` instead of `from`\n- send `toChain` + `toTokenAddress` instead of `to`\n\nEverything else works the same as [Get quotes](/api-reference/private-and-standard-swaps/get-quotes).",
 				"summary": "Get quotes by token address",
 				"tags": [
 					"Private and Standard Swaps",
@@ -7437,7 +7437,7 @@
 				],
 				"parameters": [
 					{
-						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT, not base units / wei like `100000000000000`.",
 						"in": "query",
 						"name": "amount",
 						"required": true,
@@ -7450,7 +7450,7 @@
 						"example": 1
 					},
 					{
-						"description": "Source chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Source chain identifier. ShortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"in": "query",
 						"name": "fromChain",
 						"required": true,
@@ -7461,7 +7461,7 @@
 						"example": "ethereum"
 					},
 					{
-						"description": "Destination chain identifier — shortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
+						"description": "Destination chain identifier. ShortName from [Get chains](/api-reference/reference-data/get-chains) (e.g. \"ethereum\", \"kava_2222-10\", \"AssetHub\") or numeric EVM chainId (e.g. \"1\", \"42161\").",
 						"in": "query",
 						"name": "toChain",
 						"required": true,
@@ -7505,7 +7505,7 @@
 						"example": 1
 					},
 					{
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage. `0.5` means 0.5%.\n\n- range 0 to 4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
 						"in": "query",
 						"name": "markup",
 						"required": false,
@@ -7528,7 +7528,7 @@
 						"example": false
 					},
 					{
-						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes — use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. On this endpoint fixed rate is limited to standard CEX quotes. Use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) for private fixed-rate quotes or `amountType=receive`.",
 						"in": "query",
 						"name": "fixed",
 						"required": false,
@@ -7564,7 +7564,7 @@
 						"example": 10
 					},
 					{
-						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`). Standard and DEX are single-leg and ignore it.",
 						"in": "query",
 						"name": "rotatePayoutWallets",
 						"required": false,
@@ -7574,7 +7574,7 @@
 						"example": false
 					},
 					{
-						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets. A no-op on its own.",
 						"in": "query",
 						"name": "rotateFallback",
 						"required": false,
@@ -7601,7 +7601,7 @@
 						]
 					},
 					{
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type: private, standard and DEX",
 						"in": "query",
 						"name": "swaps",
 						"required": false,
@@ -7666,7 +7666,7 @@
 						"example": []
 					},
 					{
-						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
+						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only. Private and standard swaps ignore it.",
 						"in": "query",
 						"name": "senderAddress",
 						"required": false,
@@ -7676,7 +7676,7 @@
 						"example": ""
 					},
 					{
-						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
+						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient`. Still listed, but not usable\n- also used for payout wallet rotation",
 						"in": "query",
 						"name": "receiverAddress",
 						"required": false,
@@ -7763,7 +7763,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7866,7 +7866,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -7972,7 +7972,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8078,7 +8078,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8204,7 +8204,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8224,7 +8224,7 @@
 						}
 					}
 				},
-				"description": "Returns your commission totals — lifetime, pending, processed, and the current and previous month.",
+				"description": "Returns your commission totals: lifetime, pending, processed, and the current and previous month.",
 				"summary": "Get commission summary",
 				"tags": [
 					"Partner Account"
@@ -8312,7 +8312,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8504,7 +8504,7 @@
 						}
 					},
 					"429": {
-						"description": "Rate limit exceeded — back off and retry",
+						"description": "Rate limit exceeded. Back off and retry",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -8573,27 +8573,27 @@
 	"tags": [
 		{
 			"name": "Private and Standard Swaps",
-			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge, so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: `GET /tokens?hasCex=true` → quote → `POST /exchanges` → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
+			"description": "CEX swaps in two modes, sharing the same endpoints. Pick one with the `types` parameter.\n\n- `types=standard`. Direct single-leg swap. Fastest, no privacy hop.\n- `types=private`. Two legs through a privacy bridge, so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasCex=true` → [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) → [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
 		},
 		{
 			"name": "Multi-Exchange",
-			"description": "Create and track a group of swaps sharing one `multiId`.\n\n- post the orders straight to Create multi exchange — there is no quote step and no `quoteId`\n- Get multi quotes is optional, for showing rates first\n- each order gets its own deposit address; poll `GET /exchanges/multi/{multiId}` for every leg\n- CEX standard and private only — no DEX in a batch\n\nTo fund the whole group in one transaction, see Bundler SOL or Bundler EVM. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
+			"description": "Create and track a group of swaps sharing one `multiId`.\n\n- post the orders straight to Create multi exchange. There is no quote step and no `quoteId`\n- Get multi quotes is optional, for showing rates first\n- each order gets its own deposit address; poll [Get batch status](/api-reference/multi-exchange/get-batch-status) for every leg\n- CEX standard and private only, no DEX in a batch\n\nTo fund the whole group in one transaction, see Bundler SOL or Bundler EVM. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler SOL",
-			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- one call — Build batch transaction returns the transaction to sign and broadcast\n- up to 10 deposits per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- nothing to submit back afterwards — retry and recovery are EVM-only\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
+			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- one call. Build batch transaction returns the transaction to sign and broadcast\n- up to 10 deposits per batch; all orders share one source chain\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- nothing to submit back afterwards. Retry and recovery are EVM-only\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler EVM",
-			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with `GET /tokens?hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
+			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "On-chain DEX or Bridge",
-			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: `GET /tokens?hasDex=true` → quote with `types=dex` → get approval data → send it and poll allowance → sign chain signatures → `POST /exchanges` → confirm the transaction → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
+			"description": "On-chain swaps signed and funded from the user's own wallet.\n\nFlow: [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasDex=true` → [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) with `types=dex` → [Get token approval data](/api-reference/on-chain-dex-or-bridge/get-token-approval-data) → send it and poll [Check token allowance](/api-reference/on-chain-dex-or-bridge/check-token-allowance) → [Get next chain signature](/api-reference/on-chain-dex-or-bridge/get-next-chain-signature) → [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) → [Confirm DEX transaction](/api-reference/on-chain-dex-or-bridge/confirm-dex-transaction) → [track the order](/api-reference/private-and-standard-swaps/get-order-details).\n\n- `slippage` applies to DEX only\n- `markup` is not supported"
 		},
 		{
 			"name": "Reference Data",
-			"description": "Optional lookups: supported chains, liquidity providers, and per-pair min/max swap amounts. Responses are cached and change rarely — safe to fetch once and reuse. Token ids come from `/tokens`, listed in each swap section above."
+			"description": "Optional lookups: supported chains, liquidity providers, and per-pair min/max swap amounts. Responses are cached and change rarely. Safe to fetch once and reuse. Token ids come from `/tokens`, listed in each swap section above."
 		},
 		{
 			"name": "Partner Account",
@@ -8601,7 +8601,7 @@
 		},
 		{
 			"name": "System",
-			"description": "Service health. `GET /status` is unauthenticated and exempt from x402 payment — use it for uptime monitoring."
+			"description": "Service health. [Get system health](/api-reference/system/get-system-health) is unauthenticated and exempt from x402 payment. Use it for uptime monitoring."
 		}
 	]
 }

@@ -6,6 +6,6 @@ openapi: "POST /exchanges/multi/{multiId}/tx/build"
 
 - all orders must share the same source chain; up to 10 deposits per batch
 - sign the returned transaction and broadcast it. Nothing to submit back
-- large groups come back as several batches — handle every entry in `transactions`
+- large groups come back as several batches, so handle every entry in `transactions`
 
 Find batchable tokens with [Get tokens](/api-reference/multi-exchange/get-tokens) and `hasBundler=true`. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.
