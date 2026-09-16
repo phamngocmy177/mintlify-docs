@@ -6491,7 +6491,7 @@
 						}
 					}
 				},
-				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-evm/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
+				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
 				"summary": "Submit signed transaction",
 				"tags": [
 					"Bundler EVM"
@@ -8343,7 +8343,7 @@
 	"tags": [
 		{
 			"name": "Private and Standard Swaps",
-			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge (XMR by default), so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: `GET /tokens?hasCex=true` → quote → `POST /exchanges` → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
+			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge, so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: `GET /tokens?hasCex=true` → quote → `POST /exchanges` → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
 		},
 		{
 			"name": "Multi-Exchange",
