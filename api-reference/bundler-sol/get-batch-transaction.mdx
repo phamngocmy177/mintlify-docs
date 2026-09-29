@@ -1,0 +1,12 @@
+---
+title: "Get batch transaction"
+description: "Returns one Solana transaction that pays every deposit address in the group."
+openapi: "GET /exchanges/multi/{multiId}/tx"
+---
+
+- every order must send the **same token** — all native SOL, or all the same SPL token. Mixing SOL with an SPL token is rejected
+- up to 10 deposits per batch
+- sign the returned transaction and broadcast it yourself. Nothing to submit back
+- large groups come back as several batches, so handle every entry in `transactions`
+
+Find batchable tokens with [Get tokens](/api-reference/multi-exchange/get-tokens) and `hasBundler=true`. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.

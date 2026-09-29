@@ -101,7 +101,11 @@
 					"MARKUP_EXCEEDS_LIMIT",
 					"MARKUP_MISMATCHES_QUOTE",
 					"MARKUP_NOT_SUPPORTED_FOR_DEX",
-					"FLOATING_RATE_NOT_ALLOWED"
+					"FLOATING_RATE_NOT_ALLOWED",
+					"PRIVATE_SEND_NOT_SUPPORTED",
+					"INVALID_PRIVATE_SEND_QUOTE",
+					"INTERMEDIATE_REFUND_ADDRESS_REQUIRED",
+					"ONCHAIN_LEG_ROUTE_NOT_AVAILABLE"
 				],
 				"type": "string"
 			},
@@ -112,7 +116,7 @@
 					},
 					"code": {
 						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
+						"description": "Machine-readable reason for the failure, e.g. `VALIDATION_ERROR`, `TOKEN_NOT_FOUND`, `RATE_LIMIT_EXCEEDED`. Branch on this, not on `message` — messages are free to change. The full set is listed below.\n\nUse the HTTP status to decide whether to retry, and the code to decide what to tell the user:\n\n- `4xx` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `429` (`RATE_LIMIT_EXCEEDED`) — back off and retry.\n- `5xx` — our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
 						"type": "string",
@@ -137,7 +141,7 @@
 					},
 					"code": {
 						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\n- `400` / `422` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `401` — credentials missing, malformed, or rejected.\n- `403` — authenticated, but not allowed to do this.\n- `404` — the token, order or route does not exist.\n- `409` — conflicts with something already in flight.\n- `429` — rate limited. Back off and retry.\n- `500` / `502` / `503` — our side or a provider. Safe to retry after a pause."
+						"description": "Machine-readable reason for the failure, e.g. `VALIDATION_ERROR`, `TOKEN_NOT_FOUND`, `RATE_LIMIT_EXCEEDED`. Branch on this, not on `message` — messages are free to change. The full set is listed below.\n\nUse the HTTP status to decide whether to retry, and the code to decide what to tell the user:\n\n- `4xx` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `429` (`RATE_LIMIT_EXCEEDED`) — back off and retry.\n- `5xx` — our side or a provider. Safe to retry after a pause."
 					},
 					"requestId": {
 						"type": "string",
@@ -1038,7 +1042,7 @@
 				"properties": {
 					"swap": {
 						"type": "string",
-						"description": "Provider short code, e.g. `ch`. Matches `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)."
+						"description": "Provider short code, e.g. `se`. Matches `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers).\n\nAbsent on private quotes — the providers behind a private route are not disclosed."
 					},
 					"quoteId": {
 						"type": "string",
@@ -1105,7 +1109,7 @@
 					},
 					"swapName": {
 						"type": "string",
-						"description": "Provider display name, e.g. `Changelly`."
+						"description": "Provider display name, e.g. `StealthEx`.\n\nAbsent on private quotes, for the same reason as `swap`."
 					},
 					"type": {
 						"$ref": "#/components/schemas/QuoteType",
@@ -1224,6 +1228,18 @@
 							"receive"
 						],
 						"description": "Whether the amounts are driven by the send side (`send`) or the receive side (`receive`)."
+					},
+					"requiresIntermediateRefundAddress": {
+						"type": "boolean",
+						"description": "True when this route settles through an on-chain hop, which needs a second refund address on top of `refundAddress`.\n\nCollect it from the user and send it as `intermediateRefundAddress` at [Create exchange](/api-reference/private-and-standard-swaps/create-exchange), or the call is rejected. `intermediateRefundChain` and `intermediateRefundToken` say which chain it must be on and which token it would receive."
+					},
+					"intermediateRefundChain": {
+						"type": "string",
+						"description": "Chain the `intermediateRefundAddress` must be on, e.g. `base` or `ethereum`. Present only on a route that settles through an on-chain hop."
+					},
+					"intermediateRefundToken": {
+						"type": "string",
+						"description": "Token the intermediate refund arrives in, e.g. `USDC`. The address you supply must be able to receive it. Present only on a route that settles through an on-chain hop."
 					}
 				},
 				"type": "object",
@@ -1249,10 +1265,55 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"SwapShortName": {
+			"ExchangeType": {
 				"type": "string",
-				"example": "cl",
-				"description": "A provider's short code, e.g. `cl`. Get the current list from [Get swap providers](/api-reference/reference-data/get-swap-providers) — the `shortName` field."
+				"enum": [
+					"ch",
+					"cl",
+					"cn",
+					"ff",
+					"le",
+					"se",
+					"ss",
+					"sx",
+					"sxby",
+					"sxhu",
+					"sxku",
+					"sxmx",
+					"sz",
+					"sp",
+					"eb",
+					"nx",
+					"cc",
+					"qx",
+					"sg",
+					"tc",
+					"hu",
+					"nic",
+					"dl",
+					"ad",
+					"wh",
+					"cf",
+					"un",
+					"jp",
+					"mn",
+					"rd",
+					"ps",
+					"cs",
+					"kd",
+					"ct",
+					"zx",
+					"wc",
+					"su",
+					"tt",
+					"ni",
+					"sd",
+					"bg",
+					"ab",
+					"pt",
+					"ax",
+					"rl"
+				]
 			},
 			"QuoteSort": {
 				"enum": [
@@ -1283,25 +1344,16 @@
 						"description": "Token you are swapping to. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) — a 24-character hex id such as `6689b73ec90e45f3b3e51558`, not a symbol like `SOL`.",
 						"example": "6689b73ec90e45f3b3e51558"
 					},
-					"slippage": {
-						"type": "number",
-						"format": "double",
-						"description": "Slippage percentage. Only used for DEX swaps.",
-						"example": 1,
-						"minimum": 0,
-						"maximum": 100
-					},
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
-						"example": 0.5,
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
 						"minimum": 0,
 						"maximum": 4
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
 						"example": false
 					},
 					"fixed": {
@@ -1341,77 +1393,73 @@
 						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
 						"example": false
 					},
-					"types": {
-						"items": {
-							"$ref": "#/components/schemas/QuoteType"
-						},
-						"type": "array",
-						"description": "Types of quotes to return; if omitted, all types are used",
-						"example": [
-							"private",
-							"standard",
-							"dex"
-						]
-					},
-					"swaps": {
-						"items": {
-							"$ref": "#/components/schemas/SwapShortName"
-						},
-						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
-						"example": []
-					},
 					"inLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
-						"example": []
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
 					},
 					"inLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
-						"example": []
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes."
 					},
 					"outLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
-						"example": []
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
 					},
 					"outLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
-						"example": []
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
+					},
+					"slippage": {
+						"type": "number",
+						"format": "double",
+						"description": "Slippage percentage. Only used for DEX swaps.",
+						"example": 1,
+						"minimum": 0,
+						"maximum": 100
+					},
+					"types": {
+						"items": {
+							"$ref": "#/components/schemas/QuoteType"
+						},
+						"type": "array",
+						"description": "Types of quotes to return; if omitted, all types are used"
+					},
+					"swaps": {
+						"items": {
+							"$ref": "#/components/schemas/ExchangeType"
+						},
+						"type": "array",
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
 					},
 					"senderAddress": {
 						"type": "string",
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
-						"example": ""
+						"example": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40"
 					},
 					"receiverAddress": {
 						"type": "string",
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
-						"example": ""
+						"example": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC"
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort",
-						"description": "Sort the quotes by the given field (default: amountOut)",
-						"example": "amountOut"
+						"description": "Sort the quotes by the given field (default: amountOut)"
 					},
 					"sortOrder": {
 						"$ref": "#/components/schemas/SortDirection",
-						"description": "Sort direction for quotes (default: desc)",
-						"example": "desc"
+						"description": "Sort direction for quotes (default: desc)"
 					},
 					"amountType": {
 						"type": "string",
@@ -1431,13 +1479,114 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PrivateSendQuoteQuery": {
+				"description": "Quote a private same-token send (same token in and out).",
+				"properties": {
+					"amount": {
+						"type": "number",
+						"format": "double",
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"example": 1,
+						"minimum": 0,
+						"maximum": 1.7976931348623157e+308
+					},
+					"token": {
+						"type": "string",
+						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
+						"example": "6689b73ec90e45f3b3e51566"
+					},
+					"markup": {
+						"type": "number",
+						"format": "double",
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
+						"minimum": 0,
+						"maximum": 4
+					},
+					"useXmr": {
+						"type": "boolean",
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
+						"example": false
+					},
+					"fixed": {
+						"type": "boolean",
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. Available for standard and private CEX quotes; not supported for DEX.",
+						"example": false
+					},
+					"refundAddress": {
+						"type": "string",
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at [Create exchange](/api-reference/private-and-standard-swaps/create-exchange), where it is required for fixed-rate quotes and for those routes",
+						"example": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+						"maxLength": 200
+					},
+					"deviationThreshold": {
+						"type": "number",
+						"format": "double",
+						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
+						"example": 5,
+						"minimum": 0,
+						"maximum": 100
+					},
+					"rotationLookback": {
+						"type": "integer",
+						"format": "int32",
+						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
+						"example": 10,
+						"minimum": 1,
+						"maximum": 100
+					},
+					"rotatePayoutWallets": {
+						"type": "boolean",
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"example": false
+					},
+					"rotateFallback": {
+						"type": "boolean",
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"example": false
+					},
+					"inLegIncludedSwaps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+					},
+					"inLegExcludedSwaps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes."
+					},
+					"outLegIncludedSwaps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
+					},
+					"outLegExcludedSwaps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
+					}
+				},
+				"required": [
+					"amount",
+					"token"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"MultiQuoteMode": {
 				"type": "string",
 				"enum": [
 					"all",
 					"single"
 				],
-				"description": "Controls how many of the submitted orders are individually quoted.\n- `all` (default): every order is quoted and returns its own array of candidate routes.\n- `single`: only the first order is quoted; the remaining orders come back with `quoted: false` and no candidates — a lighter, faster preview for when quoting the whole batch is too slow."
+				"description": "Controls how many of the submitted orders are individually quoted.\n- `all` (default): every order is quoted and returns its own array of\n  candidate routes.\n- `single`: only the first order is quoted; the remaining orders come back\n  with `quoted: false` and no candidates — a lighter, faster preview for\n  when quoting the whole batch is too slow."
 			},
 			"MultiQuoteOrderError": {
 				"properties": {
@@ -1533,14 +1682,14 @@
 				"properties": {
 					"from": {
 						"type": "string",
-						"description": "Token you are swapping from — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51566`.",
-						"example": "6689b73ec90e45f3b3e51566",
+						"description": "Token ID from which the swap is initiated. Must be a MongoDB ObjectId (24-char hex string).",
+						"example": "6689b73ec90e45f3b3e51564",
 						"minLength": 24,
 						"maxLength": 24
 					},
 					"to": {
 						"type": "string",
-						"description": "Token you are swapping to — an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens), e.g. `6689b73ec90e45f3b3e51558`.",
+						"description": "Token ID to which the swap is directed. Must be a MongoDB ObjectId (24-char hex string).",
 						"example": "6689b73ec90e45f3b3e51558",
 						"minLength": 24,
 						"maxLength": 24
@@ -1548,7 +1697,7 @@
 					"amount": {
 						"type": "number",
 						"format": "double",
-						"description": "Amount to swap, e.g. `1.5` BTC.",
+						"description": "Input amount as a decimal float in the token's display units. Must be > 0.",
 						"minimum": 0
 					},
 					"anonymous": {
@@ -1557,12 +1706,12 @@
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Force XMR as the anonymous bridge token."
+						"description": "Use Monero (XMR) as the bridge token on a private swap. Unset picks from a rotating set of other tokens."
 					},
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Partner markup for this request, as a percentage (0.5 = 0.5%).\nAccepted range: 0–4. This value overrides your account’s default\nmarkup for this trade. Send 0 to apply no markup, or leave the field\nempty / set it to null if no markup is requested. Providers that do\nnot support the requested markup will be excluded.",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
@@ -2000,19 +2149,15 @@
 					},
 					"quoteId": {
 						"type": "string",
-						"description": "Quote ID from a prior quote response. The amount, tokens and provider all come from it.\n\n- a quote is only accepted for about a minute after you fetched it — quote again if the user takes longer\n- private and standard swaps fall back to the next best route if the chosen provider fails\n- `rerouted: true` on the order means a fallback was used; the amounts may differ, so compare `quotedInAmount` and `quotedOutAmount`"
+						"description": "The `quoteId` from a quote response. It carries the amount, the token pair and the provider, so you do not send those again.\n\nQuotes expire. Create the exchange while the quote is still fresh:\n\n- about a minute for private and standard quotes, and for DEX quotes on a chain's native coin\n- 10 minutes for DEX quotes on a token that needs an approval, leaving room for the approval transaction\n- once it lapses the call returns 422. Fetch a new quote and retry\n\nIf the chosen provider fails, private and standard swaps fall back to the next best route. The order then comes back with `rerouted: true` and the amounts can differ from the quote, so compare `quotedInAmount` and `quotedOutAmount` before showing the result."
 					},
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this trade, as a percentage — `0.5` means 0.5%. Range 0–4.\n\nThe quote already carries the markup it was priced with, so you normally omit this field.\n\n- send it only to repeat the quote's own markup. A different value is rejected with 422 `MARKUP_MISMATCHES_QUOTE`\n- sending it on a DEX quote is rejected with 422 `MARKUP_NOT_SUPPORTED_FOR_DEX`\n- above your account ceiling it is rejected with 422 `MARKUP_EXCEEDS_LIMIT`\n\nTo change the markup, quote again with the new value rather than overriding it here.",
 						"example": 0.5,
 						"minimum": 0,
 						"maximum": 4
-					},
-					"addressFrom": {
-						"type": "string",
-						"description": "Source wallet address (required for DEX, ignored for CEX)"
 					},
 					"refundAddress": {
 						"type": "string",
@@ -2024,6 +2169,20 @@
 						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
 						"maxLength": 64
 					},
+					"intermediateRefundAddress": {
+						"type": "string",
+						"description": "Where the intermediate hop's funds are returned if that hop cannot complete. Separate from `refundAddress`, which covers the deposit leg.\n\n- required when the quote has `requiresIntermediateRefundAddress: true`; ignored otherwise\n- must be on the quote's `intermediateRefundChain` and able to receive `intermediateRefundToken`\n- **use a wallet the user controls, not an exchange deposit address**",
+						"maxLength": 200
+					},
+					"destinationTag": {
+						"type": "string",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"maxLength": 64
+					},
+					"addressFrom": {
+						"type": "string",
+						"description": "Source wallet address (required for DEX, ignored for CEX)"
+					},
 					"signatures": {
 						"items": {
 							"$ref": "#/components/schemas/SignatureObject"
@@ -2031,15 +2190,59 @@
 						"type": "array",
 						"description": "EIP-712 signatures for permit-based approvals (DEX only)"
 					},
-					"destinationTag": {
-						"type": "string",
-						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
-						"maxLength": 64
-					},
 					"walletInfo": {
 						"type": "string",
 						"description": "Name of the wallet the user is swapping from, e.g. `MetaMask`, `Phantom`, `Trust Wallet`. Optional.",
 						"maxLength": 256
+					}
+				},
+				"required": [
+					"addressTo",
+					"quoteId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PrivateSendExchangeRequest": {
+				"description": "Create a private same-token order from a prior private-send quote.",
+				"properties": {
+					"addressTo": {
+						"type": "string",
+						"description": "Destination wallet address where funds will be sent",
+						"minLength": 1,
+						"maxLength": 200
+					},
+					"quoteId": {
+						"type": "string",
+						"description": "The `quoteId` from a quote response. It carries the amount, the token pair and the provider, so you do not send those again.\n\nQuotes expire. Create the exchange while the quote is still fresh:\n\n- about a minute for private and standard quotes, and for DEX quotes on a chain's native coin\n- 10 minutes for DEX quotes on a token that needs an approval, leaving room for the approval transaction\n- once it lapses the call returns 422. Fetch a new quote and retry\n\nIf the chosen provider fails, private and standard swaps fall back to the next best route. The order then comes back with `rerouted: true` and the amounts can differ from the quote, so compare `quotedInAmount` and `quotedOutAmount` before showing the result."
+					},
+					"markup": {
+						"type": "number",
+						"format": "double",
+						"description": "Markup for this trade, as a percentage — `0.5` means 0.5%. Range 0–4.\n\nThe quote already carries the markup it was priced with, so you normally omit this field.\n\n- send it only to repeat the quote's own markup. A different value is rejected with 422 `MARKUP_MISMATCHES_QUOTE`\n- sending it on a DEX quote is rejected with 422 `MARKUP_NOT_SUPPORTED_FOR_DEX`\n- above your account ceiling it is rejected with 422 `MARKUP_EXCEEDS_LIMIT`\n\nTo change the markup, quote again with the new value rather than overriding it here.",
+						"example": 0.5,
+						"minimum": 0,
+						"maximum": 4
+					},
+					"refundAddress": {
+						"type": "string",
+						"description": "Where funds are returned if the swap cannot complete.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- required when the quote has `fixed: true` or `requiresRefundAddress: true`",
+						"maxLength": 200
+					},
+					"refundExtraId": {
+						"type": "string",
+						"description": "Memo/tag for `refundAddress`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the source token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"maxLength": 64
+					},
+					"intermediateRefundAddress": {
+						"type": "string",
+						"description": "Where the intermediate hop's funds are returned if that hop cannot complete. Separate from `refundAddress`, which covers the deposit leg.\n\n- required when the quote has `requiresIntermediateRefundAddress: true`; ignored otherwise\n- must be on the quote's `intermediateRefundChain` and able to receive `intermediateRefundToken`\n- **use a wallet the user controls, not an exchange deposit address**",
+						"maxLength": 200
+					},
+					"destinationTag": {
+						"type": "string",
+						"description": "Memo/tag for `addressTo`, e.g. XRP destination tag, Stellar memo, TON comment. Send it when the destination token's chain has `memoNeeded: true` — see [Get chains](/api-reference/reference-data/get-chains).",
+						"maxLength": 64
 					}
 				},
 				"required": [
@@ -2144,7 +2347,7 @@
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Force XMR as the anonymous bridge token"
+						"description": "Use Monero (XMR) as the bridge token on a private swap. Unset picks from a rotating set of other tokens."
 					},
 					"walletInfo": {
 						"type": "string",
@@ -2254,24 +2457,24 @@
 					},
 					"to": {
 						"type": "string",
-						"description": "Smart account that collects the funds for this batch. Send `value` and `tokenAmount` here before submitting.\n\nIt is derived from the `sender` wallet and owned by it — only that wallet can authorise a transfer out, so Houdini cannot move the funds. The same wallet always gets the same address."
+						"description": "Where to send the funding transaction. It is **not** always the smart account:\n\n- ERC-20 source token — the token contract. The smart account is the recipient encoded inside `data`.\n- native source coin — the smart account itself."
 					},
 					"data": {
 						"type": "string",
-						"description": "Calldata for the funding transfer — `0x` when the source token is the chain's native coin, otherwise an ERC-20 transfer to `to`."
+						"description": "Calldata for the funding transaction. An ERC-20 `transfer` moving the tokens to the smart account, or `0x` when the source token is the chain's native coin.\n\nThe amount encoded here is the full balance the batch needs."
 					},
 					"value": {
 						"type": "string",
-						"description": "Native coin to send to `to`, in wei. Covers gas, plus the swap amount when the source token is the native coin."
+						"description": "Native coin to send with the transaction, in wei. Covers gas plus the swap amount when the source token is the native coin, and is `\"0\"` for ERC-20 sources."
 					},
 					"chainId": {
 						"type": "number",
 						"format": "double",
-						"description": "EVM chain the batch runs on, e.g. `1` for Ethereum."
+						"description": "EVM chain the batch runs on, e.g. `1` for Ethereum, `8453` for Base."
 					},
 					"tokenAmount": {
 						"type": "string",
-						"description": "Token amount to transfer to `to`, in the token's smallest unit. `\"0\"` when the source token is the chain's native coin."
+						"description": "How much of the source token still has to reach the smart account, in the token's smallest unit. Already funded balance is deducted. `\"0\"` when the source token is the chain's native coin."
 					}
 				},
 				"required": [
@@ -3060,14 +3263,13 @@
 					"markup": {
 						"type": "number",
 						"format": "double",
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
-						"example": 0.5,
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
 						"minimum": 0,
 						"maximum": 4
 					},
 					"useXmr": {
 						"type": "boolean",
-						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
 						"example": false
 					},
 					"fixed": {
@@ -3106,62 +3308,52 @@
 							"$ref": "#/components/schemas/QuoteType"
 						},
 						"type": "array",
-						"description": "Types of quotes to return; if omitted, all types are used",
-						"example": [
-							"private",
-							"standard",
-							"dex"
-						]
+						"description": "Types of quotes to return; if omitted, all types are used"
 					},
 					"swaps": {
 						"items": {
-							"$ref": "#/components/schemas/SwapShortName"
+							"$ref": "#/components/schemas/ExchangeType"
 						},
 						"type": "array",
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
-						"example": []
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX"
 					},
 					"inLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
-						"example": []
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
 					},
 					"inLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
-						"example": []
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes."
 					},
 					"outLegIncludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
-						"example": []
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop."
 					},
 					"outLegExcludedSwaps": {
 						"items": {
 							"type": "string"
 						},
 						"type": "array",
-						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
-						"example": []
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes."
 					},
 					"senderAddress": {
 						"type": "string",
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
-						"example": ""
+						"example": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40"
 					},
 					"receiverAddress": {
 						"type": "string",
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
-						"example": ""
+						"example": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC"
 					},
 					"sort": {
 						"$ref": "#/components/schemas/QuoteSort",
@@ -4052,7 +4244,7 @@
 						"example": ""
 					},
 					{
-						"description": "Filter tokens available for private and standard swaps. `false` returns only tokens explicitly marked unavailable, not every token missing the flag.",
+						"description": "Filter tokens available for private and standard swaps.",
 						"in": "query",
 						"name": "hasCex",
 						"required": false,
@@ -4062,7 +4254,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter tokens available for DEX swaps. `false` returns only tokens explicitly marked unavailable, not every token missing the flag.",
+						"description": "Filter tokens available for DEX swaps.",
 						"in": "query",
 						"name": "hasDex",
 						"required": false,
@@ -4072,7 +4264,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
+						"description": "Filter tokens that support self-to-self private swaps — send a token and receive the same token at another address, with no on-chain link between them.",
 						"in": "query",
 						"name": "hasSelfPrivate",
 						"required": false,
@@ -4082,7 +4274,7 @@
 						"example": true
 					},
 					{
-						"description": "Filter tokens the bundler can fund — paying for a whole multi-exchange group with one transaction instead of a deposit per order. Filtering on `false` returns only tokens explicitly marked false, not those where the flag is unset.",
+						"description": "Filter tokens the bundler can fund — paying for a whole multi-exchange group with one transaction instead of a deposit per order.",
 						"in": "query",
 						"name": "hasBundler",
 						"required": false,
@@ -4102,7 +4294,7 @@
 						"example": true
 					},
 					{
-						"description": "Include tokens we have not reviewed. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens — check `securityScan` before offering one to users.",
+						"description": "Include tokens we have not reviewed. Defaults to false. Any contract address quoted through the API is added automatically, so this list contains arbitrary tokens — check `securityScan` before offering one to users.",
 						"in": "query",
 						"name": "unverified",
 						"required": false,
@@ -4315,36 +4507,29 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"houdiniId": "hxK7mQp2",
-											"id": "6707c1a2e4b0f3a9d8c12345",
-											"created": "2026-01-01T12:00:00.000Z",
-											"modified": "2026-01-01T12:02:14.000Z",
-											"inCreated": "2026-01-01T12:00:00.000Z",
-											"expires": "2026-01-01T12:30:00.000Z",
-											"depositAddress": "bc1qexampledepositaddress000000000000000000",
-											"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-											"anonymous": true,
+											"created": "2026-09-28T02:44:44.178Z",
+											"houdiniId": "ao5tBEaAxkjJJdZnZeuXo6",
+											"receiverAddress": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC",
 											"status": 0,
-											"displayStatus": "WAITING_FOR_DEPOSIT",
+											"anonymous": false,
+											"expires": "2026-09-28T03:14:44.178Z",
+											"in": "se",
+											"inAmount": 0.05,
+											"inSymbol": "ETH",
 											"inStatus": 0,
-											"outStatus": 0,
-											"inAmount": 0.25,
-											"inSymbol": "BTC",
-											"outAmount": 3.5182,
-											"outSymbol": "ETH",
-											"inAmountUsd": 26450.5,
-											"outAmountUsd": 26301.44,
-											"eta": 22,
-											"swapName": "Changelly",
+											"inCreated": "2026-09-28T02:44:44.178Z",
+											"outAmount": 1.09202632,
+											"outSymbol": "SOL",
+											"eta": 8,
+											"inAmountUsd": 132.6355,
 											"isDex": false,
-											"fixed": false,
-											"rerouted": false,
-											"notified": false,
-											"actionRequired": false,
-											"nonRefundable": false,
-											"multiId": "",
-											"outTransactionOutHash": "",
-											"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
+											"swapName": "StealthEx",
+											"depositAddress": "0x0000000000000000000000000000000000000000",
+											"id": "6ab9d49ca4f8db2c6ce6dfb2",
+											"hashUrl": "",
+											"statusLabel": "WAITING",
+											"inStatusLabel": "NEW",
+											"displayStatus": "WAITING_FOR_DEPOSIT"
 										}
 									}
 								}
@@ -4453,40 +4638,33 @@
 										"value": {
 											"orders": [
 												{
-													"houdiniId": "hxK7mQp2",
-													"id": "6707c1a2e4b0f3a9d8c12345",
-													"created": "2026-01-01T12:00:00.000Z",
-													"modified": "2026-01-01T12:02:14.000Z",
-													"inCreated": "2026-01-01T12:00:00.000Z",
-													"expires": "2026-01-01T12:30:00.000Z",
-													"depositAddress": "bc1qexampledepositaddress000000000000000000",
-													"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-													"anonymous": true,
+													"created": "2026-09-28T02:44:44.178Z",
+													"houdiniId": "ao5tBEaAxkjJJdZnZeuXo6",
+													"receiverAddress": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC",
 													"status": 0,
-													"displayStatus": "WAITING_FOR_DEPOSIT",
+													"anonymous": false,
+													"expires": "2026-09-28T03:14:44.178Z",
+													"in": "se",
+													"inAmount": 0.05,
+													"inSymbol": "ETH",
 													"inStatus": 0,
-													"outStatus": 0,
-													"inAmount": 0.25,
-													"inSymbol": "BTC",
-													"outAmount": 3.5182,
-													"outSymbol": "ETH",
-													"inAmountUsd": 26450.5,
-													"outAmountUsd": 26301.44,
-													"eta": 22,
-													"swapName": "Changelly",
+													"inCreated": "2026-09-28T02:44:44.178Z",
+													"outAmount": 1.09202632,
+													"outSymbol": "SOL",
+													"eta": 8,
+													"inAmountUsd": 132.6355,
 													"isDex": false,
-													"fixed": false,
-													"rerouted": false,
-													"notified": false,
-													"actionRequired": false,
-													"nonRefundable": false,
-													"multiId": "",
-													"outTransactionOutHash": "",
-													"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
+													"swapName": "StealthEx",
+													"depositAddress": "0x0000000000000000000000000000000000000000",
+													"id": "6ab9d49ca4f8db2c6ce6dfb2",
+													"hashUrl": "",
+													"statusLabel": "WAITING",
+													"inStatusLabel": "NEW",
+													"displayStatus": "WAITING_FOR_DEPOSIT"
 												}
 											],
-											"totalPages": 1,
-											"total": 1
+											"total": 1,
+											"totalPages": 1
 										}
 									}
 								}
@@ -4601,8 +4779,7 @@
 						"schema": {
 							"type": "string",
 							"maxLength": 64
-						},
-						"example": ""
+						}
 					},
 					{
 						"description": "Order status",
@@ -4674,8 +4851,7 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[a-fA-F0-9]{24}$"
-						},
-						"example": ""
+						}
 					},
 					{
 						"description": "Filter by the token being received, using an id from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens)",
@@ -4685,8 +4861,7 @@
 						"schema": {
 							"type": "string",
 							"pattern": "^[a-fA-F0-9]{24}$"
-						},
-						"example": ""
+						}
 					}
 				]
 			}
@@ -4763,26 +4938,6 @@
 							}
 						}
 					},
-					"401": {
-						"description": "Missing, malformed, or rejected credentials",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4803,16 +4958,6 @@
 							}
 						}
 					},
-					"429": {
-						"description": "Rate limit exceeded — back off and retry",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -4824,7 +4969,7 @@
 						}
 					}
 				},
-				"description": "Returns every available route for a token pair and amount — private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens).",
+				"description": "Returns every available route for a token pair and amount — private, standard and DEX. Narrow the set with `types`.\n\n`from` and `to` are token ids; look them up with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens).\n\nFor a private same-token send you can use [Get private send quote](/api-reference/private-send/get-private-send-quote), or stay on this endpoint with the same token on `from` and `to` and `types=private` — see the [Private send](/developer-hub/swap-flows/send) guide.",
 				"summary": "Get quotes",
 				"tags": [
 					"Private and Standard Swaps",
@@ -4870,20 +5015,7 @@
 						"example": "6689b73ec90e45f3b3e51558"
 					},
 					{
-						"description": "Slippage percentage. Only used for DEX swaps.",
-						"in": "query",
-						"name": "slippage",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number",
-							"minimum": 0,
-							"maximum": 100
-						},
-						"example": 1
-					},
-					{
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
 						"in": "query",
 						"name": "markup",
 						"required": false,
@@ -4892,11 +5024,10 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 4
-						},
-						"example": 0.5
+						}
 					},
 					{
-						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
 						"in": "query",
 						"name": "useXmr",
 						"required": false,
@@ -4973,36 +5104,6 @@
 						"example": false
 					},
 					{
-						"description": "Types of quotes to return; if omitted, all types are used",
-						"in": "query",
-						"name": "types",
-						"required": false,
-						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/components/schemas/QuoteType"
-							}
-						},
-						"example": [
-							"private",
-							"standard",
-							"dex"
-						]
-					},
-					{
-						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
-						"in": "query",
-						"name": "swaps",
-						"required": false,
-						"schema": {
-							"type": "array",
-							"items": {
-								"$ref": "#/components/schemas/SwapShortName"
-							}
-						},
-						"example": []
-					},
-					{
 						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
 						"in": "query",
 						"name": "inLegIncludedSwaps",
@@ -5012,8 +5113,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
@@ -5025,8 +5125,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -5038,8 +5137,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
@@ -5051,8 +5149,44 @@
 							"items": {
 								"type": "string"
 							}
+						}
+					},
+					{
+						"description": "Slippage percentage. Only used for DEX swaps.",
+						"in": "query",
+						"name": "slippage",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number",
+							"minimum": 0,
+							"maximum": 100
 						},
-						"example": []
+						"example": 1
+					},
+					{
+						"description": "Types of quotes to return; if omitted, all types are used",
+						"in": "query",
+						"name": "types",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/components/schemas/QuoteType"
+							}
+						}
+					},
+					{
+						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
+						"in": "query",
+						"name": "swaps",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/components/schemas/ExchangeType"
+							}
+						}
 					},
 					{
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
@@ -5062,7 +5196,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": ""
+						"example": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40"
 					},
 					{
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
@@ -5072,7 +5206,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": ""
+						"example": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC"
 					},
 					{
 						"description": "Sort the quotes by the given field (default: amountOut)",
@@ -5105,6 +5239,225 @@
 							]
 						},
 						"example": "send"
+					}
+				]
+			}
+		},
+		"/quotes/private-send": {
+			"get": {
+				"operationId": "GetPrivateSendQuote",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/QuoteResultV2"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Token not found or unavailable",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Token does not support private send",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Quote a private send: send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nReturns receive amount, fees, ETA, and min/max. Pass a `quoteId` from the response to [Create private send order](/api-reference/private-send/create-private-send-order).\nQuotes are valid for about a minute — create the order before they expire.\n\nLook up token ids with [Get tokens](/api-reference/tokens/search-tokens) (`hasSelfPrivate=true`).\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Get quotes](/api-reference/quotes/get-available-quotes-for-a-given-amount-and-token-pair) instead with the same token on `from` and `to` and `types=private`.",
+				"summary": "Get private send quote",
+				"tags": [
+					"Private Send"
+				],
+				"security": [
+					{
+						"apiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Amount of the `from` token to swap, e.g. `1.5` BTC or `250.75` USDT — not base units / wei like `100000000000000`.",
+						"in": "query",
+						"name": "amount",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number",
+							"minimum": 0,
+							"maximum": 1.7976931348623157e+308
+						},
+						"example": 1
+					},
+					{
+						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
+						"in": "query",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"example": "6689b73ec90e45f3b3e51566"
+					},
+					{
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
+						"in": "query",
+						"name": "markup",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number",
+							"minimum": 0,
+							"maximum": 4
+						}
+					},
+					{
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
+						"in": "query",
+						"name": "useXmr",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						},
+						"example": false
+					},
+					{
+						"description": "Request a fixed-rate quote. Only partners that support fixed rate will be returned. Available for standard and private CEX quotes; not supported for DEX.",
+						"in": "query",
+						"name": "fixed",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						},
+						"example": false
+					},
+					{
+						"description": "Where funds are returned if a swap cannot complete. Optional here — quotes are never filtered by it.\n\n- **use a wallet the user controls, not an exchange deposit address**\n- must be on the source chain — the refund comes back as the token you deposited\n- a route that will need one comes back with `requiresRefundAddress: true`\n- supply it at [Create exchange](/api-reference/private-and-standard-swaps/create-exchange), where it is required for fixed-rate quotes and for those routes",
+						"in": "query",
+						"name": "refundAddress",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"maxLength": 200
+						},
+						"example": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+					},
+					{
+						"description": "Maximum price deviation percentage when rotating wallets. Only used if rotatePayoutWallets is true. Default 5",
+						"in": "query",
+						"name": "deviationThreshold",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number",
+							"minimum": 0,
+							"maximum": 100
+						},
+						"example": 5
+					},
+					{
+						"description": "Number of recent orders to check for path rotation. Only used if rotatePayoutWallets is true. Default 10",
+						"in": "query",
+						"name": "rotationLookback",
+						"required": false,
+						"schema": {
+							"format": "int32",
+							"type": "integer",
+							"minimum": 1,
+							"maximum": 100
+						},
+						"example": 10
+					},
+					{
+						"description": "Rotate the payout path for better privacy. Only used for private swaps (`types=private`) — standard and DEX are single-leg and ignore it.",
+						"in": "query",
+						"name": "rotatePayoutWallets",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						},
+						"example": false
+					},
+					{
+						"description": "When strict rotation exhausts every rotated route, fall back to a valid non-rotated route instead of failing. Default false. Requires rotatePayoutWallets — a no-op on its own.",
+						"in": "query",
+						"name": "rotateFallback",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						},
+						"example": false
+					},
+					{
+						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"in": "query",
+						"name": "inLegIncludedSwaps",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
+						"in": "query",
+						"name": "inLegExcludedSwaps",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
+						"in": "query",
+						"name": "outLegIncludedSwaps",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
+						"in": "query",
+						"name": "outLegExcludedSwaps",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
 					}
 				]
 			}
@@ -5168,26 +5521,6 @@
 							}
 						}
 					},
-					"401": {
-						"description": "Missing, malformed, or rejected credentials",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -5204,16 +5537,6 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Rate limit exceeded — back off and retry",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5763,36 +6086,29 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"houdiniId": "hxK7mQp2",
-											"id": "6707c1a2e4b0f3a9d8c12345",
-											"created": "2026-01-01T12:00:00.000Z",
-											"modified": "2026-01-01T12:02:14.000Z",
-											"inCreated": "2026-01-01T12:00:00.000Z",
-											"expires": "2026-01-01T12:30:00.000Z",
-											"depositAddress": "bc1qexampledepositaddress000000000000000000",
-											"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-											"anonymous": true,
+											"created": "2026-09-24T09:33:24.938Z",
+											"houdiniId": "3HHk9iwihtsUM5tUTksNeR",
+											"receiverAddress": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC",
 											"status": 0,
-											"displayStatus": "WAITING_FOR_DEPOSIT",
+											"anonymous": false,
+											"expires": "2026-09-24T10:03:24.938Z",
+											"in": "se",
+											"inAmount": 0.05,
+											"inSymbol": "ETH",
 											"inStatus": 0,
-											"outStatus": 0,
-											"inAmount": 0.25,
-											"inSymbol": "BTC",
-											"outAmount": 3.5182,
-											"outSymbol": "ETH",
-											"inAmountUsd": 26450.5,
-											"outAmountUsd": 26301.44,
-											"eta": 22,
-											"swapName": "Changelly",
+											"inCreated": "2026-09-24T09:33:24.938Z",
+											"outAmount": 1.15832448,
+											"outSymbol": "SOL",
+											"eta": 23,
+											"inAmountUsd": 132.0905,
 											"isDex": false,
-											"fixed": false,
-											"rerouted": false,
-											"notified": false,
-											"actionRequired": false,
-											"nonRefundable": false,
-											"multiId": "",
-											"outTransactionOutHash": "",
-											"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
+											"swapName": "StealthEx",
+											"depositAddress": "0x0000000000000000000000000000000000000000",
+											"id": "6ab4ee647d5b21122e18201c",
+											"hashUrl": "",
+											"statusLabel": "WAITING",
+											"inStatusLabel": "NEW",
+											"displayStatus": "WAITING_FOR_DEPOSIT"
 										}
 									}
 								}
@@ -5870,7 +6186,7 @@
 						}
 					}
 				},
-				"description": "Creates the order from a `quoteId`.\n\nQuote first, then create right away — a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.\n\nWith the order data returned by this endpoint:\n\n- private and standard: send the deposit to `depositAddress` before `expires`\n- DEX: see the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap)",
+				"description": "Creates the order from a `quoteId`.\n\nQuote first, then create right away — a stale `quoteId` is rejected with 422, and the message names the exact age limit. For `fixed: true` quotes the locked rate must also still be inside the quote's `validUntil`, or you get `FIXED_RATE_QUOTE_EXPIRED`.\n\nWith the order data returned by this endpoint:\n\n- private and standard: send the deposit to `depositAddress` before `expires`\n- DEX: see the [DEX swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/dex-swap)\n\nFor a private same-token send you can use [Create private send order](/api-reference/private-send/create-private-send-order), or stay on this endpoint with a private same-token `quoteId` — see the [Private send](/developer-hub/swap-flows/send) guide.",
 				"summary": "Create exchange",
 				"tags": [
 					"Private and Standard Swaps",
@@ -5894,6 +6210,132 @@
 				}
 			}
 		},
+		"/exchanges/private-send": {
+			"post": {
+				"operationId": "CreatePrivateSend",
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OrderV2PublicResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"houdiniId": "hxK7mQp2",
+											"created": "2026-01-01T12:00:00.000Z",
+											"depositAddress": "bc1qexampledepositaddress000000000000000000",
+											"receiverAddress": "bc1qexampledestinationaddress000000000000",
+											"anonymous": true,
+											"expires": "2026-01-01T12:30:00.000Z",
+											"status": 0,
+											"inAmount": 0.1,
+											"inSymbol": "BTC",
+											"outAmount": 0.095,
+											"outSymbol": "BTC",
+											"displayStatus": "WAITING_FOR_DEPOSIT"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — the response carries x402 payment instructions",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Access Denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Token not found or disabled",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "quoteId must be a private same-token send quote (from=to, type private).",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nPass a `quoteId` from [Get private send quote](/api-reference/private-send/get-private-send-quote).\nQuote first, then create the order right away — a stale `quoteId` is rejected with 422.\nSend the deposit to `depositAddress` before `expires`.\n\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Create exchange](/api-reference/exchanges/create-exchange) with a private same-token `quoteId` from [Get quotes](/api-reference/quotes/get-available-quotes-for-a-given-amount-and-token-pair) instead.",
+				"summary": "Create private send order",
+				"tags": [
+					"Private Send"
+				],
+				"security": [
+					{
+						"apiKey": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PrivateSendExchangeRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/exchanges/multi": {
 			"post": {
 				"operationId": "CreateMultiExchange",
@@ -5908,29 +6350,27 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"multiId": "example-multi-id",
+											"multiId": "8ppABEC1HZGrSr1PGbUnCN",
 											"orders": [
 												{
 													"order": {
-														"houdiniId": "hxK7mQp2",
-														"id": "6707c1a2e4b0f3a9d8c12345",
-														"created": "2026-01-01T12:00:00.000Z",
-														"expires": "2026-01-01T12:30:00.000Z",
-														"depositAddress": "bc1qexampledeposit000000000000000000000000",
+														"created": "2026-09-24T09:45:09.594Z",
+														"houdiniId": "nkuYKXXrfzabgG4u3nZhpq",
 														"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-														"anonymous": true,
-														"status": 0,
-														"displayStatus": "WAITING_FOR_DEPOSIT",
-														"inAmount": 0.25,
-														"inSymbol": "BTC",
-														"outAmount": 3.5182,
+														"status": -1,
+														"anonymous": false,
+														"expires": "2026-09-24T10:15:09.594Z",
+														"fixed": false,
+														"inFixed": false,
+														"inAmount": 0.3,
+														"inSymbol": "SOL",
 														"outSymbol": "ETH",
-														"inAmountUsd": 26450.5,
-														"outAmountUsd": 26301.44,
-														"eta": 22,
-														"swapName": "Changelly",
+														"multiId": "8ppABEC1HZGrSr1PGbUnCN",
 														"isDex": false,
-														"multiId": "mx8Qa1"
+														"id": "6ab4f12584e2f105f5a2fbbf",
+														"hashUrl": "",
+														"statusLabel": "NEW",
+														"displayStatus": "WAITING_FOR_DEPOSIT"
 													}
 												}
 											]
@@ -6199,43 +6639,34 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"multiId": "example-multi-id",
+											"multiId": "8ppABEC1HZGrSr1PGbUnCN",
 											"orders": [
 												{
-													"houdiniId": "hxK7mQp2",
-													"id": "6707c1a2e4b0f3a9d8c12345",
-													"created": "2026-01-01T12:00:00.000Z",
-													"modified": "2026-01-01T12:02:14.000Z",
-													"inCreated": "2026-01-01T12:00:00.000Z",
-													"expires": "2026-01-01T12:30:00.000Z",
-													"depositAddress": "bc1qexampledepositaddress000000000000000000",
+													"created": "2026-09-24T09:45:16.943Z",
+													"modified": "2026-09-24T09:46:09.972Z",
+													"houdiniId": "q2R66TDXHeHKb5kxEcAo9C",
 													"receiverAddress": "0x9f1f9a5c0f1d9a5c0f1d9a5c0f1d9a5c0f1d9a5c",
-													"anonymous": true,
 													"status": 0,
-													"displayStatus": "WAITING_FOR_DEPOSIT",
-													"inStatus": 0,
-													"outStatus": 0,
-													"inAmount": 0.25,
-													"inSymbol": "BTC",
-													"outAmount": 3.5182,
+													"anonymous": false,
+													"expires": "2026-09-24T12:45:15.466Z",
+													"in": "hu",
+													"inAmount": 0.35,
+													"inSymbol": "SOL",
+													"inStatus": 1,
+													"inCreated": "2026-09-24T09:45:16.943Z",
+													"outAmount": 0.01481099,
 													"outSymbol": "ETH",
-													"inAmountUsd": 26450.5,
-													"outAmountUsd": 26301.44,
-													"eta": 22,
-													"swapName": "Changelly",
+													"multiId": "8ppABEC1HZGrSr1PGbUnCN",
+													"eta": 1,
+													"inAmountUsd": 39.605999999999995,
 													"isDex": false,
-													"fixed": false,
-													"rerouted": false,
-													"notified": false,
-													"actionRequired": false,
-													"nonRefundable": false,
-													"multiId": "",
-													"outTransactionOutHash": "",
-													"orderFinishedReceived": "2026-01-01T12:24:31.000Z"
-												},
-												{
-													"houdiniId": "deleted-example-houdini-id",
-													"status": 8
+													"swapName": "Verified Partner",
+													"depositAddress": "So1anaExampleDepositAddress11111111111111111",
+													"id": "6ab4f12684e2f105f5a2fbc7",
+													"hashUrl": "",
+													"statusLabel": "WAITING",
+													"inStatusLabel": "WAITING",
+													"displayStatus": "WAITING_FOR_DEPOSIT"
 												}
 											]
 										}
@@ -6511,16 +6942,16 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"multiId": "mx8Qa1",
+											"multiId": "8ppABEC1HZGrSr1PGbUnCN",
 											"chain": "sol",
 											"transactions": [
 												{
 													"houdiniIds": [
-														"hxK7mQp2",
-														"hxK7mQp3"
+														"nkuYKXXrfzabgG4u3nZhpq",
+														"q2R66TDXHeHKb5kxEcAo9C"
 													],
 													"txData": {
-														"data": "AQABBHqRUq0lHs8mkGBz0cJ0ZQ3LXKcM4k4xGz0OHhcVDQYFAwIBAAAAAgAAAAAAAADoAwAAAAAAAA=="
+														"data": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB..."
 													}
 												}
 											]
@@ -6601,12 +7032,11 @@
 						}
 					}
 				},
-				"description": "Deprecated. Use [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction) instead — it returns the same Solana transaction and works for EVM groups too.\n\nStill supported for integrations built before EVM batching existed, so nothing breaks if you are already calling it.\n\n- Solana only; `txData.data` is the serialized transaction, base64 encoded\n- up to 10 deposit addresses per batch; a larger group comes back as several entries in `transactions`",
+				"description": "Returns one Solana transaction that pays every deposit address in the group. This is the only call a Solana batch needs — sign the returned transaction and broadcast it yourself, then poll [Get batch status](/api-reference/multi-exchange/get-batch-status).\n\n- every order must send the same token — all native SOL, or all the same SPL token\n- Solana only; `txData.data` is the serialized transaction, base64 encoded\n- up to 10 deposit addresses per batch; a larger group comes back as several entries in `transactions`\n- nothing to submit back afterwards; there is no Solana equivalent of the EVM submit step\n- for EVM use [Build batch transaction](/api-reference/bundler-evm/build-batch-transaction) instead",
 				"summary": "Get batch transaction",
 				"tags": [
 					"Bundler SOL"
 				],
-				"deprecated": true,
 				"security": [
 					{
 						"apiKey": []
@@ -6641,8 +7071,7 @@
 						"required": false,
 						"schema": {
 							"type": "string"
-						},
-						"example": ""
+						}
 					}
 				]
 			},
@@ -6749,7 +7178,7 @@
 						}
 					}
 				},
-				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-sol/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first: send `txData.value` and `txData.tokenAmount` to `txData.to` from the build response\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
+				"description": "Sends the batch on-chain, using the signatures from the user's wallet.\n\n- sign the `userOpHash` of each batch from [Build batch transaction](/api-reference/bundler-evm/build-batch-transaction), and send them in the same order\n- most groups fit in one batch, so usually one signature\n- fund the smart account first, using `txData` from the build response. For an ERC-20 source `txData.to` is the token contract, not the smart account\n- 404 means nothing is awaiting submission — either never built, or already submitted. Check [Get batch status](/api-reference/multi-exchange/get-batch-status).",
 				"summary": "Submit signed transaction",
 				"tags": [
 					"Bundler EVM"
@@ -6800,8 +7229,8 @@
 										"value": {
 											"multiId": "mx8Qa1",
 											"chain": "evm",
-											"depositNeeded": "0",
-											"saCurrentBalance": "18400000000000000",
+											"depositNeeded": "500012687",
+											"saCurrentBalance": "0",
 											"transactions": [
 												{
 													"houdiniIds": [
@@ -6809,12 +7238,12 @@
 														"hxK7mQp3"
 													],
 													"txData": {
-														"userOpHash": "0x9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
-														"to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-														"data": "0xb61d27f60000000000000000000000000000000000000000000000000000000000000001",
+														"userOpHash": "0xa52e838c3667a152f26a3e039abe5bd0274261ef64dfa32d45c3a4604537852b",
+														"to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+														"data": "0xa9059cbb000000000000000000000000067423f2da169b79497f1ae57863a1d1ee7af772000000000000000000000000000000000000000000000000000000001dcdb5a6",
 														"value": "0",
-														"chainId": 1,
-														"tokenAmount": "1000000000"
+														"chainId": 8453,
+														"tokenAmount": "500012687"
 													}
 												}
 											]
@@ -6905,10 +7334,9 @@
 						}
 					}
 				},
-				"description": "Funds every order in the group with one transaction instead of paying each deposit address. Works for both chains; all orders must share the same source chain.\n\n- Solana — sign the returned transaction and broadcast it. Nothing to submit back.\n- EVM — send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction).\n- large groups come back as several batches — handle every entry in `transactions`\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
+				"description": "Funds every order in the group with one ERC-4337 UserOperation instead of paying each deposit address. Every order must send the same source token — all the chain's native coin, or all the same ERC-20.\n\n- fund the smart account: send the transaction to `to` with `data` and `value`, moving `tokenAmount` of the source token\n- pass the signature to [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)\n- large groups come back as several batches — handle every entry in `transactions`\n- supported on Ethereum, Base and BNB Smart Chain. Other EVM chains are rejected with 400\n- EVM only. For Solana use [Get batch transaction](/api-reference/bundler-sol/get-batch-transaction) instead\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence.",
 				"summary": "Build batch transaction",
 				"tags": [
-					"Bundler SOL",
 					"Bundler EVM"
 				],
 				"security": [
@@ -7286,13 +7714,13 @@
 											"monthlyRequestCount": 0,
 											"quote": {
 												"perMinute": 10,
-												"perHour": 20,
-												"perDay": 50
+												"perHour": 100,
+												"perDay": 500
 											},
 											"exchange": {
 												"perMinute": 5,
-												"perHour": 15,
-												"perDay": 10
+												"perHour": 10,
+												"perDay": 50
 											}
 										}
 									}
@@ -7588,7 +8016,7 @@
 						"example": 1
 					},
 					{
-						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results",
+						"description": "Markup for this request, as a percentage — `0.5` means 0.5%.\n\n- range 0–4; overrides your account default for this trade\n- send `0` for no markup, or omit the field to use your account default\n- providers that cannot apply it are excluded from the results\n- not supported on DEX routes. Leave `types` unset and DEX quotes are simply left out; ask for `types=dex` together with a markup and the request is rejected",
 						"in": "query",
 						"name": "markup",
 						"required": false,
@@ -7597,11 +8025,10 @@
 							"type": "number",
 							"minimum": 0,
 							"maximum": 4
-						},
-						"example": 0.5
+						}
 					},
 					{
-						"description": "Use XMR if true, if false use another token for the anonymous transaction",
+						"description": "Use Monero (XMR) as the bridge token on a private swap.\n\nA private route hops through an intermediary token so the deposit and the payout are not linkable on-chain. `true` pins that hop to XMR; leave it unset and the hop is picked from a rotating set of other tokens. Ignored by standard and DEX quotes, which are single-leg.",
 						"in": "query",
 						"name": "useXmr",
 						"required": false,
@@ -7676,12 +8103,7 @@
 							"items": {
 								"$ref": "#/components/schemas/QuoteType"
 							}
-						},
-						"example": [
-							"private",
-							"standard",
-							"dex"
-						]
+						}
 					},
 					{
 						"description": "Only quote these providers. Omit to use all of them.\n\n- values are `shortName` from [Get swap providers](/api-reference/reference-data/get-swap-providers)\n- applies to every quote type — private, standard and DEX",
@@ -7691,10 +8113,9 @@
 						"schema": {
 							"type": "array",
 							"items": {
-								"$ref": "#/components/schemas/SwapShortName"
+								"$ref": "#/components/schemas/ExchangeType"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Only use these providers for the in-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -7706,8 +8127,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Never use these providers for the in-leg of a private (2-hop) route. Does not affect the out-leg. Ignored by standard and DEX quotes.",
@@ -7719,8 +8139,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Only use these providers for the out-leg of a private (2-hop) route. Ignored by standard and DEX quotes, which are single-hop.",
@@ -7732,8 +8151,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Never use these providers for the out-leg of a private (2-hop) route. Does not affect the in-leg. Ignored by standard and DEX quotes.",
@@ -7745,8 +8163,7 @@
 							"items": {
 								"type": "string"
 							}
-						},
-						"example": []
+						}
 					},
 					{
 						"description": "Wallet that funds the swap, on the source chain. Used by DEX quotes only — private and standard swaps ignore it.",
@@ -7756,7 +8173,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": ""
+						"example": "0xb7dE6b6eEBF7401aFea5a49D6405C9048fEf2d40"
 					},
 					{
 						"description": "Wallet that receives the payout.\n\n- when it differs from `senderAddress`, DEX routes that cannot pay out to a different wallet are returned with `filtered: true` and `filteredReason: different_recipient` — still listed, but not usable\n- also used for payout wallet rotation",
@@ -7766,7 +8183,7 @@
 						"schema": {
 							"type": "string"
 						},
-						"example": ""
+						"example": "8jZnXYnZB1MJQG6zBXyouzcycsaPTrZtPXPHDNifjYaC"
 					},
 					{
 						"description": "Sort the quotes by the given field (default: amountOut)",
@@ -8659,16 +9076,20 @@
 			"description": "CEX swaps in two modes, sharing the same endpoints — pick one with the `types` parameter.\n\n- `types=standard` — direct single-leg swap. Fastest, no privacy hop.\n- `types=private` — two legs through a privacy bridge, so deposit and payout are not linkable on-chain. Adds `anonymous`, `useXmr`, `rotatePayoutWallets` and the `inLeg*` / `outLeg*` filters.\n\nFlow: [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasCex=true` → [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) → [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) → [track the order](/api-reference/private-and-standard-swaps/get-order-details). `markup` works in both modes."
 		},
 		{
+			"name": "Private Send",
+			"description": "Send a token to another wallet privately — same token in and out, with no on-chain link between the two addresses.\n\n- find eligible tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasSelfPrivate=true`\n- quote with Get private send quote, then create with Create private send order\n- you can also stay on the main endpoints with a private same-token `quoteId`\n\nSee the [Private send](https://docs.houdiniswap.com/docs/v2/private-send) guide."
+		},
+		{
 			"name": "Multi-Exchange",
 			"description": "Create and track a group of swaps sharing one `multiId`.\n\n- post the orders straight to Create multi exchange — there is no quote step and no `quoteId`\n- Get multi quotes is optional, for showing rates first\n- each order gets its own deposit address; poll [Get batch status](/api-reference/multi-exchange/get-batch-status) for every leg\n- CEX standard and private only — no DEX in a batch\n\nTo fund the whole group in one transaction, see Bundler SOL or Bundler EVM. See the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler SOL",
-			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- one call — Build batch transaction returns the transaction to sign and broadcast\n- up to 10 deposits per batch; all orders share one source chain\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- nothing to submit back afterwards — retry and recovery are EVM-only\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
+			"description": "Fund a whole multi-exchange group with one Solana batch transfer.\n\n- one call — Get batch transaction returns the transaction to sign and broadcast\n- up to 10 deposits per batch; every order must send the same token\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- nothing to submit back afterwards — retry and recovery are EVM-only\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "Bundler EVM",
-			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- up to 20 legs per batch; all orders share one source chain\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
+			"description": "Fund a whole multi-exchange group with one ERC-4337 UserOperation, submitted through the bundler.\n\n- Ethereum, Base and BNB Smart Chain only; other EVM chains are rejected\n- up to 20 legs per batch; every order must send the same source token\n- find batchable tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasBundler=true`\n- build the UserOp, then submit the signed result\n- if a bundle fails: retry within 30 minutes, or recover stuck assets\n\nSee the [multi-swap flow](https://docs.houdiniswap.com/developer-hub/swap-flows/multi-swap) for the full sequence."
 		},
 		{
 			"name": "On-chain DEX or Bridge",
