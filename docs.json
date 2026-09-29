@@ -13,86 +13,92 @@
       {
         "tab": "API reference (manual testing version)",
         "openapi": "openapi.json",
-        "groups": [
-          {
-            "group": "Private and Standard Swaps",
-            "pages": [
-              "api-reference/private-and-standard-swaps/get-tokens",
-              "api-reference/private-and-standard-swaps/get-quotes",
-              "api-reference/private-and-standard-swaps/get-quotes-by-token-address",
-              "api-reference/private-and-standard-swaps/create-exchange",
-              "api-reference/private-and-standard-swaps/get-order-details"
-            ]
-          },
-          {
-            "group": "Multi-Exchange",
-            "pages": [
-              "api-reference/multi-exchange/get-tokens",
-              "POST /quotes/multi",
-              "POST /exchanges/multi",
-              "GET /exchanges/multi/{multiId}",
-              {
-                "group": "Bundler SOL",
-                "pages": [
-                  "api-reference/bundler-sol/build-batch-transaction",
-                  "GET /exchanges/multi/{multiId}/tx"
+          "groups": [
+                    {
+                        "group": "Private and Standard Swaps",
+                        "pages": [
+                            "docs/v2/api-reference/private-and-standard-swaps/get-tokens",
+                            "docs/v2/api-reference/private-and-standard-swaps/get-quotes",
+                            "docs/v2/api-reference/private-and-standard-swaps/get-quotes-by-token-address",
+                            "docs/v2/api-reference/private-and-standard-swaps/create-exchange",
+                            "docs/v2/api-reference/private-and-standard-swaps/get-order-details"
+                        ]
+                    },
+                    {
+                        "group": "Private Send",
+                        "pages": [
+                            "GET /quotes/private-send",
+                            "POST /exchanges/private-send"
+                        ]
+                    },
+                    {
+                        "group": "Multi-Exchange",
+                        "pages": [
+                            "docs/v2/api-reference/multi-exchange/get-tokens",
+                            "POST /quotes/multi",
+                            "POST /exchanges/multi",
+                            "GET /exchanges/multi/{multiId}",
+                            {
+                                "group": "Bundler SOL",
+                                "pages": [
+                                    "docs/v2/api-reference/bundler-sol/get-batch-transaction"
+                                ]
+                            },
+                            {
+                                "group": "Bundler EVM",
+                                "pages": [
+                                    "docs/v2/api-reference/bundler-evm/build-batch-transaction",
+                                    "POST /exchanges/multi/{multiId}/tx",
+                                    "POST /exchanges/multi/{multiId}/retry",
+                                    "POST /exchanges/multi/recovery"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "group": "On-chain DEX or Bridge",
+                        "pages": [
+                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-tokens",
+                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-quotes",
+                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-quotes-by-token-address",
+                            "docs/v2/api-reference/on-chain-dex-or-bridge/create-exchange",
+                            "POST /dex/approve",
+                            "POST /dex/allowance",
+                            "POST /dex/chainSignatures",
+                            "POST /dex/confirmTx",
+                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-order-details"
+                        ]
+                    },
+                    {
+                        "group": "Reference Data",
+                        "pages": [
+                            "GET /tokens/{id}",
+                            "GET /chains",
+                            "GET /swaps",
+                            "GET /minMax"
+                        ]
+                    },
+                    {
+                        "group": "Partner Account",
+                        "pages": [
+                            "GET /orders",
+                            "GET /me",
+                            "GET /rateLimits",
+                            "GET /commissions",
+                            "GET /commissions/summary",
+                            "GET /withdrawals",
+                            "GET /stats/volume",
+                            "GET /stats/weeklyVolume",
+                            "GET /stats/chart"
+                        ]
+                    },
+                    {
+                        "group": "System",
+                        "pages": [
+                            "GET /status"
+                        ]
+                    }
                 ]
-              },
-              {
-                "group": "Bundler EVM",
-                "pages": [
-                  "api-reference/bundler-evm/build-batch-transaction",
-                  "POST /exchanges/multi/{multiId}/tx",
-                  "POST /exchanges/multi/{multiId}/retry",
-                  "POST /exchanges/multi/recovery"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "On-chain DEX or Bridge",
-            "pages": [
-              "api-reference/on-chain-dex-or-bridge/get-tokens",
-              "api-reference/on-chain-dex-or-bridge/get-quotes",
-              "api-reference/on-chain-dex-or-bridge/get-quotes-by-token-address",
-              "api-reference/on-chain-dex-or-bridge/create-exchange",
-              "POST /dex/approve",
-              "POST /dex/allowance",
-              "POST /dex/chainSignatures",
-              "POST /dex/confirmTx",
-              "api-reference/on-chain-dex-or-bridge/get-order-details"
-            ]
-          },
-          {
-            "group": "Reference Data",
-            "pages": [
-              "GET /tokens/{id}",
-              "GET /chains",
-              "GET /swaps",
-              "GET /minMax"
-            ]
-          },
-          {
-            "group": "Partner Account",
-            "pages": [
-              "GET /orders",
-              "GET /me",
-              "GET /rateLimits",
-              "GET /commissions",
-              "GET /commissions/summary",
-              "GET /withdrawals",
-              "GET /stats/volume",
-              "GET /stats/weeklyVolume",
-              "GET /stats/chart"
-            ]
-          },
-          {
-            "group": "System",
-            "pages": [
-              "GET /status"
-            ]
-          }
-        ]
       },
       {
         "tab": "API develop",
