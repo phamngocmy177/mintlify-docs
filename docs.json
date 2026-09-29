@@ -17,11 +17,11 @@
                     {
                         "group": "Private and Standard Swaps",
                         "pages": [
-                            "docs/v2/api-reference/private-and-standard-swaps/get-tokens",
-                            "docs/v2/api-reference/private-and-standard-swaps/get-quotes",
-                            "docs/v2/api-reference/private-and-standard-swaps/get-quotes-by-token-address",
-                            "docs/v2/api-reference/private-and-standard-swaps/create-exchange",
-                            "docs/v2/api-reference/private-and-standard-swaps/get-order-details"
+                            "api-reference/private-and-standard-swaps/get-tokens",
+                            "api-reference/private-and-standard-swaps/get-quotes",
+                            "api-reference/private-and-standard-swaps/get-quotes-by-token-address",
+                            "api-reference/private-and-standard-swaps/create-exchange",
+                            "api-reference/private-and-standard-swaps/get-order-details"
                         ]
                     },
                     {
@@ -34,20 +34,20 @@
                     {
                         "group": "Multi-Exchange",
                         "pages": [
-                            "docs/v2/api-reference/multi-exchange/get-tokens",
+                            "api-reference/multi-exchange/get-tokens",
                             "POST /quotes/multi",
                             "POST /exchanges/multi",
                             "GET /exchanges/multi/{multiId}",
                             {
                                 "group": "Bundler SOL",
                                 "pages": [
-                                    "docs/v2/api-reference/bundler-sol/get-batch-transaction"
+                                    "api-reference/bundler-sol/get-batch-transaction"
                                 ]
                             },
                             {
                                 "group": "Bundler EVM",
                                 "pages": [
-                                    "docs/v2/api-reference/bundler-evm/build-batch-transaction",
+                                    "api-reference/bundler-evm/build-batch-transaction",
                                     "POST /exchanges/multi/{multiId}/tx",
                                     "POST /exchanges/multi/{multiId}/retry",
                                     "POST /exchanges/multi/recovery"
@@ -58,15 +58,15 @@
                     {
                         "group": "On-chain DEX or Bridge",
                         "pages": [
-                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-tokens",
-                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-quotes",
-                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-quotes-by-token-address",
-                            "docs/v2/api-reference/on-chain-dex-or-bridge/create-exchange",
+                            "api-reference/on-chain-dex-or-bridge/get-tokens",
+                            "api-reference/on-chain-dex-or-bridge/get-quotes",
+                            "api-reference/on-chain-dex-or-bridge/get-quotes-by-token-address",
+                            "api-reference/on-chain-dex-or-bridge/create-exchange",
                             "POST /dex/approve",
                             "POST /dex/allowance",
                             "POST /dex/chainSignatures",
                             "POST /dex/confirmTx",
-                            "docs/v2/api-reference/on-chain-dex-or-bridge/get-order-details"
+                            "api-reference/on-chain-dex-or-bridge/get-order-details"
                         ]
                     },
                     {
