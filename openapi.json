@@ -9324,7 +9324,7 @@
 	},
 	"servers": [
 		{
-			"url": "https://api-partner.houdiniswap.com/v2"
+			"url": "https://api-dev-partner.houdiniswap.com/v2"
 		}
 	],
 	"tags": [
