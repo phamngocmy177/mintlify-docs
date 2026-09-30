@@ -1,0 +1,9 @@
+---
+title: "Get order details"
+description: "Track a private send after it is created."
+openapi: "GET /orders/{houdiniId}"
+---
+
+Poll this with the `houdiniId` from [Create private send order](/api-reference/private-send/create-private-send-order). Send the deposit to `depositAddress` before `expires`, then watch `displayStatus` until it reads `SWAP_COMPLETED`.
+
+Orders drop out of the API 48 hours after creation, so store anything you need to keep before then.

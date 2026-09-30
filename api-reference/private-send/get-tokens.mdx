@@ -1,0 +1,16 @@
+---
+title: "Get tokens"
+description: "Returns the tokens you can send privately to another wallet. Use the returned id as the token of a private send quote."
+openapi: "GET /tokens"
+---
+
+A private send moves a token to another wallet with no on-chain link between the two addresses, so the same token goes in and out. Pass `hasSelfPrivate=true` to list the tokens that support it.
+
+Without filters this returns every enabled token, 1000 per page. Narrow it further with:
+
+- `term`: search by name, symbol, address or cexTokenId
+- `chain`: one chain only, e.g. `ethereum`. Use a `shortName` from [Get chains](/api-reference/reference-data/get-chains)
+
+Tokens we have not reviewed are excluded unless you pass `unverified=true`.
+
+Next, pass the token id to [Get private send quote](/api-reference/private-send/get-private-send-quote), then create the order with [Create private send order](/api-reference/private-send/create-private-send-order). See the [Private send](/developer-hub/swap-flows/send) guide for the full sequence.

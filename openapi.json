@@ -23,100 +23,14 @@
 					"type": "object"
 				}
 			},
-			"ErrorCode": {
-				"enum": [
-					"VALIDATION_ERROR",
-					"INVALID_MONTH_FORMAT",
-					"BAD_REQUEST",
-					"INTERNAL_SERVER_ERROR",
-					"METHOD_NOT_ALLOWED",
-					"ROUTE_NOT_FOUND",
-					"MISSING_API_CREDENTIALS",
-					"INVALID_API_CREDENTIALS",
-					"INVALID_API_CREDENTIALS_FORMAT",
-					"AUTHENTICATION_FAILED",
-					"INVALID_SECURITY_SCHEME",
-					"NOT_FOUND",
-					"ACCESS_DENIED",
-					"SERVICE_UNAVAILABLE",
-					"QUOTE_OVER_LIMIT",
-					"ANONYMOUS_DISABLED",
-					"AMOUNT_TOO_LOW",
-					"TO_AND_FROM_CANNOT_BE_THE_SAME",
-					"UNSUPPORTED_ANON_TOKEN",
-					"SWAP_COMBINATION_DISABLED",
-					"PRICE_QUOTES_NOT_RETRIEVED",
-					"UNSUPPORTED_FROM_TOKEN",
-					"UNSUPPORTED_TO_TOKEN",
-					"ADDRESS_TO_INVALID",
-					"ADDRESS_TO_INVALID_FOR_CHAIN",
-					"ADDRESS_TO_IN_DEPOSIT_LOG",
-					"ADDRESS_REFUND_IN_DEPOSIT_LOG",
-					"ADDRESS_TO_IS_TOKEN_ADDRESS",
-					"ADDRESS_REFUND_IS_TOKEN_ADDRESS",
-					"ADDRESS_FROM_IS_TOKEN_ADDRESS",
-					"ADDRESS_TO_SANCTIONED",
-					"ADDRESS_REFUND_SANCTIONED",
-					"ADDRESS_FROM_SANCTIONED",
-					"ADDRESS_FROM_INVALID",
-					"ADDRESS_FROM_REQUIRED",
-					"DEPOSIT_FLOW_NOT_SUPPORTED",
-					"DEPOSIT_FLOW_DISABLED",
-					"CONFLICTING_FLOW_PARAMS",
-					"ORDER_ALREADY_INITIALIZING_OR_PROCESSED",
-					"X_ADDRESS_NOT_SUPPORTED",
-					"REFUND_X_ADDRESS_NOT_SUPPORTED",
-					"INVALID_QUOTE",
-					"UNABLE_TO_PERFORM_EXCHANGE",
-					"PROVIDER_EXCHANGE_FAILED",
-					"INVALID_PATH",
-					"ANON_SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
-					"XMR_SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
-					"SWAP_AMOUNT_IS_OUT_OF_BOUNDS",
-					"SWAP_PROVIDER_REJECTED_QUOTE",
-					"ANON_SWAP_PROVIDER_REJECTED_QUOTE",
-					"REUSED_DEPOSIT_ADDRESS",
-					"STATIC_DEPOSIT_IN_USE",
-					"TOKEN_NOT_FOUND",
-					"TOKEN_DISABLED",
-					"INVALID_SWAP",
-					"INVALID_SIGNATURE",
-					"ADDRESS_FROM_INVALID_FOR_CHAIN",
-					"ADDRESS_REFUND_INVALID_FOR_CHAIN",
-					"RATE_LIMIT_EXCEEDED",
-					"INVALID_TOKEN",
-					"NO_DEX_ROUTES",
-					"REFUND_ADDRESS_REQUIRED_FOR_FIXED_RATE",
-					"REFUND_ADDRESS_REQUIRED",
-					"ANONYMOUS_AND_FIXED_RATE_NOT_SUPPORTED",
-					"FIXED_RATE_QUOTE_EXPIRED",
-					"DEX_AND_FIXED_RATE_NOT_SUPPORTED",
-					"EXACT_OUT_NOT_SUPPORTED_FOR_ANONYMOUS",
-					"EXACT_OUT_NOT_SUPPORTED_FOR_DEX",
-					"EXACT_OUT_REQUIRES_FIXED_RATE",
-					"CONTRADICTORY_LEG_FILTER",
-					"ALREADY_SUBMITTED",
-					"UNABLE_TO_CREATE_REFUND_LEG",
-					"FIXED_RATE_NOT_ALLOWED",
-					"MARKUP_EXCEEDS_LIMIT",
-					"MARKUP_MISMATCHES_QUOTE",
-					"MARKUP_NOT_SUPPORTED_FOR_DEX",
-					"FLOATING_RATE_NOT_ALLOWED",
-					"PRIVATE_SEND_NOT_SUPPORTED",
-					"INVALID_PRIVATE_SEND_QUOTE",
-					"INTERMEDIATE_REFUND_ADDRESS_REQUIRED",
-					"ONCHAIN_LEG_ROUTE_NOT_AVAILABLE"
-				],
-				"type": "string"
-			},
 			"ValidationError": {
 				"properties": {
 					"message": {
 						"type": "string"
 					},
 					"code": {
-						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure, e.g. `VALIDATION_ERROR`, `TOKEN_NOT_FOUND`, `RATE_LIMIT_EXCEEDED`. Branch on this, not on `message` — messages are free to change. The full set is listed below.\n\nUse the HTTP status to decide whether to retry, and the code to decide what to tell the user:\n\n- `4xx` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `429` (`RATE_LIMIT_EXCEEDED`) — back off and retry.\n- `5xx` — our side or a provider. Safe to retry after a pause."
+						"type": "string",
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\nThe value depends on the HTTP status. The common ones:\n\n- `400` — `BAD_REQUEST`, `INVALID_API_CREDENTIALS_FORMAT`\n- `401` — `MISSING_API_CREDENTIALS`, `INVALID_API_CREDENTIALS`\n- `403` — `ACCESS_DENIED`, `FIXED_RATE_NOT_ALLOWED`\n- `404` — `NOT_FOUND`, `TOKEN_NOT_FOUND`, `TOKEN_DISABLED`\n- `409` — `ALREADY_SUBMITTED`, `STATIC_DEPOSIT_IN_USE`\n- `422` — `VALIDATION_ERROR`, `AMOUNT_TOO_LOW`, `INVALID_SWAP`, `FIXED_RATE_QUOTE_EXPIRED`, and most other request problems\n- `429` — `RATE_LIMIT_EXCEEDED`\n- `5xx` — `INTERNAL_SERVER_ERROR`, `PROVIDER_EXCHANGE_FAILED`, `SERVICE_UNAVAILABLE`\n\nNew codes are added over time, so treat this as an open set: match the ones you handle and fall back to the HTTP status for the rest."
 					},
 					"requestId": {
 						"type": "string",
@@ -140,8 +54,8 @@
 						"type": "string"
 					},
 					"code": {
-						"$ref": "#/components/schemas/ErrorCode",
-						"description": "Machine-readable reason for the failure, e.g. `VALIDATION_ERROR`, `TOKEN_NOT_FOUND`, `RATE_LIMIT_EXCEEDED`. Branch on this, not on `message` — messages are free to change. The full set is listed below.\n\nUse the HTTP status to decide whether to retry, and the code to decide what to tell the user:\n\n- `4xx` — the request is wrong. Fix it and retry; retrying unchanged will fail again.\n- `429` (`RATE_LIMIT_EXCEEDED`) — back off and retry.\n- `5xx` — our side or a provider. Safe to retry after a pause."
+						"type": "string",
+						"description": "Machine-readable reason for the failure. Branch on this, not on `message` — messages are free to change.\n\nThe value depends on the HTTP status. The common ones:\n\n- `400` — `BAD_REQUEST`, `INVALID_API_CREDENTIALS_FORMAT`\n- `401` — `MISSING_API_CREDENTIALS`, `INVALID_API_CREDENTIALS`\n- `403` — `ACCESS_DENIED`, `FIXED_RATE_NOT_ALLOWED`\n- `404` — `NOT_FOUND`, `TOKEN_NOT_FOUND`, `TOKEN_DISABLED`\n- `409` — `ALREADY_SUBMITTED`, `STATIC_DEPOSIT_IN_USE`\n- `422` — `VALIDATION_ERROR`, `AMOUNT_TOO_LOW`, `INVALID_SWAP`, `FIXED_RATE_QUOTE_EXPIRED`, and most other request problems\n- `429` — `RATE_LIMIT_EXCEEDED`\n- `5xx` — `INTERNAL_SERVER_ERROR`, `PROVIDER_EXCHANGE_FAILED`, `SERVICE_UNAVAILABLE`\n\nNew codes are added over time, so treat this as an open set: match the ones you handle and fall back to the HTTP status for the rest."
 					},
 					"requestId": {
 						"type": "string",
@@ -152,6 +66,12 @@
 					"message",
 					"code"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"X402PaymentRequired": {
+				"description": "Body of a `402 Payment required`. Always empty — `{}`.\n\nThis is the x402 payment protocol, not the normal error format, so there is no `code` or `message` to branch on. What to pay is in the `payment-required` response header: base64-encoded JSON whose `accepts[]` entries each carry the `network`, the `asset` to pay in, the `amount`, and the `payTo` address, alongside `maxTimeoutSeconds` and the x402 `scheme`.\n\nSending an `Authorization` header skips the payment flow, so a 402 never reaches a partner using API credentials — only callers paying per request.",
+				"properties": {},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -1492,7 +1412,7 @@
 					},
 					"token": {
 						"type": "string",
-						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
+						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-send/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
 						"example": "6689b73ec90e45f3b3e51566"
 					},
 					"markup": {
@@ -3480,7 +3400,7 @@
 					},
 					"tier": {
 						"type": "string",
-						"description": "Your plan. It sets your rate limits — see [Get rate limits](/api-reference/partner-account/get-rate-limits)."
+						"description": "Your plan: `free` or `pro`. It sets your rate limits — see [Get rate limits](/api-reference/partner-account/get-rate-limits)."
 					},
 					"commissionRate": {
 						"type": "number",
@@ -3604,7 +3524,7 @@
 					},
 					"routeType": {
 						"type": "string",
-						"description": "Which route earned it — `private`, `standard` or `dex`. Each can have its own rate."
+						"description": "Which route earned it — `standard`, `privateSwap` or `dex`. Each can have its own rate."
 					},
 					"order": {
 						"$ref": "#/components/schemas/CommissionOrderSummary",
@@ -3882,13 +3802,13 @@
 				"type": "apiKey",
 				"name": "Authorization",
 				"in": "header",
-				"description": "Send `Authorization: <partnerId>:<secret>` — joined by a colon, raw. No `Bearer` prefix, no base64.\n\n[Get your credentials](https://docs.houdiniswap.com/developer-hub/getting-started/authentication)"
+				"description": "Send `Authorization: <ApiKey>:<ApiSecret>` — joined by a colon, raw. No `Bearer` prefix, no base64.\n\n[Get your credentials](https://docs.houdiniswap.com/developer-hub/getting-started/authentication)"
 			},
 			"x402": {
 				"type": "apiKey",
 				"name": "X-PAYMENT",
 				"in": "header",
-				"description": "x402 payment protocol. Send USDC payment proof in the X-PAYMENT header. If no payment is provided, a 402 response with payment instructions is returned."
+				"description": "x402 payment protocol, for callers paying per request instead of using API credentials. Send USDC payment proof in the `X-PAYMENT` header.\n\nWithout payment you get a `402` whose body is empty — what to pay is in the base64 `payment-required` response header. Most callers never see this: sending an `Authorization` header skips the payment flow entirely."
 			}
 		}
 	},
@@ -3972,12 +3892,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -4147,12 +4075,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -4191,6 +4127,7 @@
 				"summary": "Get tokens",
 				"tags": [
 					"Private and Standard Swaps",
+					"Private Send",
 					"On-chain DEX or Bridge",
 					"Multi-Exchange"
 				],
@@ -4418,12 +4355,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -4547,12 +4492,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -4601,6 +4554,7 @@
 				"summary": "Get order details",
 				"tags": [
 					"Private and Standard Swaps",
+					"Private Send",
 					"On-chain DEX or Bridge"
 				],
 				"security": [
@@ -4682,12 +4636,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -4880,7 +4842,7 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"total": 93,
+											"total": 3,
 											"quotes": [
 												{
 													"amountIn": 1,
@@ -4938,6 +4900,34 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/X402PaymentRequired"
+								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -4954,6 +4944,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5253,7 +5253,80 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/QuoteResultV2"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"total": 3,
+											"quotes": [
+												{
+													"amountIn": 0.1,
+													"amountOut": 0.09845812,
+													"min": 0.0012053668334948734,
+													"max": 111.14801288872027,
+													"duration": 44,
+													"amountOutUsd": 8232.872062741199,
+													"quoteId": "6abcd9544740df03928bb7ee",
+													"type": "private",
+													"rewardsAvailable": true,
+													"fixed": false
+												},
+												{
+													"amountIn": 0.1,
+													"amountOut": 0.09845029,
+													"min": 0.00119657,
+													"max": 12.158054581842057,
+													"duration": 37,
+													"amountOutUsd": 8232.2173337229,
+													"quoteId": "6abcd9544740df03928bb7ef",
+													"type": "private",
+													"rewardsAvailable": true,
+													"fixed": false
+												},
+												{
+													"amountIn": 0.1,
+													"amountOut": 0.09842404,
+													"min": 0.001205773828948278,
+													"max": 111.18554232344803,
+													"duration": 35,
+													"amountOutUsd": 8230.0223609604,
+													"quoteId": "6abcd9544740df03928bb7f8",
+													"type": "private",
+													"rewardsAvailable": true,
+													"fixed": false
+												}
+											]
+										}
+									}
 								}
+							}
+						}
+					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/X402PaymentRequired"
+								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -5277,6 +5350,16 @@
 							}
 						}
 					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
 					"500": {
 						"description": "Internal Server Error",
 						"content": {
@@ -5288,7 +5371,7 @@
 						}
 					}
 				},
-				"description": "Quote a private send: send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nReturns receive amount, fees, ETA, and min/max. Pass a `quoteId` from the response to [Create private send order](/api-reference/private-send/create-private-send-order).\nQuotes are valid for about a minute — create the order before they expire.\n\nLook up token ids with [Get tokens](/api-reference/tokens/search-tokens) (`hasSelfPrivate=true`).\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Get quotes](/api-reference/quotes/get-available-quotes-for-a-given-amount-and-token-pair) instead with the same token on `from` and `to` and `types=private`.",
+				"description": "Quote a private send: send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nReturns receive amount, fees, ETA, and min/max. Pass a `quoteId` from the response to [Create private send order](/api-reference/private-send/create-private-send-order).\nQuotes are valid for about a minute — create the order before they expire.\n\nLook up token ids with [Get tokens](/api-reference/private-send/get-tokens) (`hasSelfPrivate=true`).\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) instead with the same token on `from` and `to` and `types=private`.",
 				"summary": "Get private send quote",
 				"tags": [
 					"Private Send"
@@ -5313,7 +5396,7 @@
 						"example": 1
 					},
 					{
-						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
+						"description": "Token to send. Use an `id` from [Get tokens](/api-reference/private-send/get-tokens) with `hasSelfPrivate=true` — not a symbol.",
 						"in": "query",
 						"name": "token",
 						"required": true,
@@ -5521,6 +5604,34 @@
 							}
 						}
 					},
+					"401": {
+						"description": "Missing, malformed, or rejected credentials",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"402": {
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/X402PaymentRequired"
+								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
+							}
+						}
+					},
 					"404": {
 						"description": "Token not found or disabled",
 						"content": {
@@ -5537,6 +5648,16 @@
 							"application/json": {
 								"schema": {
 									"$ref": "#/components/schemas/ValidationError"
+								}
+							}
+						}
+					},
+					"429": {
+						"description": "Rate limit exceeded — back off and retry",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
 								}
 							}
 						}
@@ -5610,12 +5731,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -5774,12 +5903,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -5901,12 +6038,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -5999,12 +6144,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6126,12 +6279,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6253,12 +6414,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6313,7 +6482,7 @@
 						}
 					}
 				},
-				"description": "Send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nPass a `quoteId` from [Get private send quote](/api-reference/private-send/get-private-send-quote).\nQuote first, then create the order right away — a stale `quoteId` is rejected with 422.\nSend the deposit to `depositAddress` before `expires`.\n\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Create exchange](/api-reference/exchanges/create-exchange) with a private same-token `quoteId` from [Get quotes](/api-reference/quotes/get-available-quotes-for-a-given-amount-and-token-pair) instead.",
+				"description": "Send funds to another wallet via a private (two-hop) route. Same token in and out.\n\nPass a `quoteId` from [Get private send quote](/api-reference/private-send/get-private-send-quote).\nQuote first, then create the order right away — a stale `quoteId` is rejected with 422.\nSend the deposit to `depositAddress` before `expires`.\n\nSee the [Private send](/developer-hub/swap-flows/send) guide.\n\nThis endpoint only supports private same-token routes. If you want to keep one integration for every exchange type, use [Create exchange](/api-reference/private-and-standard-swaps/create-exchange) with a private same-token `quoteId` from [Get quotes](/api-reference/private-and-standard-swaps/get-quotes) instead.",
 				"summary": "Create private send order",
 				"tags": [
 					"Private Send"
@@ -6391,12 +6560,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6542,12 +6719,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6686,12 +6871,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6833,12 +7026,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -6972,12 +7173,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7118,12 +7327,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7264,12 +7481,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7423,12 +7648,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7546,12 +7779,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7739,12 +7980,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -7816,7 +8065,7 @@
 								"examples": {
 									"Example 1": {
 										"value": {
-											"total": 93,
+											"total": 3,
 											"quotes": [
 												{
 													"amountIn": 1,
@@ -7885,12 +8134,20 @@
 						}
 					},
 					"402": {
-						"description": "Payment required — the response carries x402 payment instructions",
+						"description": "Payment required — x402 protocol. The body is empty; what to pay is in the `payment-required` header. Not returned when you send an `Authorization` header.",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponse"
+									"$ref": "#/components/schemas/X402PaymentRequired"
 								}
+							}
+						},
+						"headers": {
+							"payment-required": {
+								"schema": {
+									"type": "string"
+								},
+								"required": true
 							}
 						}
 					},
@@ -8417,7 +8674,7 @@
 											"name": "Example Partner",
 											"nickname": "example-partner",
 											"email": "partner@example.com",
-											"tier": "growth",
+											"tier": "pro",
 											"commissionRate": 0.5,
 											"privateCommissionRate": 0.5,
 											"standardCommissionRate": 0.5,
@@ -8528,7 +8785,7 @@
 													"orderVolumeUsd": 26301.44,
 													"processed": false,
 													"commissionMonth": "2026-01",
-													"routeType": "private",
+													"routeType": "privateSwap",
 													"order": {
 														"id": "6707c1a2e4b0f3a9d8c12345",
 														"houdiniId": "hxK7mQp2",
@@ -9077,7 +9334,7 @@
 		},
 		{
 			"name": "Private Send",
-			"description": "Send a token to another wallet privately — same token in and out, with no on-chain link between the two addresses.\n\n- find eligible tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasSelfPrivate=true`\n- quote with Get private send quote, then create with Create private send order\n- you can also stay on the main endpoints with a private same-token `quoteId`\n\nSee the [Private send](https://docs.houdiniswap.com/docs/v2/private-send) guide."
+			"description": "Send a token to another wallet privately — same token in and out, with no on-chain link between the two addresses.\n\n- find eligible tokens with [Get tokens](/api-reference/private-and-standard-swaps/get-tokens) and `hasSelfPrivate=true`\n- quote with Get private send quote, then create with Create private send order\n- you can also stay on the main endpoints with a private same-token `quoteId`\n\nSee the [Private send](/docs/v2/private-send) guide."
 		},
 		{
 			"name": "Multi-Exchange",

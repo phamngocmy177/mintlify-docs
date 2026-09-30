@@ -13,7 +13,7 @@
       {
         "tab": "API reference (manual testing version)",
         "openapi": "openapi.json",
-          "groups": [
+       "groups": [
                     {
                         "group": "Private and Standard Swaps",
                         "pages": [
@@ -27,8 +27,10 @@
                     {
                         "group": "Private Send",
                         "pages": [
+                            "api-reference/private-send/get-tokens",
                             "GET /quotes/private-send",
-                            "POST /exchanges/private-send"
+                            "POST /exchanges/private-send",
+                            "api-reference/private-send/get-order-details"
                         ]
                     },
                     {

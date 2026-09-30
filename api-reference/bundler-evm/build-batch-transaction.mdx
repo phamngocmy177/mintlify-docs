@@ -4,7 +4,7 @@ description: "Funds every order in a multi-exchange with one ERC-4337 UserOperat
 openapi: "POST /exchanges/multi/{multiId}/tx/build"
 ---
 
-- every order must send the **same token**: all the chain's native coin, or all the same ERC-20. Mixing them is rejected
+- every order must send the **same token** — all the chain's native coin, or all the same ERC-20. Mixing them is rejected
 - supported on Ethereum, Base and BNB Smart Chain; other EVM chains are rejected
 - up to 20 legs per batch
 - send `value` and `tokenAmount` to `to`, sign `userOpHash`, then call [Submit signed transaction](/api-reference/bundler-evm/submit-signed-transaction)

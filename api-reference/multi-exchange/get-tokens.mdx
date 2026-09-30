@@ -4,7 +4,7 @@ description: "Returns the tokens available for a multi-exchange. Use the returne
 openapi: "GET /tokens"
 ---
 
-A multi-exchange runs private and standard swaps only, so pass `hasCex=true`. To fund the whole group in one transaction through [Bundler SOL](/api-reference/bundler-sol/build-batch-transaction) or [Bundler EVM](/api-reference/bundler-evm/build-batch-transaction), also pass `hasBundler=true`.
+A multi-exchange runs private and standard swaps only, so pass `hasCex=true`. To fund the whole group in one transaction through [Bundler SOL](/api-reference/bundler-sol/get-batch-transaction) or [Bundler EVM](/api-reference/bundler-evm/build-batch-transaction), also pass `hasBundler=true`.
 
 Without filters this returns every enabled token, 1000 per page. Narrow it further with:
 
