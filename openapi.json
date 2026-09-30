@@ -9324,7 +9324,7 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:3003/v2"
+			"url": "https://api-partner.houdiniswap.com/v2"
 		}
 	],
 	"tags": [
