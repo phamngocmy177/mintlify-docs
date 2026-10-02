@@ -11,8 +11,8 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "API reference (manual testing version)",
-        "openapi": "openapi.json",
+        "tab": "API reference",
+        "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json",
        "groups": [
                     {
                         "group": "Private and Standard Swaps",
