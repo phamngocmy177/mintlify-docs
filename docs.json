@@ -11,65 +11,68 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "API reference",
-        "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json",
-       "groups": [
-                    {
-                        "group": "Private and Standard Swaps",
-                        "pages": [
-                            "api-reference/private-and-standard-swaps/get-tokens",
-                            "api-reference/private-and-standard-swaps/get-quotes",
-                            "api-reference/private-and-standard-swaps/get-quotes-by-token-address",
-                            "api-reference/private-and-standard-swaps/create-exchange",
-                            "api-reference/private-and-standard-swaps/get-order-details"
-                        ]
-                    },
-                    {
-                        "group": "Private Send",
-                        "pages": [
-                            "api-reference/private-send/get-tokens",
-                            "GET /quotes/private-send",
-                            "POST /exchanges/private-send",
-                            "api-reference/private-send/get-order-details"
-                        ]
-                    },
+        "tab": "API Reference (dev)",
+        "openapi": "https://pr-3837-partner.dev.houdiniswap.com/v2/openapi.json"
+      },
+      {
+        "tab": "API reference (manual testing version)",
+        "openapi": "openapi.json",
+      "groups": [
+        {
+          "group": "Private Swaps",
+          "pages": [
+            "GET /tokens",
+            "GET /quotes",
+            "GET /quotes/byChainAddress",
+            "POST /exchanges",
+            "GET /orders",
+            "GET /orders/{houdiniId}"
+          ]
+        },
+        {
+          "group": "Standard Swaps",
+          "pages": [
+            "GET /tokens",
+            "GET /quotes",
+            "GET /quotes/byChainAddress",
+            "POST /exchanges",
+            "GET /orders",
+            "GET /orders/{houdiniId}"
+          ]
+        },
+        {
+          "group": "DEX Swaps",
+          "pages": [
+            "GET /tokens",
+            "GET /quotes",
+            "GET /quotes/byChainAddress",
+            "POST /exchanges",
+            "POST /dex/allowance",
+            "POST /dex/approve",
+            "POST /dex/chainSignatures",
+            "POST /dex/confirmTx",
+            "GET /orders",
+            "GET /orders/{houdiniId}"
+          ]
+        },
                     {
                         "group": "Multi-Exchange",
                         "pages": [
-                            "api-reference/multi-exchange/get-tokens",
+                          "GET /tokens",
                             "POST /quotes/multi",
                             "POST /exchanges/multi",
                             "GET /exchanges/multi/{multiId}",
                             {
-                                "group": "Bundler SOL",
-                                "pages": [
-                                    "api-reference/bundler-sol/get-batch-transaction"
-                                ]
-                            },
-                            {
-                                "group": "Bundler EVM",
-                                "pages": [
-                                    "api-reference/bundler-evm/build-batch-transaction",
-                                    "POST /exchanges/multi/{multiId}/tx",
-                                    "POST /exchanges/multi/{multiId}/retry",
-                                    "POST /exchanges/multi/recovery"
-                                ]
+                              "group": "Bundler",
+                              "pages": [
+                                "POST /exchanges/multi/{multiId}/tx/build",
+                                "GET /exchanges/multi/{multiId}/tx",
+                                "POST /exchanges/multi/{multiId}/tx",
+                                "POST /exchanges/multi/{multiId}/retry",
+                                "POST /exchanges/multi/recovery"
+                              ]
                             }
-                        ]
-                    },
-                    {
-                        "group": "On-chain DEX or Bridge",
-                        "pages": [
-                            "api-reference/on-chain-dex-or-bridge/get-tokens",
-                            "api-reference/on-chain-dex-or-bridge/get-quotes",
-                            "api-reference/on-chain-dex-or-bridge/get-quotes-by-token-address",
-                            "api-reference/on-chain-dex-or-bridge/create-exchange",
-                            "POST /dex/approve",
-                            "POST /dex/allowance",
-                            "POST /dex/chainSignatures",
-                            "POST /dex/confirmTx",
-                            "api-reference/on-chain-dex-or-bridge/get-order-details"
-                        ]
+                          ]
                     },
                     {
                         "group": "Reference Data",
@@ -83,15 +86,14 @@
                     {
                         "group": "Partner Account",
                         "pages": [
-                            "GET /orders",
                             "GET /me",
-                            "GET /rateLimits",
                             "GET /commissions",
                             "GET /commissions/summary",
                             "GET /withdrawals",
                             "GET /stats/volume",
                             "GET /stats/weeklyVolume",
-                            "GET /stats/chart"
+                            "GET /stats/chart",
+                            "GET /rateLimits"
                         ]
                     },
                     {
