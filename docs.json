@@ -12,7 +12,7 @@
     "tabs": [
       {
         "tab": "API reference",
-        "openapi": "https://pr-3837-partner.dev.houdiniswap.com/v2/openapi.json",
+        "openapi": "https://api-dev-partner.houdiniswap.com/v2/openapi.json",
        "groups": [
                     {
                         "group": "Private and Standard Swaps",
